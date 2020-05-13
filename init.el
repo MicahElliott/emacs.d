@@ -27,7 +27,7 @@
 ;;   (require 'use-package))
 
 
-;;; Viju
+;;; Packaging
 
 
 ;; https://emacs.stackexchange.com/a/16832/11025
@@ -88,7 +88,7 @@
     jump-char
     key-chord
     kibit-helper
-    ;; nlinum-relative
+    nlinum-relative
     magit
     markdown-mode
     mode-icons
@@ -117,13 +117,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
-(require 'ivy)
-(require 'ace-window)
-(require 'cider)
-(require 'smartparens-config)
-(require 'expand-region)
-;;(require 'clj-refactor)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -131,14 +124,42 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))))
+    (key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+ '(ediff-split-window-function (quote split-window-horizontally))
+ '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
+ '(cursor-type (quote (bar . 2)))
+ '(blink-cursor-blinks 2)
+ '(blink-cursor-interval 0.2)
+ '(blink-cursor-mode t)
+ )
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(cursor ((t (:background "red" :foreground "#272822" :inverse-video t))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange" :weight bold))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink" :weight bold))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse" :weight bold))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue" :weight bold))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow" :weight bold))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid" :weight bold))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green" :weight bold))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
+ '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
+ '(font-lock-comment-face ((t (:foreground "#75715E" :height 0.9 :family "Delius"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
+ '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
+ '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
+ '(font-lock-variable-name-face ((t (:foreground "#A6E22E")))))
+
+(require 'ivy)
+(require 'ace-window)
+(require 'cider)
+(require 'smartparens-config)
+
 
 
 ;;; UI
@@ -224,8 +245,11 @@
 (setq projectile-completion-system 'ivy)
 
 (smartparens-global-mode)
-(projectile-global-mode)
 
+;; ENABLE??
+;; https://github.com/magnars/expand-region.el
+;; (require 'expand-region)
+;; (global-set-key (kbd "C-=") 'er/expand-region)
 
 
 ;;; Prelude
@@ -448,16 +472,24 @@
 ;; Line numbers
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
-;; (require 'nlinum-relative)
-;; (nlinum-relative-on)
+(require 'nlinum-relative)
+(nlinum-relative-on)
 ;; (global-display-line-numbers-mode)
-
-
-;; ENABLE??
+(setq nlinum-relative-redisplay-delay 0)
+(setq nlinum-relative-offset 0)
+;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
+                                        
+;; Visible mark
+;; http://pragmaticemacs.com/emacs/regions-marks-and-visual-mark/
+(setq visible-mark-max 2)
+(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
+(global-visible-mark-mode)
+(defface visible-mark-active ;; put this before (require 'visible-mark)
+  '((((type tty) (class mono)))
+    (t (:background "magenta"))) "")
+(setq visible-mark-max 2)
+(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (require 'visible-mark)
-;; (setq visible-mark-max 2)
-;; (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
-;; (global-visible-mark-mode)
 
 
 
@@ -890,15 +922,18 @@
 
 (add-hook 'prog-mode-hook 'company-mode)
 
-;; smart pairing for all (some of these are from prelude)
+;; Smartparens (some of these are from prelude)
+(require 'smartparens)  ; better paredit, sp-*
 (require 'smartparens-config)
-(smartparens-mode)
+(smartparens-global-mode t)
 (sp-use-paredit-bindings)
+;; TODO: why are these 3 set?
 (setq sp-base-key-bindings 'paredit)
 (setq sp-autoskip-closing-pair 'always)
 (setq sp-hybrid-kill-entire-symbol nil)
 (show-smartparens-global-mode +1)
 ;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
+;; Enable all the goodies.
 (smartparens-strict-mode +1)
                                                      
                                                      
@@ -950,7 +985,6 @@
 (setq clojure-align-forms-automatically t)
 
 ;; NOTE: also installed to ~/.lein/profiles.clj: kibit, eastwood
-(require 'smartparens)  ; better paredit, sp-*
 (add-to-list 'package-pinned-packages '(cider . "melpa-stable") t)
 (require 'cider)
 (require 'cider-eval-sexp-fu)
