@@ -54,6 +54,8 @@
     crux
     cucumber-goto-step
     cycle-quotes
+    delight
+    diff-hl
     discover-clj-refactor
     dot-mode
     dumb-jump
@@ -70,7 +72,7 @@
     flycheck-yamllint
     flymd
     git-messenger
-    ;; hide-comnt
+    git-timemachine
     highlight-parentheses
     ido
     ido-completing-read+
@@ -100,7 +102,8 @@
     toggle-quotes
     typo
     undo-tree
-    unfill))
+    unfill
+    which-key))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -171,7 +174,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -227,6 +230,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
+ '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
 
 ;; '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
@@ -235,9 +239,6 @@
 ;; '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
 ;; '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
 ;; '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
-
-(require 'ivy)
-(require 'cider)
 
 
 
@@ -290,9 +291,10 @@
 ;; (add-hook 'after-init-hook #'sml/setup)
 
 ;; show available keybindings after you start typing
-;; ENABLE??
-;; (require 'which-key)
-;; (which-key-mode +1)
+;; Need to decide between discover-my-major, guide-key, plain-old describe-bindings (C-h b)
+;; https://emacs.stackexchange.com/questions/
+(require 'which-key)
+(which-key-mode +1)
 
 ;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (scroll-bar-mode -1)
@@ -315,13 +317,6 @@
 (beacon-mode +1)
 (global-set-key (kbd "C-S-c") 'beacon-blink)
 
-
-;;ivy code
-(ivy-mode 1)
-(counsel-mode)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
-(setq projectile-completion-system 'ivy)
 
 ;; ENABLE??
 ;; https://github.com/magnars/expand-region.el
@@ -375,10 +370,6 @@
 
 ;;; Look-n-Feel
 
-;;; FONTS
-
-;; Should set default font through OS controls to something like Avenir
-
 ;; Displaying of tab widith; like vim's tabstop
 (setq tab-width 20)
 
@@ -407,7 +398,15 @@
 
 
 
-;;; Ivy
+;;; Ivy, Counsel, Swiper
+
+(require 'ivy)
+(ivy-mode 1)
+(counsel-mode)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+(setq projectile-completion-system 'ivy)
+
 (global-set-key (kbd "C-s") 'swiper-isearch)
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -422,9 +421,35 @@
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 
+;; Buffers (B) and File (F)
+(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
+(global-set-key (kbd "C-S-f") 'counsel-recentf)
+
+;; Enable counsel replacements for projectile.
+;; https://github.com/ericdanan/counsel-projectile
+(require 'counsel-projectile)
+(counsel-projectile-mode)
+
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+
+;; Projectile
+;; ENABLE
+(require 'projectile)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
+;; (require 'helm-rg)
+;; (define-key projectile-mode-map (kbd "C-S-p s") 'helm-projectile-rg)
+;; (define-key projectile-mode-map (kbd "C-S-p S") 'helm-projectile-ag)
+
+;; https://github.com/nlamirault/ripgrep.el
+(require 'ripgrep)
+
 
 
-;; Linters
+;;; Linters
 
 (require 'flycheck-yamllint)
 
@@ -444,10 +469,13 @@
 ;; Edit in new buffer
 ;; Better than poporg-edit?  Great for markdown.  Can even eval code.
 ;; Keys: C-c ' (start), C-c C-c (commit)
-(require 'typo)
-(require 'edit-indirect)
-(require 'cycle-quotes)
-(require 'toggle-quotes)
+(require 'typo) ; C-c T
+;; https://github.com/emacsmirror/cycle-quotes/blob/master/cycle-quotes.el
+;; (require 'cycle-quotes)
+;; https://github.com/toctan/toggle-quotes.el
+;; (require 'toggle-quotes)
+;; (global-set-key (kbd "C-'") 'toggle-quotes)
+;; TEST: Can't "do" this.
 
 ;; Simpler attempt at typography.
 (global-set-key (kbd "C-c '") "’")
@@ -505,10 +533,9 @@
 ;; (require 'fic-mode)
 ;; (add-hook 'prog-mode-hook 'fic-mode)
 
-;; Wow, hide comments!!
-;; ENABLE??
-;; (require 'hide-comnt) ; in vendor/ since not in melpa
-;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
+;; Wow, hide comments!! Just blanks them out.
+(require 'hide-comnt) ; in vendor/ since not in melpa
+(global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
 
 ;; Planck-friendly
 (global-set-key (kbd "M-{") 'backward-paragraph)
@@ -526,15 +553,6 @@
 ;; (prelude-require-package 'idle-highlight-mode)
 ;; (add-hook 'prog-mode-hook 'idle-highlight-mode)
 
-
-;; Make the active window more visible than others
-;; https://github.com/yoshida-mediba/hiwin-mode
-;; Ugh, make cider repl go blank when switching out
-;; ENABLE
-;; (prelude-require-package 'hiwin)
-;; (hiwin-activate)
-;; Set face color with customize
-;; (set-face-background 'hiwin-face "gray80")
 
 ;; auto-dim
 ;; https://github.com/mina86/auto-dim-other-buffers.el
@@ -760,10 +778,6 @@
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
 
-;; Buffers (B) and File (F)
-(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-(global-set-key (kbd "C-S-f") 'counsel-recentf)
-
 
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
@@ -821,11 +835,6 @@
 (global-set-key (kbd "M-L") 'recenter-top-bottom)
 
 
-
-;; Need to decide between discover-my-major, guide-key, plain-old describe-bindings (C-h b)
-;; ENABLE
-
-
 ;;; Commenter: still stuggling with this
 (require 'comment-dwim-2)
 (global-set-key (kbd "M-;") 'comment-dwim-2)
@@ -848,16 +857,6 @@
 (global-set-key (kbd "C-c /") "”")
 (global-set-key (kbd "C-c -") "—")
 
-;; https://github.com/emacsmirror/cycle-quotes/blob/master/cycle-quotes.el
-;; ENABLE??
-;; (require 'cycle-quotes)
-
-;; https://github.com/toctan/toggle-quotes.el
-;; ENABLE??
-;; (require 'toggle-quotes)
-(global-set-key (kbd "C-'") 'toggle-quotes)
-;; TEST: Can't "do" this.
-
 
 ;;; Git
 
@@ -865,6 +864,9 @@
 (require 'popup)
 (require 'git-messenger)
 (require 'magit)
+(require 'git-timemachine)
+(require 'diff-hl)
+(global-diff-hl-mode)
 
 ;; Magit: came with Super-based shortcuts; use C-c g ... instead
 ;; maGit (G)
@@ -882,21 +884,6 @@
 (global-set-key (kbd "C-c C-g r") 'diff-hl-revert-hunk)
 (global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
 ;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
-
-;; Projectile
-;; ENABLE
-(require 'projectile)
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
-;; (require 'helm-rg)
-;; (define-key projectile-mode-map (kbd "C-S-p s") 'helm-projectile-rg)
-;; (define-key projectile-mode-map (kbd "C-S-p S") 'helm-projectile-ag)
-
-;; https://github.com/nlamirault/ripgrep.el
-(require 'ripgrep)
-
-;; https://github.com/ericdanan/counsel-projectile
-(require 'counsel-projectile)
 
 
 
@@ -1016,13 +1003,6 @@
 ;; (show-smartparens-mode 0)
                                                      
                                                      
-
-
-;; https://github.com/expez/company-quickhelp
-;; ENABLE
-;; (setq company-tooltip-idle-delay 0.1)
-;; (setq company-quickhelp-delay 0.1)
-
 
 ;;; Completion
 ;;
