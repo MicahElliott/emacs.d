@@ -113,13 +113,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-dim-other-buffers-mode t)
- '(ediff-split-window-function (quote split-window-horizontally))
- '(global-superword-mode t)
- '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
- '(package-selected-packages
-   (quote
-    (company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
- 
  '(beacon-blink-duration 0.4)
  '(beacon-blink-when-focused t)
  '(beacon-blink-when-point-moves-vertically 5)
@@ -163,8 +156,10 @@
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(global-hl-line-mode t)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
+ '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
  '(ido-default-file-method (quote selected-window))
  '(inhibit-startup-screen nil)
  '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "--stat" "-n10")))
@@ -174,6 +169,9 @@
  '(neo-theme (quote icons))
  '(neo-window-position (quote right))
  '(neo-window-width 40)
+ '(package-selected-packages
+   (quote
+    (company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -191,7 +189,7 @@
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(standard-indent 2)
  '(text-scale-mode-step 1.1)
- '(tramp-default-method "ssh" nil (tramp))
+ '(tramp-default-method "ssh")
  '(which-key-max-description-length 45))
 
    
@@ -199,13 +197,14 @@
 ;; '(blink-cursor-blinks 2)
 ;; '(blink-cursor-interval 0.2)
 
+ ;; '(default ((t (:inherit nil :foreground "#F8F8F2" :height 60 :family "Fantasque Sans Mono"))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :foreground "#F8F8F2" :height 60 :family "Fantasque Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 60 :width normal :foundry "nil" :family "Fantasque Sans Mono"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -214,6 +213,7 @@
  '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "#A6E22E"))))
+ '(hl-line ((t (:background "#000000"))))
  '(mode-line ((t (:box (:line-width 2 :color "blue")))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
  '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
