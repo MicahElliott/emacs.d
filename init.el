@@ -159,7 +159,7 @@
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
- '(global-hl-line-mode t)
+ '(global-hl-line-mode nil)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
  '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
