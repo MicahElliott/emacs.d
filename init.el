@@ -17,18 +17,7 @@
 (setq user-emacs-directory (file-name-directory user-init-file))
 
 
-;; Use-package
-;; https://github.com/jwiegley/use-package
-;; This is only needed once, near the top of the file
-;; ENABLE??
-;; (eval-when-compile
-;;   ;; Following line is not needed if use-package.el is in ~/.emacs.d
-;;   (add-to-list 'load-path "<path where use-package is installed>")
-;;   (require 'use-package))
-
-
 ;;; Packaging
-
 
 ;; https://emacs.stackexchange.com/a/16832/11025
 ;; package.el config from https://github.com/flyingmachine/emacs.d
@@ -48,6 +37,7 @@
     all-the-icons-dired
     ag
     ample-theme
+    auto-dim-other-buffers
     avy
     beacon
     buffer-move
@@ -122,16 +112,92 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-dim-other-buffers-mode t)
+ '(ediff-split-window-function (quote split-window-horizontally))
+ '(global-superword-mode t)
+ '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
  '(package-selected-packages
    (quote
-    (key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+ 
+ '(beacon-blink-duration 0.4)
+ '(beacon-blink-when-focused t)
+ '(beacon-blink-when-point-moves-vertically 5)
+ '(beacon-color "red")
+ '(beacon-push-mark nil)
+ '(browse-url-browser-function (quote browse-url-firefox))
+ '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+ '(cider-special-mode-truncate-lines nil)
+ '(cljr-favor-private-functions nil)
+ '(cljr-hotload-dependencies t)
+ '(cljr-magic-require-namespaces
+   (quote
+    (("str" . "clojure.string")
+     ("set" . "clojure.set")
+     ("pp" . "clojure.pprint")
+     ("zip" . "clojure.zip")
+     ("edn" . "clojure.edn")
+     ("t" . "clojure.test")
+     ("as" . "clojure.core.async")
+     ("logic" . "clojure.core.logic")
+     ("walk" . "clojure.walk")
+     ("xml" . "clojure.data.xml")
+     ("csv" . "clojure.data.csv")
+     ("spec" . "clojure.spec.alpha")
+     ("io" . "clojure.java.io")
+     ("mat" . "clojure.core.matrix")
+     ("json" . "cheshire.core")
+     ("time" . "java-time")
+     ("spr" . "com.rpl.specter")
+     ("http" . "clj-http.client")
+     ("log" . "clojure.tools.logging")
+     ("e" . "taoensso.encore")
+     ("s3" . "amazonica.aws.s3")
+     ("sql" . "hugsql.core")
+     ("yaml" . "clj-yaml.core")
+     ("sh" . "clojure.java.shell")
+     ("w" . "clojure.walk")
+     ("fs" . "me.raynes.fs")
+     ("r" . "reagent.core")
+     ("rf" . "re-frame.core"))))
  '(ediff-split-window-function (quote split-window-horizontally))
- '(hl-paren-colors (quote ("red" "IndianRed1" "IndianRed3" "IndianRed4")))
- '(cursor-type (quote (bar . 2)))
- '(blink-cursor-blinks 2)
- '(blink-cursor-interval 0.2)
- '(blink-cursor-mode t)
- )
+ '(fci-rule-color "#383838")
+ '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(global-superword-mode t)
+ '(global-yascroll-bar-mode t)
+ '(ido-default-file-method (quote selected-window))
+ '(inhibit-startup-screen nil)
+ '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "--stat" "-n10")))
+ '(markdown-header-scaling t)
+ '(markdown-wiki-link-search-subdirectories t)
+ '(neo-show-hidden-files t)
+ '(neo-theme (quote icons))
+ '(neo-window-position (quote right))
+ '(neo-window-width 40)
+ '(projectile-enable-caching t)
+ '(projectile-file-exists-remote-cache-expire nil)
+ '(projectile-globally-ignored-directories
+   (quote
+    (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor")))
+ '(projectile-indexing-method (quote hybrid))
+ '(projectile-mode t nil (projectile))
+ '(projectile-sort-order (quote recently-active))
+ '(safe-local-variable-values
+   (quote
+    ((cider-lein-global-options . "with-profile +dev,+test")
+     (scss-mode
+      (css-indent-offset . 2)))))
+ '(scroll-bar-mode nil)
+ '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(standard-indent 2)
+ '(text-scale-mode-step 1.1)
+ '(tramp-default-method "ssh" nil (tramp))
+ '(which-key-max-description-length 45))
+
+   
+;; '(cursor-type (quote (bar . 2)))
+;; '(blink-cursor-blinks 2)
+;; '(blink-cursor-interval 0.2)
 
 
 (custom-set-faces
@@ -139,7 +205,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(cursor ((t (:background "red" :foreground "#272822" :inverse-video t))))
+ '(default ((t (:inherit nil :foreground "#F8F8F2" :height 60 :family "Fantasque Sans Mono"))))
+ '(auto-dim-other-buffers-face ((t (:background "gray29"))))
+ '(cursor ((t (:background "red" :foreground "#272822"))))
+ '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
+ '(font-lock-comment-face ((t (:foreground "#75715E"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue"))))
+ '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
+ '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
+ '(font-lock-variable-name-face ((t (:foreground "#A6E22E"))))
+ '(mode-line ((t (:box (:line-width 2 :color "blue")))))
+ '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
+ '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
+ '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse" :weight bold))))
@@ -148,17 +226,18 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid" :weight bold))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
- '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
- '(font-lock-comment-face ((t (:foreground "#75715E" :height 0.9 :family "Delius"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
- '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
- '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
- '(font-lock-variable-name-face ((t (:foreground "#A6E22E")))))
+ '(region ((t (:inherit highlight :background "slate blue"))))
+ '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
+
+;; '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
+;; '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
+;; '(font-lock-comment-face ((t (:foreground "#75715E" :height 0.9 :family "Delius"))))
+;; '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
+;; '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
+;; '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
 
 (require 'ivy)
-(require 'ace-window)
 (require 'cider)
-(require 'smartparens-config)
 
 
 
@@ -244,28 +323,32 @@
 (setq ivy-count-format "(%d/%d) ")
 (setq projectile-completion-system 'ivy)
 
-(smartparens-global-mode)
-
 ;; ENABLE??
 ;; https://github.com/magnars/expand-region.el
 ;; (require 'expand-region)
 ;; (global-set-key (kbd "C-=") 'er/expand-region)
 
-
-;;; Prelude
 
-;; reduce the frequency of garbage collection by making it happen on
+
+;;; Tuning
+
+(setq savehist-autosave-interval 300)
+
 ;; each 50MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 50000000)
 
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
+;; warn when opening files bigger than 1MB
+(setq large-file-warning-threshold 1000000)
+
+;; https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag
+(setq auto-window-vscroll nil)
 
 ;; config changes made through the customize UI will be store here
 ;; (setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
 
-;; begin prelude-mode
+
 (require 'crux)
+
 
 ;; mimic popular IDEs binding, note that it doesn't work in a terminal session
 (global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
@@ -282,19 +365,12 @@
 (global-set-key [(meta shift up)]  'move-text-up)
 (global-set-key [(meta shift down)]  'move-text-down)
 
+;; Undo-tree
+;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
+(global-undo-tree-mode 1)
+(global-set-key (kbd "C-?") 'undo-tree-redo)
 
 
-
-
-
-
-
-
-
-
-;;; Tuning
-
-(setq savehist-autosave-interval 300)
 
 
 ;;; Look-n-Feel
@@ -312,14 +388,14 @@
   (interactive)
   (typo-mode 0)
   ;; (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 180))
-  (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 80))
+  (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 60))
   (buffer-face-mode))
 
 (defun my-buffer-face-mode-variable ()
   "Set font to a variable width (proportional) fonts in current buffer."
   (interactive)
   ;; (setq buffer-face-mode-face '(:family "Alegreya Sans" :height 180 :width semi-condensed))
-  (setq buffer-face-mode-face '(:family "Alegreya Sans" :height 110 :width semi-condensed))
+  (setq buffer-face-mode-face '(:family "Alegreya Sans" :height 60 :width semi-condensed))
   (buffer-face-mode))
 ;; Font face overrides via hooks
 (add-hook 'prog-mode-hook 'my-buffer-face-mode-fixed)
@@ -462,18 +538,17 @@
 
 ;; auto-dim
 ;; https://github.com/mina86/auto-dim-other-buffers.el
-;; ENABLE
-;; (add-hook 'after-init-hook
-;;           (lambda ()
-;;             (when (fboundp 'auto-dim-other-buffers-mode)
-;;               (auto-dim-other-buffers-mode t))))
+(add-hook 'after-init-hook
+          (lambda ()
+            (when (fboundp 'auto-dim-other-buffers-mode)
+              (auto-dim-other-buffers-mode t))))
 
 ;; BUGGY
 ;; Line numbers
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
 (require 'nlinum-relative)
-(nlinum-relative-on)
+(global-nlinum-relative-mode 1)
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 0)
 (setq nlinum-relative-offset 0)
@@ -491,6 +566,11 @@
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (require 'visible-mark)
 
+;; recentf stuff
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 50)
+;; (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 
 ;;; Behavior
@@ -607,6 +687,8 @@
 
 ;; Ace Window
 ;; https://github.com/abo-abo/ace-window
+(require 'ace-window)
+
 (global-set-key (kbd "M-o") 'ace-window)
 (defvar aw-dispatch-alist
   '((?x aw-delete-window "Delete Window")
@@ -624,11 +706,8 @@
   "List of actions for `aw-dispatch-default'.")
 
 (global-set-key (kbd "C-<tab>") 'aw-flip-window)
-(global-set-key (kbd "M-<tab>") 'ace-window)
+;; (global-set-key (kbd "M-<tab>") 'ace-window)
 
-
-(global-set-key (kbd "C-<tab>") 'aw-flip-window)
-(global-set-key (kbd "M-<tab>") 'ace-window)
 
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
@@ -681,8 +760,9 @@
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
 
-;; Buffers (B)
-(global-set-key (kbd "C-S-b") 'ibuffer-other-window)
+;; Buffers (B) and File (F)
+(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
+(global-set-key (kbd "C-S-f") 'counsel-recentf)
 
 
 ;; Window buffer switching (O: Only)
@@ -819,13 +899,6 @@
 (require 'counsel-projectile)
 
 
-;; Seems prelude already does this??
-;; https://www.emacswiki.org/emacs/ShowParenMode
-;; (show-paren-mode 1)
-(setq show-paren-delay 0)
-(show-paren-mode 0)
-(show-smartparens-mode 0)
-
 
 ;; Select/highlight with easy-kill
 ;; https://github.com/leoliu/easy-kill
@@ -920,21 +993,27 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (rainbow-delimiters-mode +1)
 
-(add-hook 'prog-mode-hook 'company-mode)
-
 ;; Smartparens (some of these are from prelude)
-(require 'smartparens)  ; better paredit, sp-*
-(require 'smartparens-config)
-(smartparens-global-mode t)
-(sp-use-paredit-bindings)
 ;; TODO: why are these 3 set?
 (setq sp-base-key-bindings 'paredit)
 (setq sp-autoskip-closing-pair 'always)
 (setq sp-hybrid-kill-entire-symbol nil)
-(show-smartparens-global-mode +1)
-;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
+(require 'smartparens)  ; better paredit, sp-*
+(require 'smartparens-config)
+(sp-use-paredit-bindings)
 ;; Enable all the goodies.
-(smartparens-strict-mode +1)
+(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+(smartparens-global-mode t)
+
+;; (show-smartparens-global-mode +1)
+;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
+
+
+;; TODO
+;; https://www.emacswiki.org/emacs/ShowParenMode
+;; (setq show-paren-delay 0)
+;; (show-paren-mode 0)
+;; (show-smartparens-mode 0)
                                                      
                                                      
 
@@ -944,12 +1023,36 @@
 ;; (setq company-tooltip-idle-delay 0.1)
 ;; (setq company-quickhelp-delay 0.1)
 
-(require 'pos-tip) ; just a dependency package of quickhelp
-(require 'company-quickhelp)
-(company-quickhelp-mode 1)
-;; stupid thing overrids M-h
-;; (eval-after-load 'company
-;; '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
+
+;;; Completion
+;;
+;; M-TAB -- invoke dabbrev menu (also double-TAB), aka M-/
+;; TAB -- company-complete manually
+;; M-/ -- dabbrev
+
+(require 'company)
+
+(setq company-dabbrev-downcase 0)
+
+;; Disable company auto-completion; manually availalbe now with TAB
+;; https://emacs.stackexchange.com/questions/32467/
+(setq company-idle-delay nil)
+
+(define-key company-mode-map [remap indent-for-tab-command]
+  #'company-indent-or-complete-common)
+
+;; Complete with double-TAB
+;; https://emacsredux.com/blog/2016/01/31/use-tab-to-indent-or-complete/
+(setq tab-always-indent 'complete)
+
+(add-hook 'prog-mode-hook 'company-mode)
+
+(with-eval-after-load 'company-quickhelp
+  (company-quickhelp-terminal-mode 1))
+
+;; (require 'pos-tip) ; just a dependency package of quickhelp
+;; (require 'company-quickhelp)
+;; (company-quickhelp-mode 1)
 
 
 
@@ -964,10 +1067,8 @@
 
 (require 'flymd)
 ;; (require 'markdown-toc)
-
 ;; Enable syntax highlighting of code in blocks.
 (setq markdown-fontify-code-blocks-natively t)
-
 
 
 ;; Gherkin/Cucumber
