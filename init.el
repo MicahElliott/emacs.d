@@ -190,12 +190,13 @@
       (css-indent-offset . 2)))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(show-trailing-whitespace t)
  '(standard-indent 2)
  '(text-scale-mode-step 1.1)
  '(tramp-default-method "ssh")
  '(which-key-max-description-length 45))
 
-   
+
 ;; '(cursor-type (quote (bar . 2)))
 ;; '(blink-cursor-blinks 2)
 ;; '(blink-cursor-interval 0.2)
@@ -217,6 +218,16 @@
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "#A6E22E"))))
  '(hl-line ((t (:background "#000000"))))
+ '(markdown-code-face ((t (:inherit code-face))))
+ '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
+ '(markdown-header-face ((t (:foreground "#A6E22E" :weight bold :family "Alegreya Sans SC"))))
+ '(markdown-header-face-1 ((t (:inherit markdown-header-face :weight bold :height 1.5))))
+ '(markdown-header-face-2 ((t (:inherit markdown-header-face :weight bold :height 1.3))))
+ '(markdown-header-face-3 ((t (:inherit markdown-header-face :slant italic :height 1.05))))
+ '(markdown-header-face-4 ((t (:inherit markdown-header-face :slant italic :height 1.0))))
+ '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
+ '(markdown-italic-face ((t (:inherit italic :slant italic))))
+ '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
  '(mode-line ((t (:box (:line-width 2 :color "blue")))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
  '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
@@ -571,7 +582,7 @@
 (setq nlinum-relative-redisplay-delay 0)
 (setq nlinum-relative-offset 0)
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
-                                        
+
 ;; Visible mark
 ;; http://pragmaticemacs.com/emacs/regions-marks-and-visual-mark/
 (setq visible-mark-max 2)
@@ -593,6 +604,9 @@
 
 ;;; Behavior
 
+;; Auto-save
+(add-hook 'focus-out-hook 'save-buffer)
+
 ;; Register marking/jumping, closer to vim
 (global-set-key (kbd "C-S-M") 'point-to-register)
 ;; Hmm, M-J is needed for sp-join-sexp
@@ -613,6 +627,9 @@
 ;; maybe use in future, not bound to anything
 ;; https://github.com/jcpetkovich/shrink-whitespace.el
 (require 'shrink-whitespace)
+
+;; Automatically remove all trailing whitespace.
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Inverse of Emacs' fill-paragraph and fill-region
 ;; https://github.com/purcell/unfill
@@ -1001,8 +1018,8 @@
 ;; (setq show-paren-delay 0)
 ;; (show-paren-mode 0)
 ;; (show-smartparens-mode 0)
-                                                     
-                                                     
+
+
 
 ;;; Completion
 ;;
