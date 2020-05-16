@@ -213,7 +213,7 @@
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "aquamarine3" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "#A6E22E"))))
@@ -400,11 +400,12 @@
   (setq buffer-face-mode-face '(:family "Alegreya Sans" :height 60 :width semi-condensed))
   (buffer-face-mode))
 ;; Font face overrides via hooks
-(add-hook 'prog-mode-hook 'my-buffer-face-mode-fixed)
-(add-hook 'dired-mode-hook 'my-buffer-face-mode-fixed)
-(add-hook 'magit-mode-hook 'my-buffer-face-mode-fixed)
-(add-hook 'eshell-mode-hook 'my-buffer-face-mode-fixed)
-(add-hook 'yaml-mode-hook 'my-buffer-face-mode-fixed)
+;; Enable these if you wanna go with variable-width fonts as default.
+;; (add-hook 'prog-mode-hook 'my-buffer-face-mode-fixed)
+;; (add-hook 'dired-mode-hook 'my-buffer-face-mode-fixed)
+;; (add-hook 'magit-mode-hook 'my-buffer-face-mode-fixed)
+;; (add-hook 'eshell-mode-hook 'my-buffer-face-mode-fixed)
+;; (add-hook 'yaml-mode-hook 'my-buffer-face-mode-fixed)
 ;; (add-hook 'markdown-mode-hook 'my-buffer-face-mode-variable)
 
 
