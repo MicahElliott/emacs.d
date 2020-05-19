@@ -415,6 +415,7 @@
 (require 'ivy)
 (ivy-mode 1)
 (counsel-mode)
+(setq ivy-height 20)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
 (setq projectile-completion-system 'ivy)
@@ -999,6 +1000,28 @@
 (rainbow-delimiters-mode +1)
 
 ;; Smartparens (some of these are from prelude)
+
+;; From smartparens.el
+;; '(("C-M-f" . sp-backward-sexp)
+;;   ("C-M-b" . sp-backward-sexp)
+;;   ("C-M-u" . sp-backward-up-sexp)
+;;   ("C-M-d" . sp-down-sexp)
+;;   ("C-M-p" . sp-backward-down-sexp)
+;;   ("C-M-n" . sp-up-sexp)
+;;   ("M-s"   . sp-splice-sexp) ;; depth-changing commands
+;;   ("M-r"   . sp-splice-sexp-killing-around)
+;;   ("M-("   . sp-wrap-round)
+;;   ("C-)"   . sp-forward-slurp-sexp)
+;;   ("C-}"   . sp-forward-barf-sexp)
+;;   ("C-("   . sp-backward-slurp-sexp)
+;;   ("C-{"   . sp-backward-barf-sexp)
+;;   ("M-S"   . sp-split-sexp) ;; misc
+;;   ("M-j"   . sp-join-sexp)
+;;   ("M-?"   . sp-convolute-sexp)
+;;   ("M-<up>" . sp-splice-sexp-killing-backward)
+;;   ("M-<down>" . sp-splice-sexp-killing-forward)
+;;   ("C-M-<left>" . sp-backward-slurp-sexp)
+
 ;; TODO: why are these 3 set?
 (setq sp-base-key-bindings 'paredit)
 (setq sp-autoskip-closing-pair 'always)
