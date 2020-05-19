@@ -104,7 +104,8 @@
     typo
     undo-tree
     unfill
-    which-key))
+    which-key
+    yaml-mode))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -157,6 +158,9 @@
      ("fs" . "me.raynes.fs")
      ("r" . "reagent.core")
      ("rf" . "re-frame.core"))))
+ '(custom-safe-themes
+   (quote
+    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
@@ -175,7 +179,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -229,7 +233,6 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
- '(mode-line ((t (:box (:line-width 2 :color "blue")))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
  '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
  '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
@@ -296,11 +299,13 @@
 (enable-theme 'ample)
 
 ;; ENABLE
-;; (require 'smart-mode-line)
-;; (setq sml/no-confirm-load-theme t)
+(require 'smart-mode-line)
+(setq sml/no-confirm-load-theme t)
 ;; delegate theming to the currently active theme
-;; (setq sml/theme nil)
-;; (add-hook 'after-init-hook #'sml/setup)
+(setq sml/theme nil)
+(add-hook 'after-init-hook #'sml/setup)
+(require 'smart-mode-line-powerline-theme)
+
 
 ;; show available keybindings after you start typing
 ;; Need to decide between discover-my-major, guide-key, plain-old describe-bindings (C-h b)
@@ -423,6 +428,7 @@
 ;; (add-hook 'markdown-mode-hook 'my-buffer-face-mode-variable)
 
 
+
 
 ;;; Ivy, Counsel, Swiper
 
@@ -459,7 +465,8 @@
 
 (global-set-key (kbd "C-c g") 'counsel-git)
 (global-set-key (kbd "C-c j") 'counsel-git-grep)
-(global-set-key (kbd "C-c k") 'counsel-ag)
+;; (global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-c k") 'ag-project-files)
 (global-set-key (kbd "C-x l") 'counsel-locate)
 
 ;; Projectile
