@@ -56,6 +56,7 @@
     cycle-quotes
     delight
     diff-hl
+    diminish
     discover-clj-refactor
     dot-mode
     dumb-jump
@@ -174,7 +175,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -323,6 +324,19 @@
 ;; Newline at end of file
 (setq require-final-newline t)
 
+;; store all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; autosave the undo-tree history
+(setq undo-tree-history-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq undo-tree-auto-save-history t)
+
+
+
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
 (beacon-mode +1)
@@ -451,6 +465,7 @@
 ;; Projectile
 ;; ENABLE
 (require 'projectile)
+(projectile-global-mode t)
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
 ;; (require 'helm-rg)
@@ -629,6 +644,11 @@
 ;; maybe use in future, not bound to anything
 ;; https://github.com/jcpetkovich/shrink-whitespace.el
 (require 'shrink-whitespace)
+
+;; whitespace-mode config
+(require 'whitespace)
+(setq whitespace-line-column 100) ;; limit line length
+(setq whitespace-style '(face tabs empty trailing lines-tail))
 
 ;; Automatically remove all trailing whitespace.
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -961,6 +981,46 @@
 (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
 ;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
 
+
+;; avy allows us to effectively navigate to visible things
+(require 'avy)
+(setq avy-background t)
+(setq avy-style 'at-full)
+
+;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
+;; If we ever want to abandon swiper, anzu will be useful
+;; (require 'anzu)
+;; (global-anzu-mode)
+;; (global-set-key (kbd "M-%") 'anzu-query-replace)
+;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
+
+;; dired - reuse current buffer by pressing 'a'
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; always delete and copy recursively
+(setq dired-recursive-deletes 'always)
+(setq dired-recursive-copies 'always)
+
+;; if there is a dired buffer displayed in the next window, use its
+;; current subdir, instead of the current subdir of this dired buffer
+(setq dired-dwim-target t)
+
+;; ediff - don't start another frame
+(require 'ediff)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;; clean up obsolete buffers automatically
+;; https://www.emacswiki.org/emacs/MidnightMode
+(require 'midnight)
+
+;; make a shell script executable automatically on save
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+
+;; .zsh file is shell script too
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
+
+
 ;; (key-chord-define-global ",u" 'undo-tree-visualize)
 ;; (key-chord-define-global ",x" 'execute-extended-command)
 ;; (key-chord-define-global ",y" 'browse-kill-ring)
@@ -1035,6 +1095,51 @@
 
 ;; (show-smartparens-global-mode +1)
 ;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
+
+;; ;; diminish keeps the modeline tidy
+;; (require 'diminish)
+;; (diminish 'my-keys)
+;; (diminish 'hs)
+
+;; saveplace remembers your location in a file when saving files
+(defvar root-dir (file-name-directory load-file-name)
+  "The root dir of the Emacs Prelude distribution.")
+(defvar savefile-dir (expand-file-name "savefile" root-dir)
+  "This folder stores all the automatically generated save/history-files.")
+(setq save-place-file (expand-file-name "saveplace" savefile-dir))
+(save-place-mode 1)
+
+
+;; savehist keeps track of some history
+(require 'savehist)
+(setq savehist-additional-variables
+      ;; search entries
+      '(search-ring regexp-search-ring)
+      ;; save every minute
+      savehist-autosave-interval 60
+      ;; keep the home clean
+      savehist-file (expand-file-name "savehist" savefile-dir))
+(savehist-mode +1)
+
+;; save recent files
+(require 'recentf)
+(setq recentf-save-file (expand-file-name "recentf" savefile-dir)
+      recentf-max-saved-items 500
+      recentf-max-menu-items 15
+      ;; disable recentf-cleanup on Emacs start, because it can cause
+      ;; problems with remote files
+      recentf-auto-cleanup 'never)
+
+;; flyspell-mode does spell-checking on the fly as you type
+(require 'flyspell)
+(setq ispell-program-name "aspell" ; use aspell instead of ispell
+      ispell-extra-args '("--sug-mode=ultra"))
+(flyspell-mode +1)
+
+;; enable change region case commands
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
 
 
 ;; TODO
@@ -1179,6 +1284,7 @@
 
 ;; https://github.com/clojure-emacs/squiggly-clojure
                                         ; (eval-after-load 'flycheck '(flycheck-clojure-setup))
+
 (add-hook 'after-init-hook #'global-flycheck-mode)
 ;; (require 'flycheck-pos-tip)
 
@@ -1186,16 +1292,7 @@
 ;; (setq ac-delay 0.1)
 ;; (setq ac-quick-help-delay 0.1)
 
-;; Simply bind `cljr-helm` to a key (I'd suggest C-c r) in Clojure
-;; mode, and you're ready to go.
-;; (prelude-require-package 'cljr-helm)
 (require 'discover-clj-refactor)
-
-;; Use imenu to display list of functions.
-;; (global-set-key (kbd "C-c i") 'helm-semantic-or-imenu)
-
-;; (prelude-require-package 'ac-cider)
-;; (prelude-require-package 'helm-cider)
 
 (defun my-cider-find-var (arg)
   (interactive "p")
