@@ -249,6 +249,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
+ '(swiper-line-face ((t (:background "purple4"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
 
@@ -351,6 +352,7 @@
 (require 'beacon)
 (beacon-mode +1)
 (global-set-key (kbd "C-S-c") 'beacon-blink)
+(key-chord-define-global ",c" 'beacon-blink)
 
 
 ;; ENABLE??
@@ -361,6 +363,9 @@
 
 
 ;;; Tuning
+
+;; https://www.reddit.com/r/emacs/comments/7wezb4/how_can_i_make_line_rendering_faster/du1mige/
+(setq-default bidi-display-reordering nil)
 
 ;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
@@ -465,7 +470,10 @@
 
 ;; Buffers (B) and File (F)
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
+(key-chord-define-global ",b" 'counsel-ibuffer)
+
 (global-set-key (kbd "C-S-f") 'counsel-recentf)
+(key-chord-define-global ",f" 'counsel-recentf)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
@@ -479,12 +487,13 @@
 (global-set-key (kbd "C-x l") 'counsel-locate)
 
 ;; Projectile
-;; ENABLE
 (require 'projectile)
-(projectile-global-mode t)
+(projectile-mode t)
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
-;; (require 'helm-rg)
+(key-chord-define-global ",p" 'projectile-command-map)
+
+;; FIXME: need to be able to use ag to limit to file type with option
 ;; (define-key projectile-mode-map (kbd "C-S-p s") 'helm-projectile-rg)
 ;; (define-key projectile-mode-map (kbd "C-S-p S") 'helm-projectile-ag)
 
@@ -614,8 +623,11 @@
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
-(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
 (global-set-key (kbd "C-S-L") 'nlinum-mode)
+(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
+(key-chord-define-global ",l" 'nlinum-mode)
+(key-chord-define-global "<L" 'nlinum-relative-toggle)
+
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
 ;; Visible mark
@@ -644,15 +656,21 @@
 
 ;; Register marking/jumping, closer to vim
 (global-set-key (kbd "C-S-M") 'point-to-register)
+(key-chord-define-global ",m" 'point-to-register)
+
 ;; Hmm, M-J is needed for sp-join-sexp
 ;; (global-set-key (kbd "M-J") 'jump-to-register)
 (global-set-key (kbd "C-S-J") 'jump-to-register)
+(key-chord-define-global ",j" 'jump-to-register)
 
 ;; ISpell (I)
 (global-set-key (kbd "C-S-i") 'flycheck-next-error)
+(key-chord-define-global ",i" 'flycheck-next-error)
 
 (global-set-key (kbd "C-M-_") 'text-scale-decrease)
 (global-set-key (kbd "C-M-+") 'text-scale-increase)
+(key-chord-define-global ",-" 'text-scale-decrease)
+(key-chord-define-global ",+" 'text-scale-increase) ; not working in gui
 
 
 ;; Make Emacs use the $PATH set up by the user's shell
@@ -793,6 +811,7 @@
 (global-set-key (kbd "M-<down>") 'windmove-down)
 
 (global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
+(key-chord-define-global ",s" 'isearch-forward-symbol-at-point)
 
 ;; Fastest window switching: http://emacs.stackexchange.com/a/3471/11025
 ;; (global-set-key (kbd "C-.") 'other-window)
@@ -832,17 +851,19 @@
 ;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
 ;; Background window (Z: like shell's C-z)
 (global-set-key (kbd "C-S-z") 'delete-window-balancedly)
+(key-chord-define-global ",z" 'delete-window-balancedly)
+
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-
+(key-chord-define-global ",k" 'kill-window-balancedly)
 
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
+(key-chord-define-global ",o" 'delete-other-windows)
+
 ;; Just use C-c left-arrow
 ;; (global-set-key (kbd "C-S-g") 'winner-undo)
 ;; (global-set-key (kbd "C-S-+") 'balance-windows)
-
-
 
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
@@ -856,6 +877,7 @@
   (other-window 1))
 ;; New window (N)
 (global-set-key (kbd "C-S-n") 'split-window-balancedly)
+(key-chord-define-global ",n" 'split-window-balancedly)
 
 ;; Scroll without moving point; like Vim's C-y, C-e
 ;; http://stackoverflow.com/a/10541426/326516
@@ -869,6 +891,8 @@
   (forward-line arg))
 (global-set-key (kbd "C-S-E") 'scroll-up-stay)
 (global-set-key (kbd "C-S-Y") 'scroll-down-stay)
+(key-chord-define-global ",e" 'scroll-up-stay)
+(key-chord-define-global ",y" 'scroll-down-stay)
 
 
 ;; Camel, Kebab cases
@@ -988,12 +1012,12 @@
 (setq key-chord-two-keys-delay .1
       key-chord-one-key-delay .2) ; defaults
 
-(key-chord-define-global ",b" 'crux-switch-to-previous-buffer)
-(key-chord-define-global ",c" 'avy-goto-word-1)
-(key-chord-define-global ",n" 'neotree-toggle)
-(key-chord-define-global ",f" 'windmove-right)
-(key-chord-define-global ",s" 'windmove-left)
-(key-chord-define-global ",p" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "<B" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "<C" 'avy-goto-word-1)
+(key-chord-define-global "<N" 'neotree-toggle)
+(key-chord-define-global "<F" 'windmove-right)
+(key-chord-define-global "<S" 'windmove-left)
+(key-chord-define-global "<P" 'crux-switch-to-previous-buffer)
 (key-chord-define-global ",," 'aw-flip-window)
 
 (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
@@ -1286,6 +1310,7 @@
        (setq cider-prompt-for-symbol nil)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
+       (key-chord-define-global ",r" 'cljr-add-keybindings-with-prefix)
        (cljr-add-keybindings-with-prefix "C-c m")
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
