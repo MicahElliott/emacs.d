@@ -206,14 +206,18 @@
 ;; '(blink-cursor-blinks 2)
 ;; '(blink-cursor-interval 0.2)
 
- ;; '(default ((t (:inherit nil :foreground "#F8F8F2" :height 60 :family "Fantasque Sans Mono"))))
+;; '(default ((t (:inherit nil :foreground "#F8F8F2" :height 60 :family "Fantasque Sans Mono"))))
+;; '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 60 :width normal :foundry "nil" :family "Fantasque Sans Mono"))))
+;; '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
+;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
+;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 60 :width normal :foundry "nil" :family "Fantasque Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 60 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -233,9 +237,9 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
- '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fantasque Sans Mono"))))
- '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
- '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
+ '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fira Code"))))
+ '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
+ '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fira Code"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse" :weight bold))))
@@ -298,7 +302,6 @@
 ;; (load-theme 'ample-light t t)
 (enable-theme 'ample)
 
-;; ENABLE
 (require 'smart-mode-line)
 (setq sml/no-confirm-load-theme t)
 ;; delegate theming to the currently active theme
@@ -306,6 +309,8 @@
 (add-hook 'after-init-hook #'sml/setup)
 (require 'smart-mode-line-powerline-theme)
 
+;; (setq flycheck-set-indication-mode 'left-margin)
+;; (flycheck-set-indication-mode 'left-fringe)
 
 ;; show available keybindings after you start typing
 ;; Need to decide between discover-my-major, guide-key, plain-old describe-bindings (C-h b)
@@ -356,6 +361,9 @@
 
 
 ;;; Tuning
+
+;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
 (setq savehist-autosave-interval 300)
 
@@ -409,7 +417,8 @@
   (interactive)
   (typo-mode 0)
   ;; (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 180))
-  (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 60))
+  (setq buffer-face-mode-face '(:family "Fira Code" :height 60))
+  ;; (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 60))
   (buffer-face-mode))
 
 (defun my-buffer-face-mode-variable ()
@@ -603,8 +612,10 @@
 (require 'nlinum-relative)
 (global-nlinum-relative-mode 1)
 ;; (global-display-line-numbers-mode)
-(setq nlinum-relative-redisplay-delay 0)
+(setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
+(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
+(global-set-key (kbd "C-S-L") 'nlinum-mode)
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
 ;; Visible mark
@@ -1089,6 +1100,7 @@
 ;;   ("M-<down>" . sp-splice-sexp-killing-forward)
 ;;   ("C-M-<left>" . sp-backward-slurp-sexp)
 
+
 ;; TODO: why are these 3 set?
 (setq sp-base-key-bindings 'paredit)
 (setq sp-autoskip-closing-pair 'always)
@@ -1099,6 +1111,17 @@
 ;; Enable all the goodies.
 (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
 (smartparens-global-mode t)
+
+;; https://emacs.stackexchange.com/questions/7832/how-to-bind-c-for-real
+;; (define-key input-decode-map (kbd "C-[") [control-bracketleft])
+;; (define-key smartparens-mode-map (kbd "C-]") 'sp-forward-barf-sexp)
+;; (define-key smartparens-mode-map [control-bracketleft] 'sp-backward-barf-sexp)
+
+;; https://github.com/Fuco1/.emacs.d/blob/master/files/smartparens.el
+(define-key smartparens-mode-map (kbd "C-}") 'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-)") 'sp-forward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-{") 'sp-backward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-(") 'sp-backward-barf-sexp)
 
 ;; (show-smartparens-global-mode +1)
 ;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
