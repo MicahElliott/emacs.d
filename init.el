@@ -16,6 +16,11 @@
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
 
+(defconst IS-MAC     (eq system-type 'darwin))
+(defconst IS-LINUX   (eq system-type 'gnu/linux))
+(defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
+(defconst IS-BSD     (or IS-MAC (eq system-type 'berkeley-unix)))
+
 
 ;;; Packaging
 
@@ -59,6 +64,7 @@
     diff-hl
     diminish
     discover-clj-refactor
+    doom-modeline
     dot-mode
     dumb-jump
     easy-kill
@@ -164,6 +170,10 @@
  '(custom-safe-themes
    (quote
     ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
+ '(doom-modeline-height 12)
+ '(doom-modeline-indent-info nil)
+ '(doom-modeline-unicode-fallback t)
+ '(doom-modeline-vcs-max-length 20)
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
@@ -182,7 +192,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -306,12 +316,19 @@
 ;; (load-theme 'ample-light t t)
 (enable-theme 'ample)
 
-(require 'smart-mode-line)
-(setq sml/no-confirm-load-theme t)
-;; delegate theming to the currently active theme
-(setq sml/theme nil)
-(add-hook 'after-init-hook #'sml/setup)
-(require 'smart-mode-line-powerline-theme)
+;; https://seagle0128.github.io/doom-modeline/
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+ (setq doom-modeline-height 1)
+(set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
+(set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
+
+;; (require 'smart-mode-line)
+;; (setq sml/no-confirm-load-theme t)
+;; ;; delegate theming to the currently active theme
+;; (setq sml/theme nil)
+;; (add-hook 'after-init-hook #'sml/setup)
+;; (require 'smart-mode-line-powerline-theme)
 
 ;; (setq flycheck-set-indication-mode 'left-margin)
 ;; (flycheck-set-indication-mode 'left-fringe)
@@ -366,6 +383,12 @@
 
 
 ;;; Tuning
+
+;; Don’t compact font caches during GC.
+(setq inhibit-compacting-font-caches t)
+
+;; Follow symlinks.
+(setq find-file-visit-truename t)
 
 ;; https://andrewjamesjohnson.com/suppressing-ad-handle-definition-warnings-in-emacs/
 (setq ad-redefinition-action 'accept)
@@ -423,6 +446,14 @@
 
 ;; Displaying of tab widith; like vim's tabstop
 (setq tab-width 20)
+
+;; This was a widespread practice in the days of typewriters. I actually prefer
+;; it when writing prose with monospace fonts, but it is obsolete otherwise.
+(setq sentence-end-double-space nil)
+
+;; Default to soft line-wrapping in text modes. It is more sensibile for text
+;; modes, even if hard wrapping is more performant.
+(add-hook 'text-mode-hook #'visual-line-mode)
 
 ;; Use monospaced font faces in current buffer
 (defun my-buffer-face-mode-fixed ()
@@ -680,6 +711,20 @@
 (key-chord-define-global ",-" 'text-scale-decrease)
 (key-chord-define-global ",+" 'text-scale-increase) ; not working in gui
 
+
+
+;; Extra file extensions to support
+(push '("/LICENSE\\'" . text-mode) auto-mode-alist)
+(push '("\\.log\\'" . text-mode) auto-mode-alist)
+(push '("rc\\'" . conf-mode) auto-mode-alist)
+
+;; Cull duplicates in the kill ring to reduce bloat and make the kill ring
+;; easier to peruse (with `counsel-yank-pop' or `helm-show-kill-ring'.
+(setq kill-do-not-save-duplicates t)
+
+;; Allow UTF or composed text from the clipboard, even in the terminal or on
+;; non-X systems (like Windows or macOS), where only `STRING' is used.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 ;; Make Emacs use the $PATH set up by the user's shell
 (require 'exec-path-from-shell)
@@ -1017,8 +1062,8 @@
 (require 'key-chord)
 (key-chord-mode +1)
 
-(setq key-chord-two-keys-delay .1
-      key-chord-one-key-delay .2) ; defaults
+(setq key-chord-two-keys-delay .1 ; default is .1
+      key-chord-one-key-delay  .4) ; default is .2
 
 (key-chord-define-global "<B" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "<C" 'avy-goto-word-1)
@@ -1397,7 +1442,7 @@
 ;; Copy filename to clipboard
 ;; https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
 (defun my-copy-filename ()
-  "Copy current buffer file name to clipboard"
+  "Copy current buffer file name to clipboard."
   (interactive)
   (let ((fname (buffer-file-name)))
     (kill-new fname)
