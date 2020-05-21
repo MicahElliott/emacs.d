@@ -49,6 +49,7 @@
     comment-dwim-2
     company
     company-quickhelp
+    company-terraform
     counsel
     counsel-projectile
     crux
@@ -100,6 +101,8 @@
     smart-mode-line-powerline-theme
     string-inflection
     smex
+    terraform-doc
+    terraform-mode
     toggle-quotes
     typo
     undo-tree
@@ -179,7 +182,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -364,10 +367,14 @@
 
 ;;; Tuning
 
+;; https://andrewjamesjohnson.com/suppressing-ad-handle-definition-warnings-in-emacs/
+(setq ad-redefinition-action 'accept)
+
 ;; https://www.reddit.com/r/emacs/comments/7wezb4/how_can_i_make_line_rendering_faster/du1mige/
 (setq-default bidi-display-reordering nil)
 
 ;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
+;; https://www.facebook.com/notes/daniel-colascione/buttery-smooth-emacs/10155313440066102/
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
 (setq savehist-autosave-interval 300)
@@ -406,6 +413,7 @@
 ;; Undo-tree
 ;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
 (global-undo-tree-mode 1)
+;; FIXME: terminal
 (global-set-key (kbd "C-?") 'undo-tree-redo)
 
 
@@ -1373,7 +1381,7 @@
 
 
 
-;; Other non-programming modes
+;;; Extra stuff
 
 (defun my-beginning-of-defun ()
   "Jump to start of name of function, since often want to search it."
@@ -1424,6 +1432,48 @@
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 
 
+;; Slime-like for shell/zsh (C-u C-x M-m)
+;; http://stackoverflow.com/questions/6286579/
+(defun sh-send-line-or-region (&optional step)
+  (interactive ())
+  (let ((proc (get-process "shell"))
+        pbuf min max command)
+    (unless proc
+      (let ((currbuff (current-buffer)))
+        (shell)
+        (switch-to-buffer currbuff)
+        (setq proc (get-process "shell"))
+        ))
+    (setq pbuff (process-buffer proc))
+    (if (use-region-p)
+        (setq min (region-beginning)
+              max (region-end))
+      (setq min (point-at-bol)
+            max (point-at-eol)))
+    (setq command (concat (buffer-substring min max) "\n"))
+    (with-current-buffer pbuff
+      (goto-char (process-mark proc))
+      (insert command)
+      (move-marker (process-mark proc) (point))
+      ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
+    (process-send-string  proc command)
+    (display-buffer (process-buffer proc) t)
+    (when step
+      (goto-char max)
+      (forward-line))
+    ))
+(defun sh-send-line-or-region-and-step ()
+  (interactive)
+  (sh-send-line-or-region t))
+(defun sh-switch-to-process-buffer ()
+  (interactive)
+  (pop-to-buffer (process-buffer (get-process "shell")) t))
+
+;; (setq comint-scroll-to-bottom-on-output t)
+
+;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region-and-step)
+;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region)
+;; (define-key sh-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 
 
 (provide 'init)
