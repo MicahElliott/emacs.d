@@ -170,10 +170,11 @@
  '(custom-safe-themes
    (quote
     ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
- '(doom-modeline-height 12)
+ '(doom-modeline-github t)
+ '(doom-modeline-height 16)
  '(doom-modeline-indent-info nil)
  '(doom-modeline-unicode-fallback t)
- '(doom-modeline-vcs-max-length 20)
+ '(doom-modeline-vcs-max-length 40)
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
@@ -230,7 +231,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 60 :width normal :foundry "nil" :family "Fira Code"))))
+ '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 50 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -319,9 +320,9 @@
 ;; https://seagle0128.github.io/doom-modeline/
 (require 'doom-modeline)
 (doom-modeline-mode 1)
- (setq doom-modeline-height 1)
-(set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
-(set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
+(setq doom-modeline-height 10)
+;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
+;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
 
 ;; (require 'smart-mode-line)
 ;; (setq sml/no-confirm-load-theme t)
@@ -461,7 +462,7 @@
   (interactive)
   (typo-mode 0)
   ;; (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 180))
-  (setq buffer-face-mode-face '(:family "Fira Code" :height 60))
+  (setq buffer-face-mode-face '(:family "Fira Code" :height 50))
   ;; (setq buffer-face-mode-face '(:family "Fantasque Sans Mono" :height 60))
   (buffer-face-mode))
 
@@ -691,7 +692,10 @@
 ;;; Behavior
 
 ;; Auto-save
-(add-hook 'focus-out-hook 'save-buffer)
+;; (add-hook 'focus-out-hook 'save-buffer)
+(add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
+
+;; FIXME: C-d C-d d should pop up docs for various modes.
 
 ;; Register marking/jumping, closer to vim
 (global-set-key (kbd "C-S-M") 'point-to-register)
@@ -1481,6 +1485,7 @@
 ;; http://stackoverflow.com/questions/6286579/
 (defun sh-send-line-or-region (&optional step)
   (interactive ())
+  ;; (let ((proc (get-process "shell"))
   (let ((proc (get-process "shell"))
         pbuf min max command)
     (unless proc
