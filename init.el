@@ -21,6 +21,9 @@
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
 (defconst IS-BSD     (or IS-MAC (eq system-type 'berkeley-unix)))
 
+;(add-to-list 'load-path (expand-file-name "~/.emacs.d/elisp"))
+;(require 'aweshell)
+
 
 ;;; Packaging
 
@@ -113,6 +116,8 @@
     typo
     undo-tree
     unfill
+    vterm
+    vterm-toggle
     which-key
     yaml-mode))
 (dolist (p my-packages)
@@ -193,7 +198,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -326,7 +331,7 @@
 
 ;; (require 'smart-mode-line)
 ;; (setq sml/no-confirm-load-theme t)
-;; ;; delegate theming to the currently active theme
+;; ;; delegate theming  to the currently active theme
 ;; (setq sml/theme nil)
 ;; (add-hook 'after-init-hook #'sml/setup)
 ;; (require 'smart-mode-line-powerline-theme)
@@ -510,7 +515,7 @@
 
 ;; Buffers (B) and File (F)
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-(key-chord-define-global ",b" 'counsel-ibuffer)
+(key-chord-define-global "<B" 'counsel-ibuffer)
 
 (global-set-key (kbd "C-S-f") 'counsel-recentf)
 (key-chord-define-global ",f" 'counsel-recentf)
@@ -1009,6 +1014,7 @@
 ;; Magit: came with Super-based shortcuts; use C-c g ... instead
 ;; maGit (G)
 (global-set-key (kbd "C-S-g") 'magit-status)
+(key-chord-define-global ",g" 'magit-status)
 (global-set-key (kbd "C-c C-g B") 'github-browse-file)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
 (global-set-key (kbd "C-c C-g b") 'magit-blame)
@@ -1069,7 +1075,7 @@
 (setq key-chord-two-keys-delay .1 ; default is .1
       key-chord-one-key-delay  .4) ; default is .2
 
-(key-chord-define-global "<B" 'crux-switch-to-previous-buffer)
+(key-chord-define-global ",b" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "<C" 'avy-goto-word-1)
 (key-chord-define-global "<N" 'neotree-toggle)
 (key-chord-define-global "<F" 'windmove-right)
@@ -1517,14 +1523,39 @@
   (sh-send-line-or-region t))
 (defun sh-switch-to-process-buffer ()
   (interactive)
-  (pop-to-buffer (process-buffer (get-process "shell")) t))
+  (pop-to-buffer (process-buffer (get-process "vterm")) t))
 
 ;; (setq comint-scroll-to-bottom-on-output t)
 
-;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region-and-step)
+;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region-mand-step)
 ;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region)
 ;; (define-key sh-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
+(define-key shell-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
+;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
+;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
+(define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
 
+
+(defun tws-region-to-process (arg beg end)
+  "Send the current region to a process buffer.
+The first time it's called, will prompt for the buffer to
+send to. Subsequent calls send to the same buffer, unless a
+prefix argument is used (C-u), or the buffer no longer has an
+active process."
+  (interactive "P\nr")
+  (if (or arg ;; user asks for selection
+          (not (boundp 'tws-process-target)) ;; target not set
+          ;; or target is not set to an active process:
+          (not (process-live-p (get-buffer-process
+                                tws-process-target))))
+      (setq tws-process-target
+            (completing-read
+             "Process: "
+             (seq-map (lambda (el) (buffer-name (process-buffer el)))
+                      (process-list)))))
+  (process-send-region tws-process-target beg end))
+
+(define-key sh-mode-map (kbd "C-c C-c") 'tws-region-to-process)
 
 (provide 'init)
 
