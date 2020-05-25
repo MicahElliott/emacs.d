@@ -432,7 +432,6 @@
 (global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
 (global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
 (global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
-(global-set-key (kbd "C-c k") 'crux-kill-other-buffers)
 (global-set-key (kbd "C-c I") 'crux-find-user-init-file)
 
 (require 'move-text)
@@ -527,8 +526,6 @@
 
 (global-set-key (kbd "C-c g") 'counsel-git)
 (global-set-key (kbd "C-c j") 'counsel-git-grep)
-;; (global-set-key (kbd "C-c k") 'counsel-ag)
-(global-set-key (kbd "C-c k") 'ag-project-files)
 (global-set-key (kbd "C-x l") 'counsel-locate)
 
 ;; Projectile
@@ -536,6 +533,7 @@
 (projectile-mode t)
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
+
 (key-chord-define-global ",p" 'projectile-command-map)
 
 ;; FIXME: need to be able to use ag to limit to file type with option
