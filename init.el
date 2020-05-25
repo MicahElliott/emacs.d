@@ -1486,6 +1486,21 @@
   (recenter-top-bottom 1))
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 
+;; https://github.com/kai2nenobu/guide-key/blob/master/guide-key.el#L578
+;; key-chord hack
+(defadvice this-command-keys (after key-chord-hack disable)
+  "Add key chord to the key sequence returned by `this-command-keys'.
+Original `this-command-keys' returns \"[key-chord]\" when you
+type any of key chords, so it is difficult to know which key
+chord is pressed.  This advice enables to distinguish pressed key
+chord."
+  (condition-case nil
+      (if (equal ad-return-value [key-chord])
+          (let ((rkeys (recent-keys)))
+            (setq ad-return-value
+                  (vector 'key-chord (aref rkeys (- (length rkeys) 2))
+                          (aref rkeys (- (length rkeys) 1))))))
+    (error "")))
 
 ;; Slime-like for shell/zsh (C-u C-x M-m)
 ;; http://stackoverflow.com/questions/6286579/
