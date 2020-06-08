@@ -432,11 +432,10 @@
 (global-set-key [(shift return)] 'crux-smart-open-line)
 (global-set-key (kbd "M-o") 'crux-smart-open-line)
 (global-set-key (kbd "M-O") 'crux-smart-open-line-above)
-(key-chord-define-global ",o" 'crux-smart-open-line)
-(key-chord-define-global "ql" 'crux-smart-open-line)
+(key-chord-define-global "qo" 'crux-smart-open-line)
 (global-set-key [(control shift return)] 'crux-smart-open-line-above)
 (key-chord-define-global "<O" 'crux-smart-open-line-above)
-(key-chord-define-global "qo" 'crux-smart-open-line-above)
+(key-chord-define-global "ql" 'crux-smart-open-line-above)
 (global-set-key (kbd "C-c e") 'crux-eval-and-replace)
 (global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
 (global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
@@ -519,7 +518,7 @@
 (key-chord-define-global "<B" 'counsel-ibuffer)
 
 (global-set-key (kbd "C-S-f") 'counsel-recentf)
-(key-chord-define-global ",f" 'counsel-recentf)
+(key-chord-define-global "'f" 'counsel-recentf)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
@@ -539,7 +538,6 @@
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 (key-chord-define-global ",p" 'projectile-command-map)
 (key-chord-define-global "qp" 'projectile-command-map)
-;; ( (kbd ",p") 'projectile-command-map)
 (global-set-key (kbd "C-p") 'previous-line)
 ;; https://github.com/nlamirault/ripgrep.el
 (require 'ripgrep)
@@ -627,8 +625,8 @@
 ;; (add-hook 'prog-mode-hook 'fic-mode)
 
 ;; Wow, hide comments!! Just blanks them out.
-(require 'hide-comnt) ; in vendor/ since not in melpa
-(global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
+;; (require 'hide-comnt) ; in vendor/ since not in melpa
+;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
 
 ;; Planck-friendly
 (global-set-key (kbd "M-{") 'backward-paragraph)
@@ -665,8 +663,8 @@
 (setq nlinum-relative-offset 0)
 (global-set-key (kbd "C-S-L") 'nlinum-mode)
 (global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
-(key-chord-define-global "ql" 'nlinum-mode)
-(key-chord-define-global "<L" 'nlinum-relative-toggle)
+(key-chord-define-global "QL" 'nlinum-mode)
+;; (key-chord-define-global "" 'nlinum-relative-toggle)
 
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
@@ -862,7 +860,7 @@
 (require 'ace-window)
 
 ;; (global-set-key (kbd "M-o") 'ace-window)
-(key-chord-define-global ",w" 'ace-window)
+(key-chord-define-global "'w" 'ace-window)
 
 (defvar aw-dispatch-alist
   '((?x aw-delete-window "Delete Window")
@@ -893,15 +891,15 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   ("1" delete-other-frames :exit t)
   ("2" make-frame  :exit t)
   ("b" balance-windows)
-  ("d" kill-and-delete-frame :exit t)
+  ;; ("d" kill-and-delete-frame :exit t)
   ("e" ace-swap-window)
   ("F" toggle-frame-fullscreen)   ;; is <f11>
-  ("g" resize-frame-right :exit t)
-  ("H" resize-frame-left :exit t)  ;; aw-dispatch-alist uses h, I rebind here so hjkl can be used for size
+  ;; ("g" resize-frame-right :exit t)
+  ;; ("H" resize-frame-left :exit t)  ;; aw-dispatch-alist uses h, I rebind here so hjkl can be used for size
   ("n" split-window-balancedly :exit t)
   ("z" delete-window-balancedly :exit t)
   ;; ("r" reverse-windows)
-  ("t" toggle-window-spilt) ; MISSING
+  ;; ("t" toggle-window-spilt) ; MISSING
   ("w" ace-delete-window :exit t)
   ("x" delete-frame :exit t)
   ("K" text-scale-decrease)
@@ -960,77 +958,78 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 
-(defhydra hydra-window ()
-  "
-    Movement^   ^Split^         ^Switch^       ^^^Resize^         ^Window Purpose^
-    ------------------------------------------------------------------------------------------------------
-    _h_ ←        _|_ vertical    ^_b_uffer       _<left>_  X←     choose window _P_urpose
-    _j_ ↓        _-_ horizontal  ^_f_ind files   _<down>_  X↓     switch to _B_uffer w/ same purpose
-    _k_ ↑        _u_ undo        ^_a_ce window   _<up>_    X↑     Purpose-dedication(_!_)
-    _l_ →        _r_ reset       ^_s_wap         _<right>_ X→     Buffer-dedication(_#_)
-    ^^^^^^^                                      _M_aximize
-    ^^^^^^^                                      _d_elete
-    _x_ M-x      _q_ quit
-    "
-  ("h" windmove-left)
-  ("j" windmove-down)
-  ("k" windmove-up)
-  ("l" windmove-right)
-  ("|" (lambda ()
-         (interactive)
-         (split-window-right)
-         (windmove-right)))
-  ("-" (lambda ()
-         (interactive)
-         (split-window-below)
-         (windmove-down)))
-  ("u" (progn
-         (winner-undo)
-         (setq this-command 'winner-undo)))
-  ("r" winner-redo)
-  ;; ("b" ivy -purpose-switch-buffer-without-purpose)
-  ("f" counsel-find-file)
-  ("a" (lambda ()
-         (interactive)
-         (ace-window 1)
-         (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
-  ("s" (lambda ()
-         (interactive)
-         (ace-swap-window)
-         (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
-  ("<left>" hydra-move-splitter-left)
-  ("<down>" hydra-move-splitter-down)
-  ("<up>" hydra-move-splitter-up)
-  ("<right>" hydra-move-splitter-right)
-  ("M" delete-other-windows)
-  ("d" delete-window)
+;; (defhydra hydra-window ()
+;;   "
+;;     Movement^   ^Split^         ^Switch^       ^^^Resize^         ^Window Purpose^
+;;     ------------------------------------------------------------------------------------------------------
+;;     _h_ ←        _|_ vertical    ^_b_uffer       _<left>_  X←     choose window _P_urpose
+;;     _j_ ↓        _-_ horizontal  ^_f_ind files   _<down>_  X↓     switch to _B_uffer w/ same purpose
+;;     _k_ ↑        _u_ undo        ^_a_ce window   _<up>_    X↑     Purpose-dedication(_!_)
+;;     _l_ →        _r_ reset       ^_s_wap         _<right>_ X→     Buffer-dedication(_#_)
+;;     ^^^^^^^                                      _M_aximize
+;;     ^^^^^^^                                      _d_elete
+;;     _x_ M-x      _q_ quit
+;;     "
+;;   ("h" windmove-left)
+;;   ("j" windmove-down)
+;;   ("k" windmove-up)
+;;   ("l" windmove-right)
+;;   ("|" (lambda ()
+;;          (interactive)
+;;          (split-window-right)
+;;          (windmove-right)))
+;;   ("-" (lambda ()
+;;          (interactive)
+;;          (split-window-below)
+;;          (windmove-down)))
+;;   ("u" (progn
+;;          (winner-undo)
+;;          (setq this-command 'winner-undo)))
+;;   ("r" winner-redo)
+;;   ;; ("b" ivy -purpose-switch-buffer-without-purpose)
+;;   ("f" counsel-find-file)
+;;   ("a" (lambda ()
+;;          (interactive)
+;;          (ace-window 1)
+;;          (add-hook 'ace-window-end-once-hook
+;;                    'hydra-window/body)))
+;;   ("s" (lambda ()
+;;          (interactive)
+;;          (ace-swap-window)
+;;          (add-hook 'ace-window-end-once-hook
+;;                    'hydra-window/body)))
+;;   ("<left>" hydra-move-splitter-left)
+;;   ("<down>" hydra-move-splitter-down)
+;;   ("<up>" hydra-move-splitter-up)
+;;   ("<right>" hydra-move-splitter-right)
+;;   ("M" delete-other-windows)
+;;   ("d" delete-window)
 
-  ("P" purpose-set-window-purpose)
-  ("B" ivy-purpose-switch-buffer-with-purpose)
-  ("!" purpose-toggle-window-purpose-dedicated)
-  ("#" purpose-toggle-window-buffer-dedicated)
+  ;; ("P" purpose-set-window-purpose)
+  ;; ("B" ivy-purpose-switch-buffer-with-purpose)
+  ;; ("!" purpose-toggle-window-purpose-dedicated)
+  ;; ("#" purpose-toggle-window-buffer-dedicated)
 
-  ;; ("K" ace-delete-other-windows)
-  ;; ("S" save-buffer)
-  ;; ("d" delete-window)
-  ;; ("D" (lambda ()
-  ;;        (interactive)
-  ;;        (ace-delete-window)
-  ;;        (add-hook 'ace-window-end-once-hook
-  ;;                  'hydra-window/body))
-  ;;  )
+  ;; ;; ("K" ace-delete-other-windows)
+  ;; ;; ("S" save-buffer)
+  ;; ;; ("d" delete-window)
+  ;; ;; ("D" (lambda ()
+  ;; ;;        (interactive)
+  ;; ;;        (ace-delete-window)
+  ;; ;;        (add-hook 'ace-window-end-once-hook
+  ;; ;;                  'hydra-window/body))
+  ;; ;;  )
 
-  ("x" counsel-M-x)
-  ("q" nil)
-  )
-(global-set-key (kbd "<f1>") 'hydra-window/body)
-
-
+  ;; ("x" counsel-M-x)
+  ;; ("q" nil)
+  ;; )
+;; (global-set-key (kbd "<f1>") 'hydra-window/body)
 
 
-(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+
+
+;; (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+(setq aw-keys '(?a ?s ?e ?t ?g ?h ?y ?i ?o))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -1063,18 +1062,18 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 (require 'hydra)
-(defhydra hydra-window (global-map "C-M-o")
-  "window"
-  ("h" windmove-left "left")
-  ("j" windmove-down "down")
-  ("k" windmove-up "up")
-  ("l" windmove-right "right")
-  ("a" ace-window "ace")
-  ("u" hydra-universal-argument "universal")
-  ("s" (lambda () (interactive) (ace-window 4)) "swap")
-  ("d" (lambda () (interactive) (ace-window 16)) "delete")
-  ;; ("o")
-  )
+;; (defhydra hydra-window (global-map "C-M-o")
+;;   "window"
+;;   ("h" windmove-left "left")
+;;   ("j" windmove-down "down")
+;;   ("k" windmove-up "up")
+;;   ("l" windmove-right "right")
+;;   ("a" ace-window "ace")
+;;   ("u" hydra-universal-argument "universal")
+;;   ("s" (lambda () (interactive) (ace-window 4)) "swap")
+;;   ("d" (lambda () (interactive) (ace-window 16)) "delete")
+;;   ;; ("o")
+;;   )
 
 (key-chord-define-global "yy" 'hydra-window/body)
 
@@ -1136,11 +1135,11 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
 ;; Background window (Z: like shell's C-z)
 (global-set-key (kbd "C-S-z") 'delete-window-balancedly)
-(key-chord-define-global ",z" 'delete-window-balancedly)
+(key-chord-define-global "'z" 'delete-window-balancedly)
 
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-(key-chord-define-global "qk" 'kill-window-balancedly)
+(key-chord-define-global "'k" 'kill-window-balancedly)
 
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
@@ -1167,7 +1166,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (other-window 1))
 ;; New window (N)
 (global-set-key (kbd "C-S-n") 'split-window-balancedly)
-(key-chord-define-global ",n" 'split-window-balancedly)
+(key-chord-define-global "'n" 'split-window-balancedly)
 (key-chord-define-global "qn" 'split-window-balancedly)
 (key-chord-define-global "QN" 'split-window-vertically-balancedly)
 
@@ -1183,7 +1182,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (forward-line arg))
 (global-set-key (kbd "C-S-E") 'scroll-up-stay)
 (global-set-key (kbd "C-S-Y") 'scroll-down-stay)
-(key-chord-define-global ",e" 'scroll-up-stay)
+(key-chord-define-global "'e" 'scroll-up-stay)
 (key-chord-define-global "qy" 'scroll-down-stay)
 
 
@@ -1249,7 +1248,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; Magit: came with Super-based shortcuts; use C-c g ... instead
 ;; maGit (G)
 (global-set-key (kbd "C-S-g") 'magit-status)
-(key-chord-define-global ",g" 'magit-status)
+(key-chord-define-global "'g" 'magit-status)
 (global-set-key (kbd "C-c C-g B") 'github-browse-file)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
 (global-set-key (kbd "C-c C-g b") 'magit-blame)
@@ -1308,13 +1307,13 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (setq key-chord-two-keys-delay .1 ; default is .1
       key-chord-one-key-delay  .4) ; default is .2
 
-(key-chord-define-global ",b" 'crux-switch-to-previous-buffer)
-(key-chord-define-global ",c" 'avy-goto-word-1)
-(key-chord-define-global "<N" 'neotree-toggle)
+(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "'c" 'avy-goto-word-1)
+(key-chord-define-global "\"N" 'neotree-toggle)
 (key-chord-define-global "<F" 'windmove-right)
 (key-chord-define-global "<S" 'windmove-left)
 (key-chord-define-global "<P" 'crux-switch-to-previous-buffer)
-(key-chord-define-global ",," 'aw-flip-window)
+(key-chord-define-global "''" 'aw-flip-window)
 
 (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
 ;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
@@ -1592,7 +1591,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
        (setq cider-prompt-for-symbol nil)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
-       (key-chord-define-global ",r" 'cljr-add-keybindings-with-prefix)
+       (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
        (cljr-add-keybindings-with-prefix "C-c m")
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
