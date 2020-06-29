@@ -95,6 +95,7 @@
     nlinum-relative
     magit
     markdown-mode
+    mic-paren
     mode-icons
     move-text
     neotree
@@ -199,7 +200,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -215,7 +216,9 @@
       (css-indent-offset . 2)))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(show-smartparens-global-mode t)
  '(show-trailing-whitespace t)
+ '(sp-show-pair-from-inside t)
  '(standard-indent 2)
  '(text-scale-mode-step 1.1)
  '(tramp-default-method "ssh")
@@ -382,7 +385,7 @@
 (require 'beacon)
 (beacon-mode +1)
 (global-set-key (kbd "C-S-c") 'beacon-blink)
-(key-chord-define-global "<C" 'beacon-blink)
+(key-chord-define-global "\"C" 'beacon-blink)
 
 
 ;; ENABLE??
@@ -431,11 +434,10 @@
 (global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
 (global-set-key [(shift return)] 'crux-smart-open-line)
 (global-set-key (kbd "M-o") 'crux-smart-open-line)
-(global-set-key (kbd "M-O") 'crux-smart-open-line-above)
+(global-set-key (kbd "M-O") 'crux-smart-open-line)
 (key-chord-define-global "qo" 'crux-smart-open-line)
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
 (global-set-key [(control shift return)] 'crux-smart-open-line-above)
-(key-chord-define-global "<O" 'crux-smart-open-line-above)
-(key-chord-define-global "ql" 'crux-smart-open-line-above)
 (global-set-key (kbd "C-c e") 'crux-eval-and-replace)
 (global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
 (global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
@@ -515,10 +517,11 @@
 
 ;; Buffers (B) and File (F)
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-(key-chord-define-global "<B" 'counsel-ibuffer)
+(key-chord-define-global "\"B" 'counsel-ibuffer)
 
 (global-set-key (kbd "C-S-f") 'counsel-recentf)
 (key-chord-define-global "'f" 'counsel-recentf)
+(key-chord-define-global "qf" 'counsel-recentf)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
@@ -536,7 +539,7 @@
 (define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-(key-chord-define-global ",p" 'projectile-command-map)
+(key-chord-define-global "'p" 'projectile-command-map)
 (key-chord-define-global "qp" 'projectile-command-map)
 (global-set-key (kbd "C-p") 'previous-line)
 ;; https://github.com/nlamirault/ripgrep.el
@@ -703,15 +706,18 @@
 ;; Register marking/jumping, closer to vim
 (global-set-key (kbd "C-S-M") 'point-to-register)
 (key-chord-define-global "qm" 'point-to-register)
+(key-chord-define-global "'m" 'point-to-register)
 
 ;; Hmm, M-J is needed for sp-join-sexp
 ;; (global-set-key (kbd "M-J") 'jump-to-register)
 (global-set-key (kbd "C-S-J") 'jump-to-register)
 (key-chord-define-global "qj" 'jump-to-register)
+(key-chord-define-global "'j" 'jump-to-register)
 
 ;; ISpell (I)
 (global-set-key (kbd "C-S-i") 'flycheck-next-error)
 (key-chord-define-global "qi" 'flycheck-next-error)
+(key-chord-define-global "'i" 'flycheck-next-error)
 
 (global-set-key (kbd "C-M-_") 'text-scale-decrease)
 (global-set-key (kbd "C-M-+") 'text-scale-increase)
@@ -808,7 +814,7 @@
 ;; - font sizing?
 ;; - visible whitespace
 
-;; ;Line breaks are shown as pretty horizontal lines
+;; Line breaks are shown as pretty horizontal lines
 ;; https://stackoverflow.com/a/7577628/326516
 (setq-default truncate-lines t)
 (require 'page-break-lines)
@@ -861,6 +867,7 @@
 
 ;; (global-set-key (kbd "M-o") 'ace-window)
 (key-chord-define-global "'w" 'ace-window)
+(key-chord-define-global "qw" 'ace-window)
 
 (defvar aw-dispatch-alist
   '((?x aw-delete-window "Delete Window")
@@ -909,7 +916,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   ("j" enlarge-window)
   ("l" enlarge-window-horizontally))
 
-(key-chord-define-global "<W" 'hydra-frame-window/body)
+(key-chord-define-global "\"W" 'hydra-frame-window/body)
 
 
 
@@ -1028,8 +1035,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 
-;; (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-(setq aw-keys '(?a ?s ?e ?t ?g ?h ?y ?i ?o))
+;; Colemak
+(setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -1058,7 +1065,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (define-key sacha/windmove-map "[up]" 'windmove-up)
 (define-key sacha/windmove-map "[down]" 'windmove-down)
 (define-key sacha/windmove-map "[right]" 'windmove-right)
-(key-chord-define-global "yy"     sacha/windmove-map)
+;; (key-chord-define-global "yy"     sacha/windmove-map)
 
 
 (require 'hydra)
@@ -1075,7 +1082,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;;   ;; ("o")
 ;;   )
 
-(key-chord-define-global "yy" 'hydra-window/body)
+;; (key-chord-define-global "yy" 'hydra-window/body)
 
 
 
@@ -1139,7 +1146,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-(key-chord-define-global "'k" 'kill-window-balancedly)
+;; (key-chord-define-global "'k" 'kill-window-balancedly)
+(key-chord-define-global "qk" 'kill-window-balancedly)
 
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
@@ -1169,6 +1177,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "'n" 'split-window-balancedly)
 (key-chord-define-global "qn" 'split-window-balancedly)
 (key-chord-define-global "QN" 'split-window-vertically-balancedly)
+(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
 
 ;; Scroll without moving point; like Vim's C-y, C-e
 ;; http://stackoverflow.com/a/10541426/326516
@@ -1249,6 +1258,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; maGit (G)
 (global-set-key (kbd "C-S-g") 'magit-status)
 (key-chord-define-global "'g" 'magit-status)
+(key-chord-define-global "qg" 'magit-status)
 (global-set-key (kbd "C-c C-g B") 'github-browse-file)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
 (global-set-key (kbd "C-c C-g b") 'magit-blame)
@@ -1305,15 +1315,18 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; to type.
 
 (setq key-chord-two-keys-delay .1 ; default is .1
-      key-chord-one-key-delay  .4) ; default is .2
+      key-chord-one-key-delay  .6) ; default is .2
 
 (key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "'c" 'avy-goto-word-1)
+(key-chord-define-global "qc" 'avy-goto-word-1)
 (key-chord-define-global "\"N" 'neotree-toggle)
-(key-chord-define-global "<F" 'windmove-right)
-(key-chord-define-global "<S" 'windmove-left)
-(key-chord-define-global "<P" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "\"F" 'windmove-right)
+(key-chord-define-global "\"S" 'windmove-left)
+(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "''" 'aw-flip-window)
+(key-chord-define-global "qq" 'aw-flip-window)
 
 (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
 ;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
@@ -1476,11 +1489,15 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 
-;; TODO
 ;; https://www.emacswiki.org/emacs/ShowParenMode
 ;; (setq show-paren-delay 0)
 ;; (show-paren-mode 0)
-;; (show-smartparens-mode 0)
+;; Highlight matching parens
+;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
+;; Can be SLOW with long lines!
+(show-smartparens-mode t)
+;; (require 'mic-paren)
+;; (paren-activate)
 
 
 
@@ -1592,6 +1609,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
        (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
+       (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
        (cljr-add-keybindings-with-prefix "C-c m")
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
@@ -1651,6 +1669,18 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (defun my-minibuffer-setup-hook () "Foo bar."
        (my-keys-minor-mode 0))
 (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
+
+(defun my-clj-open-above-let ()
+	"Open a line above while inside a let's top line."
+	(interactive)
+	(beginning-of-line)
+	(sp-down-sexp)
+	(sp-down-sexp)
+	(newline)
+	(company-indent-or-complete-common t)
+	(forward-line -1)
+	(end-of-line))
+(key-chord-define-global "QO" 'my-clj-open-above-let)
 
 
 
