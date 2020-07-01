@@ -185,6 +185,7 @@
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(global-highlight-parentheses-mode t)
  '(global-hl-line-mode nil)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
@@ -275,6 +276,8 @@
  '(swiper-line-face ((t (:background "purple4"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
+
+;; ((((((((()))))))))
 
 ;; '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
 ;; '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -1387,12 +1390,23 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (setq avy-case-fold-search nil)
 
 
-;;; LANGUAGES
+;;; PARENS
 
 ;;; Rainbow Parens (already part of prelude?)
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (rainbow-delimiters-mode +1)
+
+;; https://www.emacswiki.org/emacs/ShowParenMode
+;; (setq show-paren-delay 0)
+;; (show-paren-mode 0)
+;; Highlight matching parens
+;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
+;; Can be SLOW with long lines!
+(show-smartparens-mode t)
+;; More matching parens: colors block you're in red (SLOW?)
+(require 'highlight-parentheses)
+(highlight-parentheses-mode t)
 
 ;; Smartparens (some of these are from prelude)
 
@@ -1489,16 +1503,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 
-;; https://www.emacswiki.org/emacs/ShowParenMode
-;; (setq show-paren-delay 0)
-;; (show-paren-mode 0)
-;; Highlight matching parens
-;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
-;; Can be SLOW with long lines!
-(show-smartparens-mode t)
-;; (require 'mic-paren)
-;; (paren-activate)
-
 
 
 ;;; COMPLETION
@@ -1531,7 +1535,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (require 'company-quickhelp)
 ;; (company-quickhelp-mode 1)
 
-
+
+;;; LANGUAGES
 
 ;;; Ruby
 
@@ -1827,6 +1832,37 @@ active process."
 (eval-after-load "shell-script"
   #'(define-key (kbd "C-c C-c") 'tws-region-to-process))
 ;; (define-key shell-mode-map (kbd "C-c C-c") 'tws-region-to-process)
+
+;; Fixing the mark commands in transient mark mode
+;; https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+(defun push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
+
+(defun jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+(global-set-key (kbd "M-`") 'jump-to-mark)
+
+(defun exchange-point-and-mark-no-activate ()
+  "Identical to \\[exchange-point-and-mark] but will not activate the region."
+  (interactive)
+  (exchange-point-and-mark)
+  (deactivate-mark nil))
+(define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
+
+(defun increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
 (provide 'init)
 
