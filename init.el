@@ -119,6 +119,7 @@
     typo
     undo-tree
     unfill
+    visible-mark
     vterm
     vterm-toggle
     which-key
@@ -1596,7 +1597,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; NOTE: also installed to ~/.lein/profiles.clj: kibit, eastwood
 (add-to-list 'package-pinned-packages '(cider . "melpa-stable") t)
 (require 'cider)
-(setq cider-repl-history-file "~/.clojure_history")
+;; (setq cider-repl-history-file "~/.clojure_history")
 (require 'cider-eval-sexp-fu)
 (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
