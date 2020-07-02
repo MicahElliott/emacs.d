@@ -83,6 +83,7 @@
     flycheck-joker
     flycheck-yamllint
     flymd
+    git-identity
     git-messenger
     git-timemachine
     highlight-parentheses
@@ -185,6 +186,16 @@
  '(ediff-split-window-function (quote split-window-horizontally))
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(git-identity-list
+   (quote
+    (("mde@micahelliott.com" :name "Personal Projects" :domains
+      ("github.com")
+      :dirs
+      ("~/.emacs.d" "~/proj" "~/dunnit"))
+     ("micah.elliott@fundingcircle.com" :name "Work" :domains
+      ("github.com")
+      :dirs
+      ("~/work")))))
  '(global-highlight-parentheses-mode t)
  '(global-hl-line-mode nil)
  '(global-superword-mode t)
@@ -203,7 +214,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -1277,6 +1288,10 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
 ;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
 
+(setq git-identity-default-username "Micah Elliott")
+(require 'git-identity)
+;; (git-identity-magit-mode 1)
+(define-key magit-status-mode-map (kbd "I") 'git-identity-info)
 
 
 ;; Select/highlight with easy-kill
