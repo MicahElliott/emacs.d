@@ -274,6 +274,8 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
  '(swiper-line-face ((t (:background "purple4"))))
+ '(visible-mark-face1 ((t (:background "DarkOrange3"))))
+ '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
 
@@ -669,6 +671,7 @@
 (setq nlinum-relative-offset 0)
 (global-set-key (kbd "C-S-L") 'nlinum-mode)
 (global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
+(key-chord-define-global "ql" 'nlinum-relative-toggle)
 (key-chord-define-global "QL" 'nlinum-mode)
 ;; (key-chord-define-global "" 'nlinum-relative-toggle)
 
@@ -678,13 +681,11 @@
 ;; http://pragmaticemacs.com/emacs/regions-marks-and-visual-mark/
 (setq visible-mark-max 2)
 (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
-(global-visible-mark-mode)
 (defface visible-mark-active ;; put this before (require 'visible-mark)
   '((((type tty) (class mono)))
     (t (:background "magenta"))) "")
-(setq visible-mark-max 2)
-(setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
 (require 'visible-mark)
+(global-visible-mark-mode)
 
 ;; recentf stuff
 (require 'recentf)
@@ -1454,6 +1455,10 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (define-key smartparens-mode-map (kbd "C-{") 'sp-backward-slurp-sexp)
 (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-barf-sexp)
 
+;; Remove unneeded bindings: https://emacs.stackexchange.com/a/54651/11025
+(define-key smartparens-mode-map (kbd "M-`") nil)
+;; (define-key smartparens-mode-map [remap kill-line] 'my-homemade-kill-line)
+
 ;; (show-smartparens-global-mode +1)
 ;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
 
@@ -1494,8 +1499,14 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; flyspell-mode does spell-checking on the fly as you type
 (require 'flyspell)
 (setq ispell-program-name "aspell" ; use aspell instead of ispell
-      ispell-extra-args '("--sug-mode=ultra"))
-(flyspell-mode +1)
+      ;; ispell-extra-args '("--sug-mode=ultra")
+      )
+;; (flyspell-mode +1)
+
+(add-hook 'text-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; Automatically run spell checker.
+(add-hook 'flyspell-mode-hook #'flyspell-buffer)
 
 ;; enable change region case commands
 (put 'upcase-region 'disabled nil)
