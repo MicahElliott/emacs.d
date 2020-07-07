@@ -1052,7 +1052,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 ;; Colemak
-(setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
+;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
+(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
