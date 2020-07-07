@@ -1895,6 +1895,16 @@ This is the same as using \\[set-mark-command] with the prefix argument."
       (error "No number at point"))
   (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
+;; Highlight numbers in groups of three.
+;; https://emacs.stackexchange.com/questions/54505/how-to-highlight-digit-groups-of-3-in-numerals
+(defun my-matcher (limit)
+  (when (re-search-forward
+         "\\([0-9]\\{1,3\\}\\)\\(?:[0-9]\\{6\\}\\)*\\(?:[0-9]\\{3\\}\\)\\_>" limit t)
+    (goto-char (match-beginning 1))
+    (re-search-forward "[0-9]+" (match-end 1))))
+(font-lock-add-keywords nil '((my-matcher 0 font-lock-warning-face)))
+
+
 (provide 'init)
 
 ;;; init ends here
