@@ -113,6 +113,7 @@
     smart-mode-line-powerline-theme
     string-inflection
     smex
+    symbol-overlay
     terraform-doc
     terraform-mode
     toggle-quotes
@@ -215,7 +216,7 @@
  '(neo-window-width 40)
  '(package-selected-packages
    (quote
-    (git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+    (symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -233,6 +234,9 @@
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
  '(standard-indent 2)
+ '(symbol-overlay-faces
+   (quote
+    (symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8)))
  '(text-scale-mode-step 1.1)
  '(tramp-default-method "ssh")
  '(which-key-max-description-length 45))
@@ -404,6 +408,14 @@
 (global-set-key (kbd "C-S-c") 'beacon-blink)
 (key-chord-define-global "\"C" 'beacon-blink)
 
+;; Highlight symbols with keymap-enabled overlays
+;; https://github.com/wolray/symbol-overlay/
+(require 'symbol-overlay)
+(global-set-key (kbd "M-i") 'symbol-overlay-put)
+(global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
+(global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
+(global-set-key (kbd "<f7>") 'symbol-overlay-mode)
+(global-set-key (kbd "<f8>") 'symbol-overlay-remove-all)
 
 ;; ENABLE??
 ;; https://github.com/magnars/expand-region.el
