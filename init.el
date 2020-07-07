@@ -1313,7 +1313,9 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (global-set-key (kbd "C-S-v s") 'hs-show-block)
 (global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
 (global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
-
+(key-chord-define-global "'h" 'hs-hide-all)
+(key-chord-define-global "'s" 'hs-show-all)
+(key-chord-define-global "'v" 'hs-toggle-hiding)
 
 
 ;;; SEARCH/JUMP/MOVEMENT
@@ -1343,6 +1345,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "'c" 'avy-goto-word-1)
 (key-chord-define-global "qc" 'avy-goto-word-1)
 (key-chord-define-global "\"N" 'neotree-toggle)
+(key-chord-define-global "QN" 'neotree-toggle)
 (key-chord-define-global "\"F" 'windmove-right)
 (key-chord-define-global "\"S" 'windmove-left)
 (key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
