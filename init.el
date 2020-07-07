@@ -1318,6 +1318,10 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 
 ;; Hide-Show (V: visible), like folding
+(defun my-hs-hide-block ()
+  (interactive)
+  (my-beginning-of-defun)
+  (hs-hide-block))
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 (global-set-key (kbd "C-S-v H") 'hs-hide-all)
 (global-set-key (kbd "C-S-v S") 'hs-show-all)
@@ -1325,9 +1329,14 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (global-set-key (kbd "C-S-v s") 'hs-show-block)
 (global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
 (global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
-(key-chord-define-global "'h" 'hs-hide-all)
-(key-chord-define-global "'s" 'hs-show-all)
+(key-chord-define-global "QH" 'hs-hide-all)
+(key-chord-define-global "qh" 'my-hs-hide-block)
+(key-chord-define-global "'h" 'hs-hide-block)
+(key-chord-define-global "\"S" 'hs-show-all)
+(key-chord-define-global "'s" 'hs-show-block)
+(key-chord-define-global "qs" 'hs-show-block)q
 (key-chord-define-global "'v" 'hs-toggle-hiding)
+(key-chord-define-global "qv" 'hs-toggle-hiding)
 
 
 ;;; SEARCH/JUMP/MOVEMENT
