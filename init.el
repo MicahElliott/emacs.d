@@ -1334,7 +1334,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "'h" 'hs-hide-block)
 (key-chord-define-global "\"S" 'hs-show-all)
 (key-chord-define-global "'s" 'hs-show-block)
-(key-chord-define-global "qs" 'hs-show-block)q
+(key-chord-define-global "qs" 'hs-show-block)
 (key-chord-define-global "'v" 'hs-toggle-hiding)
 (key-chord-define-global "qv" 'hs-toggle-hiding)
 
@@ -1923,7 +1923,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
          "\\([0-9]\\{1,3\\}\\)\\(?:[0-9]\\{6\\}\\)*\\(?:[0-9]\\{3\\}\\)\\_>" limit t)
     (goto-char (match-beginning 1))
     (re-search-forward "[0-9]+" (match-end 1))))
-(font-lock-add-keywords nil '((my-matcher 0 font-lock-warning-face)))
+(font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
 
 
 (provide 'init)
