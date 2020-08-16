@@ -56,6 +56,8 @@
     clojure-mode-extra-font-locking
     comment-dwim-2
     company
+    company-flx
+    company-fuzzy
     company-quickhelp
     company-terraform
     counsel
@@ -131,115 +133,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(auto-dim-other-buffers-mode t)
- '(beacon-blink-duration 0.4)
- '(beacon-blink-when-focused t)
- '(beacon-blink-when-point-moves-vertically 5)
- '(beacon-color "red")
- '(beacon-push-mark nil)
- '(browse-url-browser-function (quote browse-url-firefox))
- '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
- '(cider-special-mode-truncate-lines nil)
- '(cljr-favor-private-functions nil)
- '(cljr-hotload-dependencies t)
- '(cljr-magic-require-namespaces
-   (quote
-    (("str" . "clojure.string")
-     ("set" . "clojure.set")
-     ("pp" . "clojure.pprint")
-     ("zip" . "clojure.zip")
-     ("edn" . "clojure.edn")
-     ("t" . "clojure.test")
-     ("as" . "clojure.core.async")
-     ("logic" . "clojure.core.logic")
-     ("walk" . "clojure.walk")
-     ("xml" . "clojure.data.xml")
-     ("csv" . "clojure.data.csv")
-     ("spec" . "clojure.spec.alpha")
-     ("io" . "clojure.java.io")
-     ("mat" . "clojure.core.matrix")
-     ("json" . "cheshire.core")
-     ("time" . "java-time")
-     ("spr" . "com.rpl.specter")
-     ("http" . "clj-http.client")
-     ("log" . "clojure.tools.logging")
-     ("e" . "taoensso.encore")
-     ("s3" . "amazonica.aws.s3")
-     ("sql" . "hugsql.core")
-     ("yaml" . "clj-yaml.core")
-     ("sh" . "clojure.java.shell")
-     ("w" . "clojure.walk")
-     ("fs" . "me.raynes.fs")
-     ("r" . "reagent.core")
-     ("rf" . "re-frame.core"))))
- '(custom-safe-themes
-   (quote
-    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
- '(doom-modeline-github t)
- '(doom-modeline-height 16)
- '(doom-modeline-indent-info nil)
- '(doom-modeline-unicode-fallback t)
- '(doom-modeline-vcs-max-length 40)
- '(ediff-split-window-function (quote split-window-horizontally))
- '(fci-rule-color "#383838")
- '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
- '(git-identity-list
-   (quote
-    (("mde@micahelliott.com" :name "Personal Projects" :domains
-      ("github.com")
-      :dirs
-      ("~/.emacs.d" "~/proj" "~/dunnit"))
-     ("micah.elliott@fundingcircle.com" :name "Work" :domains
-      ("github.com")
-      :dirs
-      ("~/work")))))
- '(global-highlight-parentheses-mode t)
- '(global-hl-line-mode nil)
- '(global-superword-mode t)
- '(global-yascroll-bar-mode t)
- '(hl-paren-colors (quote ("red" "IndianRed1")))
- '(hl-paren-delay 0.3)
- '(hl-paren-highlight-adjacent t)
- '(ido-default-file-method (quote selected-window))
- '(inhibit-startup-screen nil)
- '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "--stat" "-n10")))
- '(markdown-header-scaling t)
- '(markdown-wiki-link-search-subdirectories t)
- '(neo-show-hidden-files t)
- '(neo-theme (quote icons))
- '(neo-window-position (quote right))
- '(neo-window-width 40)
- '(package-selected-packages
-   (quote
-    (symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
- '(projectile-enable-caching t)
- '(projectile-file-exists-remote-cache-expire nil)
- '(projectile-globally-ignored-directories
-   (quote
-    (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor")))
- '(projectile-indexing-method (quote hybrid))
- '(projectile-mode t nil (projectile))
- '(projectile-sort-order (quote recently-active))
- '(safe-local-variable-values
-   (quote
-    ((cider-lein-global-options . "with-profile +dev,+test")
-     (scss-mode
-      (css-indent-offset . 2)))))
- '(scroll-bar-mode nil)
- '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
- '(show-trailing-whitespace t)
- '(standard-indent 2)
- '(symbol-overlay-faces
-   (quote
-    (symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8)))
- '(text-scale-mode-step 1.1)
- '(tramp-default-method "ssh")
- '(which-key-max-description-length 45))
+
 
 
 ;; '(cursor-type (quote (bar . 2)))
@@ -815,13 +709,14 @@
 (global-unset-key (kbd "C-z"))
 
 (require 'dot-mode)
-;; (require 'dot-mode)
 ;; https://www.emacswiki.org/emacs/dot-mode.el
 ;; C-.  C-M-.  C-c.
 (autoload 'dot-mode "dot-mode" nil t)
 ;; (dot-mode t)
 (global-dot-mode t)
-
+;; FIXME: prbly not working since flyspell rebinds
+(global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
+                                       (message "Dot mode activated.")))
 
 ;; Make number colorful.
 ;; ENABLE??
@@ -1583,6 +1478,14 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (with-eval-after-load 'company-quickhelp
   (company-quickhelp-terminal-mode 1))
 
+;; Less powerful matching though maybe faster/simpler
+;; (require 'company-fuzzy)
+;; (global-company-fuzzy-mode 1)
+
+;; Enable fuzzy matching completion, even "index" -> "map-indexed"
+(with-eval-after-load 'company
+  (company-flx-mode +1))
+
 ;; (require 'pos-tip) ; just a dependency package of quickhelp
 ;; (require 'company-quickhelp)
 ;; (company-quickhelp-mode 1)
@@ -1929,6 +1832,115 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (provide 'init)
 
 ;;; init ends here
-;; Local Variables:
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(auto-dim-other-buffers-mode t)
+ '(beacon-blink-duration 0.4)
+ '(beacon-blink-when-focused t)
+ '(beacon-blink-when-point-moves-vertically 5)
+ '(beacon-color "red")
+ '(beacon-push-mark nil)
+ '(browse-url-browser-function (quote browse-url-firefox))
+ '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+ '(cider-special-mode-truncate-lines nil)
+ '(cljr-favor-private-functions nil)
+ '(cljr-hotload-dependencies t)
+ '(cljr-magic-require-namespaces
+   (quote
+    (("str" . "clojure.string")
+     ("set" . "clojure.set")
+     ("pp" . "clojure.pprint")
+     ("zip" . "clojure.zip")
+     ("edn" . "clojure.edn")
+     ("t" . "clojure.test")
+     ("as" . "clojure.core.async")
+     ("logic" . "clojure.core.logic")
+     ("walk" . "clojure.walk")
+     ("xml" . "clojure.data.xml")
+     ("csv" . "clojure.data.csv")
+     ("spec" . "clojure.spec.alpha")
+     ("io" . "clojure.java.io")
+     ("mat" . "clojure.core.matrix")
+     ("json" . "cheshire.core")
+     ("time" . "java-time")
+     ("spr" . "com.rpl.specter")
+     ("http" . "clj-http.client")
+     ("log" . "clojure.tools.logging")
+     ("e" . "taoensso.encore")
+     ("s3" . "amazonica.aws.s3")
+     ("sql" . "hugsql.core")
+     ("yaml" . "clj-yaml.core")
+     ("sh" . "clojure.java.shell")
+     ("w" . "clojure.walk")
+     ("fs" . "me.raynes.fs")
+     ("r" . "reagent.core")
+     ("rf" . "re-frame.core"))))
+ '(custom-safe-themes
+   (quote
+    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
+ '(doom-modeline-github t)
+ '(doom-modeline-height 16)
+ '(doom-modeline-indent-info nil)
+ '(doom-modeline-unicode-fallback t)
+ '(doom-modeline-vcs-max-length 40)
+ '(ediff-split-window-function (quote split-window-horizontally))
+ '(fci-rule-color "#383838")
+ '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(git-identity-list
+   (quote
+    (("mde@micahelliott.com" :name "Personal Projects" :domains
+      ("github.com")
+      :dirs
+      ("~/.emacs.d" "~/proj" "~/dunnit"))
+     ("micah.elliott@fundingcircle.com" :name "Work" :domains
+      ("github.com")
+      :dirs
+      ("~/work")))))
+ '(global-highlight-parentheses-mode t)
+ '(global-hl-line-mode nil)
+ '(global-superword-mode t)
+ '(global-yascroll-bar-mode t)
+ '(hl-paren-colors (quote ("red" "IndianRed1")))
+ '(hl-paren-delay 0.3)
+ '(hl-paren-highlight-adjacent t)
+ '(ido-default-file-method (quote selected-window))
+ '(inhibit-startup-screen nil)
+ '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "--stat" "-n10")))
+ '(markdown-header-scaling t)
+ '(markdown-wiki-link-search-subdirectories t)
+ '(neo-show-hidden-files t)
+ '(neo-theme (quote icons))
+ '(neo-window-position (quote right))
+ '(neo-window-width 40)
+ '(package-selected-packages
+   (quote
+    (company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+ '(projectile-enable-caching t)
+ '(projectile-file-exists-remote-cache-expire nil)
+ '(projectile-globally-ignored-directories
+   (quote
+    (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor")))
+ '(projectile-indexing-method (quote hybrid))
+ '(projectile-mode t nil (projectile))
+ '(projectile-sort-order (quote recently-active))
+ '(safe-local-variable-values
+   (quote
+    ((cider-lein-global-options . "with-profile +dev,+test")
+     (scss-mode
+      (css-indent-offset . 2)))))
+ '(scroll-bar-mode nil)
+ '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(show-trailing-whitespace t)
+ '(standard-indent 2)
+ '(symbol-overlay-faces
+   (quote
+    (symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8)))
+ '(text-scale-mode-step 1.1)
+ '(tramp-default-method "ssh")
+ '(which-key-max-description-length 45))
+ ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
