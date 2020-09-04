@@ -73,6 +73,7 @@
     doom-modeline
     dot-mode
     dumb-jump
+    edbi
     easy-kill
     edit-indirect
     exec-path-from-shell
@@ -86,11 +87,16 @@
     flycheck-yamllint
     flymd
     git-identity
+    git-link
     git-messenger
     git-timemachine
     highlight-parentheses
+    highlight-thing
+    httprepl
+    ibuffer-vc
     ido
     ido-completing-read+
+    imenu-list
     ivy
     jump-char
     key-chord
@@ -105,8 +111,10 @@
     page-break-lines
     paren-face
     popup
+    popup-imenu
     projectile
     rainbow-delimiters
+    restclient
     ripgrep
     rubocop
     shrink-whitespace
@@ -151,7 +159,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 50 :width normal :foundry "nil" :family "Fira Code"))))
+ '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -246,8 +254,17 @@
 
 ;; https://seagle0128.github.io/doom-modeline/
 (require 'doom-modeline)
-(doom-modeline-mode 1)
+;; (doom-modeline-mode 1)
 (setq doom-modeline-height 10)
+
+;; Put total lines into modeline.
+;; https://github.com/hinrik/total-lines
+(require 'total-lines)
+(global-total-lines-mode)
+(setq global-mode-string
+      `(((12 "%l" "/" (:eval (format "%d,%d" total-lines (1+ (current-column)))))
+	 (-3 "%p"))))
+
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
 ;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
 
@@ -301,6 +318,20 @@
 (beacon-mode +1)
 (global-set-key (kbd "C-S-c") 'beacon-blink)
 (key-chord-define-global "\"C" 'beacon-blink)
+
+;; Highlight word matching point without doing anything
+;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
+;; Disabling since might play badly with org-mode
+;; Also screws with visible-mark.
+;; ENABLE
+;; (prelude-require-package 'idle-highlight-mode)
+;; (add-hook 'prog-mode-hook 'idle-highlight-mode)
+
+;; ;; Highlight at point
+;; (require 'highlight-thing)
+;; (global-highlight-thing-mode)
+;; (setq highlight-thing-delay-seconds 0.9)
+;; (setq highlight-thing-exclude-thing-under-point t)
 
 ;; Highlight symbols with keymap-enabled overlays
 ;; https://github.com/wolray/symbol-overlay/
@@ -442,10 +473,6 @@
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
 (key-chord-define-global "\"B" 'counsel-ibuffer)
 
-(global-set-key (kbd "C-S-f") 'counsel-recentf)
-(key-chord-define-global "'f" 'counsel-recentf)
-(key-chord-define-global "qf" 'counsel-recentf)
-
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
 (require 'counsel-projectile)
@@ -505,7 +532,7 @@
 (global-set-key (kbd "C-c /") "”")
 (global-set-key (kbd "C-c -") "—")
 
-(global-set-key (kbd "C-'") 'toggle-quotes)
+;; (global-set-key (kbd "C-'") 'toggle-quotes)
 ;; TEST: Can't "do" this.
 
 
@@ -562,15 +589,6 @@
 
 
 
-;; Highlight word matching point without doing anything
-;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
-;; Disabling since might play badly with org-mode
-;; Also screws with visible-mark.
-;; ENABLE
-;; (prelude-require-package 'idle-highlight-mode)
-;; (add-hook 'prog-mode-hook 'idle-highlight-mode)
-
-
 ;; auto-dim
 ;; https://github.com/mina86/auto-dim-other-buffers.el
 (add-hook 'after-init-hook
@@ -604,12 +622,6 @@
     (t (:background "magenta"))) "")
 (require 'visible-mark)
 (global-visible-mark-mode)
-
-;; recentf stuff
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 50)
-;; (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 
 ;;; BEHAVIOR
@@ -737,9 +749,13 @@
 ;; - font sizing?
 ;; - visible whitespace
 
+;; Line wrap is called "truncate" in emacs
+(setq-default truncate-lines t)
+;; CHORD: t -- toggle-truncate-lines
+(key-chord-define-global "'t" 'toggle-truncate-lines)
+
 ;; Line breaks are shown as pretty horizontal lines
 ;; https://stackoverflow.com/a/7577628/326516
-(setq-default truncate-lines t)
 (require 'page-break-lines)
 (global-page-break-lines-mode)
 
@@ -752,12 +768,12 @@
 
 ;; https://github.com/ryuslash/mode-icons
 (require 'mode-icons)
+(mode-icons-mode)
 
 ;; https://github.com/domtronn/all-the-icons.el
 (require 'all-the-icons)
 
 ;; Decide on neotree, treemacs
-;; ENABLE??
 
 (require 'all-the-icons-dired)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
@@ -793,6 +809,7 @@
 (key-chord-define-global "qw" 'ace-window)
 
 (defvar aw-dispatch-alist
+
   '((?x aw-delete-window "Delete Window")
     (?m aw-swap-window "Swap Window")
     (?M aw-move-window "Move Window")
@@ -842,6 +859,13 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "\"W" 'hydra-frame-window/body)
 
 
+;; Nice size for the default window to match screen height
+;; https://stackoverflow.com/questions/17362999/setting-both-fullheight-and-width-in-emacs-on-os-x
+(defun get-default-height ()
+       (/ (- (display-pixel-height) 120)
+          (frame-char-height)))
+(add-to-list 'default-frame-alist '(width . 440))
+(add-to-list 'default-frame-alist (cons 'height (get-default-height)))
 
 
 (defun joe-scroll-other-window()
@@ -865,6 +889,10 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; 		(winner-undo)
 ;; 		(setq this-command 'winner-undo))))
 ;; 	(?r winner-redo)))
+
+
+
+;; HYDRAS
 
 (defhydra hydra-window-size (:color red)
   "Windows size"
@@ -1089,12 +1117,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (defun split-window-balancedly ()
   (interactive)
   (split-window-horizontally)
-  (balance-windows)
+  ;; (balance-windows)
   (other-window 1))
 (defun split-window-vertically-balancedly ()
   (interactive)
   (split-window-vertically)
-  (balance-windows)
+  ;; (balance-windows)
   (other-window 1))
 ;; New window (N)
 (global-set-key (kbd "C-S-n") 'split-window-balancedly)
@@ -1183,7 +1211,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (global-set-key (kbd "C-S-g") 'magit-status)
 (key-chord-define-global "'g" 'magit-status)
 (key-chord-define-global "qg" 'magit-status)
-(global-set-key (kbd "C-c C-g B") 'github-browse-file)
+;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
+(global-set-key (kbd "C-c C-g B") 'git-link)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
 (global-set-key (kbd "C-c C-g b") 'magit-blame)
 (global-set-key (kbd "C-c C-g g") 'magit-status)
@@ -1201,6 +1230,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (require 'git-identity)
 ;; (git-identity-magit-mode 1)
 (define-key magit-status-mode-map (kbd "I") 'git-identity-info)
+
+
+;;; RESTCLIENT
+(require 'restclient)
+
+(require 'httprepl)
 
 
 ;; Select/highlight with easy-kill
@@ -1260,8 +1295,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "'c" 'avy-goto-word-1)
 (key-chord-define-global "qc" 'avy-goto-word-1)
-(key-chord-define-global "\"N" 'neotree-toggle)
-(key-chord-define-global "QN" 'neotree-toggle)
+(key-chord-define-global "'d" 'neotree-toggle)
+(key-chord-define-global "qd" 'neotree-toggle)
 (key-chord-define-global "\"F" 'windmove-right)
 (key-chord-define-global "\"S" 'windmove-left)
 (key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
@@ -1425,12 +1460,24 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 ;; save recent files
 (require 'recentf)
-(setq recentf-save-file (expand-file-name "recentf" savefile-dir)
+(global-set-key (kbd "C-S-f") 'counsel-recentf)
+(key-chord-define-global "'f" 'counsel-recentf)
+(key-chord-define-global "qf" 'counsel-recentf)
+(recentf-mode t)
+(setq
+      ;; recentf-save-file (expand-file-name "recentf" savefile-dir)
       recentf-max-saved-items 500
-      recentf-max-menu-items 15
+      recentf-max-menu-items 30
       ;; disable recentf-cleanup on Emacs start, because it can cause
       ;; problems with remote files
-      recentf-auto-cleanup 'never)
+      ;; recentf-auto-cleanup 'never
+      )
+
+;; Save recent files every 5m
+;; https://emacs.stackexchange.com/a/16691/11025
+(run-at-time (current-time) 300 'recentf-save-list)
+;; (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
 
 ;; flyspell-mode does spell-checking on the fly as you type
 (require 'flyspell)
@@ -1440,7 +1487,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (flyspell-mode +1)
 
 (add-hook 'text-mode-hook 'flyspell-mode)
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 ;; Automatically run spell checker.
 (add-hook 'flyspell-mode-hook #'flyspell-buffer)
 
@@ -1515,6 +1562,8 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (require 'cucumber-goto-step)
 
 
+(require 'edbi)
+
 
 
 ;; CLOJURE
@@ -1543,11 +1592,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (require 'flycheck-clj-kondo)
 (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
   (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
-(dolist (checkers '((clj-kondo-clj . clojure-joker)
-                    (clj-kondo-cljs . clojurescript-joker)
-                    (clj-kondo-cljc . clojure-joker)
-                    (clj-kondo-edn . edn-joker)))
-  (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
+;; (dolist (checkers '((clj-kondo-clj . clojure-joker)
+;;                     (clj-kondo-cljs . clojurescript-joker)
+;;                     (clj-kondo-cljc . clojure-joker)
+;;                     (clj-kondo-edn . edn-joker)))
+;;   (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
+
 
 ;; Trying to get rid of the prompt to save before load.
 (defun my-cider-load-buffer ()
@@ -1641,6 +1691,18 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 	(forward-line -1)
 	(end-of-line))
 (key-chord-define-global "QO" 'my-clj-open-above-let)
+
+
+
+;;; TRIALS
+;; (require 'imenu-anywhere)
+
+(require 'imenu-list)
+(require 'popup-imenu)
+(global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
+(global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
+(global-set-key (kbd "C-\"") 'popup-imenu)
+
 
 
 
@@ -1843,14 +1905,13 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(beacon-blink-when-point-moves-vertically 5)
  '(beacon-color "red")
  '(beacon-push-mark nil)
- '(browse-url-browser-function (quote browse-url-firefox))
+ '(browse-url-browser-function 'browse-url-firefox)
  '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
  '(cider-special-mode-truncate-lines nil)
  '(cljr-favor-private-functions nil)
  '(cljr-hotload-dependencies t)
  '(cljr-magic-require-namespaces
-   (quote
-    (("str" . "clojure.string")
+   '(("str" . "clojure.string")
      ("set" . "clojure.set")
      ("pp" . "clojure.pprint")
      ("zip" . "clojure.zip")
@@ -1877,67 +1938,70 @@ This is the same as using \\[set-mark-command] with the prefix argument."
      ("w" . "clojure.walk")
      ("fs" . "me.raynes.fs")
      ("r" . "reagent.core")
-     ("rf" . "re-frame.core"))))
+     ("rf" . "re-frame.core")))
  '(custom-safe-themes
-   (quote
-    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
+   '("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+ '(doom-modeline-buffer-file-name-style 'truncate-with-project)
+ '(doom-modeline-continuous-word-count-modes nil)
+ '(doom-modeline-display-default-persp-name t)
  '(doom-modeline-github t)
  '(doom-modeline-height 16)
+ '(doom-modeline-icon t)
  '(doom-modeline-indent-info nil)
  '(doom-modeline-unicode-fallback t)
  '(doom-modeline-vcs-max-length 40)
- '(ediff-split-window-function (quote split-window-horizontally))
+ '(ediff-split-window-function 'split-window-horizontally)
  '(fci-rule-color "#383838")
- '(flycheck-pycheckers-checkers (quote (pylint pep8 pyflakes bandit)))
+ '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(git-identity-list
-   (quote
-    (("mde@micahelliott.com" :name "Personal Projects" :domains
+   '(("mde@micahelliott.com" :name "Personal Projects" :domains
       ("github.com")
       :dirs
       ("~/.emacs.d" "~/proj" "~/dunnit"))
      ("micah.elliott@fundingcircle.com" :name "Work" :domains
       ("github.com")
       :dirs
-      ("~/work")))))
+      ("~/work"))))
  '(global-highlight-parentheses-mode t)
  '(global-hl-line-mode nil)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
- '(hl-paren-colors (quote ("red" "IndianRed1")))
+ '(hl-paren-colors '("red" "IndianRed1"))
  '(hl-paren-delay 0.3)
  '(hl-paren-highlight-adjacent t)
- '(ido-default-file-method (quote selected-window))
+ '(ido-default-file-method 'selected-window)
+ '(imenu-list-focus-after-activation t)
+ '(imenu-list-position 'left)
+ '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
- '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "--stat" "-n10")))
+ '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
  '(neo-show-hidden-files t)
- '(neo-theme (quote icons))
- '(neo-window-position (quote right))
+ '(neo-theme 'icons)
+ '(neo-window-position 'right)
  '(neo-window-width 40)
  '(package-selected-packages
-   (quote
-    (company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window)))
+   '(total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
-   (quote
-    (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor")))
- '(projectile-indexing-method (quote hybrid))
+   '(".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor"))
+ '(projectile-indexing-method 'hybrid)
  '(projectile-mode t nil (projectile))
- '(projectile-sort-order (quote recently-active))
+ '(projectile-sort-order 'recently-active)
  '(safe-local-variable-values
-   (quote
-    ((cider-lein-global-options . "with-profile +dev,+test")
+   '((eval with-eval-after-load 'cider
+	   (setq cider-default-cljs-repl 'figwheel))
+     (cider-lein-global-options . "with-profile +dev,+test")
      (scss-mode
-      (css-indent-offset . 2)))))
+      (css-indent-offset . 2))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
  '(standard-indent 2)
  '(symbol-overlay-faces
-   (quote
-    (symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8)))
+   '(symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8))
  '(text-scale-mode-step 1.1)
  '(tramp-default-method "ssh")
  '(which-key-max-description-length 45))
