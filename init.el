@@ -43,6 +43,7 @@
     ace-window
     all-the-icons
     all-the-icons-dired
+    all-the-icons-ivy-rich
     ag
     ample-theme
     auto-dim-other-buffers
@@ -56,9 +57,11 @@
     clojure-mode-extra-font-locking
     comment-dwim-2
     company
+    company-box
     company-flx
     company-fuzzy
     company-quickhelp
+    company-posframe
     company-terraform
     counsel
     counsel-projectile
@@ -76,6 +79,7 @@
     edbi
     easy-kill
     edit-indirect
+    eyebrowse
     exec-path-from-shell
     expand-region
     feature-mode
@@ -84,6 +88,7 @@
     flycheck-clj-kondo
     flycheck-clojure
     flycheck-joker
+    flycheck-pos-tip
     flycheck-yamllint
     flymd
     git-identity
@@ -98,6 +103,7 @@
     ido-completing-read+
     imenu-list
     ivy
+    ivy-rich
     jump-char
     key-chord
     kibit-helper
@@ -127,6 +133,12 @@
     terraform-doc
     terraform-mode
     toggle-quotes
+    total-lines
+    treemacs
+    treemacs-projectile
+    treemacs-all-the-icons
+    treemacs-icons-dired
+    treemacs-magit
     typo
     undo-tree
     unfill
@@ -161,6 +173,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
+ '(company-box-background ((t (:background "black" :inverse-video nil))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
@@ -206,6 +219,24 @@
 ;; '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
 ;; '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
 
+
+;;; BINDINGS
+
+(global-set-key (kbd "C-S-v H") 'hs-hide-all)
+(global-set-key (kbd "C-S-v S") 'hs-show-all)
+(global-set-key (kbd "C-S-v h") 'hs-hide-block)
+(global-set-key (kbd "C-S-v s") 'hs-show-block)
+(global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
+(global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
+(key-chord-define-global "QH" 'hs-hide-all)
+(key-chord-define-global "qh" 'my-hs-hide-block)
+(key-chord-define-global "'h" 'hs-hide-block)
+(key-chord-define-global "\"S" 'hs-show-all)
+;; (key-chord-define-global "'s" 'hs-show-block)
+(key-chord-define-global "'s" 'persp-switch)
+(key-chord-define-global "qs" 'hs-show-block)
+(key-chord-define-global "'v" 'hs-toggle-hiding)
+(key-chord-define-global "qv" 'hs-toggle-hiding)
 
 
 ;;; UI
@@ -226,6 +257,10 @@
 
 ;; disable startup screen
 (setq inhibit-startup-screen nil)
+
+;; Stop cl deprecated warnings
+;; https://github.com/kiwanami/emacs-epc/issues/35
+(setq byte-compile-warnings '(cl-functions))
 
 ;; ;; nice scrolling
 ;; ENABLE
@@ -254,7 +289,7 @@
 
 ;; https://seagle0128.github.io/doom-modeline/
 (require 'doom-modeline)
-;; (doom-modeline-mode 1)
+(doom-modeline-mode 1)
 (setq doom-modeline-height 10)
 
 ;; Put total lines into modeline.
@@ -307,8 +342,8 @@
       `((".*" ,temporary-file-directory t)))
 
 ;; autosave the undo-tree history
-(setq undo-tree-history-directory-alist
-      `((".*" . ,temporary-file-directory)))
+;; (setq undo-tree-history-directory-alist
+;;       `((".*" . ,temporary-file-directory)))
 (setq undo-tree-auto-save-history t)
 
 
@@ -346,6 +381,10 @@
 ;; https://github.com/magnars/expand-region.el
 ;; (require 'expand-region)
 ;; (global-set-key (kbd "C-=") 'er/expand-region)
+
+;;; Perpectives/Sessions
+;; https://github.com/Bad-ptr/persp-mode.el
+(setq wg-morph-on nil)
 
 
 
@@ -455,6 +494,22 @@
 (setq ivy-count-format "(%d/%d) ")
 (setq projectile-completion-system 'ivy)
 
+;; (require 'ivy-posframe)
+;; display at `ivy-posframe-style'
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
+;; (ivy-posframe-mode 1)
+
+(require 'ivy-rich)
+(ivy-rich-mode 1)
+(all-the-icons-ivy-rich-mode 1)
+(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+(setq ivy-rich-path-style 'abbrev)
+
 (global-set-key (kbd "C-s") 'swiper-isearch)
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -471,7 +526,10 @@
 
 ;; Buffers (B) and File (F)
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-(key-chord-define-global "\"B" 'counsel-ibuffer)
+;; (key-chord-define-global "\"B" 'counsel-ibuffer)
+;; (key-chord-define-global "\"B" 'counsel-switch-buffer)
+;; (key-chord-define-global "\"B" 'counsel-buffer-or-recentf)
+(key-chord-define-global "\"B" 'counsel-projectile-switch-to-buffer)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
@@ -495,6 +553,10 @@
 ;; https://github.com/nlamirault/ripgrep.el
 (require 'ripgrep)
 
+
+;; Treemacs
+(key-chord-define-global "'d" 'treemacs)
+(key-chord-define-global "qd" 'treemacs)
 
 
 ;;; LINTERS
@@ -641,6 +703,7 @@
 (global-set-key (kbd "C-S-M") 'point-to-register)
 (key-chord-define-global "qm" 'point-to-register)
 (key-chord-define-global "'m" 'point-to-register)
+(key-chord-define-global "QM" 'counsel-bookmark)
 
 ;; Hmm, M-J is needed for sp-join-sexp
 ;; (global-set-key (kbd "M-J") 'jump-to-register)
@@ -767,13 +830,11 @@
 
 
 ;; https://github.com/ryuslash/mode-icons
-(require 'mode-icons)
-(mode-icons-mode)
+;(require 'mode-icons)
+;(mode-icons-mode)
 
 ;; https://github.com/domtronn/all-the-icons.el
 (require 'all-the-icons)
-
-;; Decide on neotree, treemacs
 
 (require 'all-the-icons-dired)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
@@ -890,6 +951,25 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; 		(setq this-command 'winner-undo))))
 ;; 	(?r winner-redo)))
 
+;; Window Manager (C-c C-w)
+
+;; Eyebrowse is just a fancier winner-mode, so not bothering yet.
+;; (require 'eyebrowse)
+;; (eyebrowse-mode t)
+
+;; New mode in v27! (C-x t)
+;; Don't know how to save on restart!
+;; (tab-bar-mode)
+
+;; (with-eval-after-load "persp-mode-autoloads"
+;;   (setq wg-morph-on nil) ;; switch off animation
+;;   (setq persp-autokill-buffer-on-remove 'kill-weak)
+;;   (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
+
+;; This is actually perspec
+(persp-mode)
+(add-hook 'kill-emacs-hook #'persp-state-save)
+(setq persp-state-default-file "~/.emacs.d/persp-mde")
 
 
 ;; HYDRAS
@@ -1117,12 +1197,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (defun split-window-balancedly ()
   (interactive)
   (split-window-horizontally)
-  ;; (balance-windows)
+  (balance-windows)
   (other-window 1))
 (defun split-window-vertically-balancedly ()
   (interactive)
   (split-window-vertically)
-  ;; (balance-windows)
+  (balance-windows)
   (other-window 1))
 ;; New window (N)
 (global-set-key (kbd "C-S-n") 'split-window-balancedly)
@@ -1253,20 +1333,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (my-beginning-of-defun)
   (hs-hide-block))
 (add-hook 'prog-mode-hook 'hs-minor-mode)
-(global-set-key (kbd "C-S-v H") 'hs-hide-all)
-(global-set-key (kbd "C-S-v S") 'hs-show-all)
-(global-set-key (kbd "C-S-v h") 'hs-hide-block)
-(global-set-key (kbd "C-S-v s") 'hs-show-block)
-(global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
-(global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
-(key-chord-define-global "QH" 'hs-hide-all)
-(key-chord-define-global "qh" 'my-hs-hide-block)
-(key-chord-define-global "'h" 'hs-hide-block)
-(key-chord-define-global "\"S" 'hs-show-all)
-(key-chord-define-global "'s" 'hs-show-block)
-(key-chord-define-global "qs" 'hs-show-block)
-(key-chord-define-global "'v" 'hs-toggle-hiding)
-(key-chord-define-global "qv" 'hs-toggle-hiding)
 
 
 ;;; SEARCH/JUMP/MOVEMENT
@@ -1295,8 +1361,11 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
 (key-chord-define-global "'c" 'avy-goto-word-1)
 (key-chord-define-global "qc" 'avy-goto-word-1)
-(key-chord-define-global "'d" 'neotree-toggle)
-(key-chord-define-global "qd" 'neotree-toggle)
+;; (key-chord-define-global "'d" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'treemacs)
+(key-chord-define-global "'d" 'treemacs-select-window)
+(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 (key-chord-define-global "\"F" 'windmove-right)
 (key-chord-define-global "\"S" 'windmove-left)
 (key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
@@ -1522,8 +1591,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 (add-hook 'prog-mode-hook 'company-mode)
 
-(with-eval-after-load 'company-quickhelp
-  (company-quickhelp-terminal-mode 1))
+;; (with-eval-after-load 'company-quickhelp (company-quickhelp-terminal-mode 1))
 
 ;; Less powerful matching though maybe faster/simpler
 ;; (require 'company-fuzzy)
@@ -1536,6 +1604,16 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (require 'pos-tip) ; just a dependency package of quickhelp
 ;; (require 'company-quickhelp)
 ;; (company-quickhelp-mode 1)
+
+;; TRIAL
+(require 'popwin)
+(popwin-mode 1)
+
+;; YAY!!!
+;; https://github.com/sebastiencs/company-box
+(require 'company-box)
+(add-hook 'company-mode-hook 'company-box-mode)
+
 
 
 ;;; LANGUAGES
@@ -1730,6 +1808,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (global-set-key (kbd "C-c c") 'my-copy-filename)
 
 (require 'dumb-jump)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 (defun cider-or-dumb-jump ()
   (interactive)
@@ -1982,7 +2061,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'right)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(perspective eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -2004,6 +2083,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
    '(symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8))
  '(text-scale-mode-step 1.1)
  '(tramp-default-method "ssh")
+ '(treemacs-width 45)
  '(which-key-max-description-length 45))
  ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
