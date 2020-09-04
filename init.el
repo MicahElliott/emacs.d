@@ -228,6 +228,8 @@
 (global-set-key (kbd "C-S-v s") 'hs-show-block)
 (global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
 (global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
+(global-set-key (kbd "C-S-c") 'beacon-blink)
+
 (key-chord-define-global "QH" 'hs-hide-all)
 (key-chord-define-global "qh" 'my-hs-hide-block)
 (key-chord-define-global "'h" 'hs-hide-block)
@@ -237,6 +239,284 @@
 (key-chord-define-global "qs" 'hs-show-block)
 (key-chord-define-global "'v" 'hs-toggle-hiding)
 (key-chord-define-global "qv" 'hs-toggle-hiding)
+(key-chord-define-global "\"C" 'beacon-blink)
+(key-chord-define-global "qo" 'crux-smart-open-line)
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
+(key-chord-define-global "qo" 'crux-smart-open-line)
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
+
+;; Treemacs
+(key-chord-define-global "'d" 'treemacs)
+(key-chord-define-global "qd" 'treemacs)
+
+;; Register marking/jumping, closer to vim
+(global-set-key (kbd "C-S-M") 'point-to-register)
+(key-chord-define-global "ql" 'nlinum-relative-toggle)
+(key-chord-define-global "QL" 'nlinum-mode)
+;; (key-chord-define-global "" 'nlinum-relative-toggle)
+(key-chord-define-global "qm" 'point-to-register)
+(key-chord-define-global "'m" 'point-to-register)
+(key-chord-define-global "QM" 'counsel-bookmark)
+
+;; Hmm, M-J is needed for sp-join-sexp
+;; (global-set-key (kbd "M-J") 'jump-to-register)
+(global-set-key (kbd "C-S-J") 'jump-to-register)
+(key-chord-define-global "qj" 'jump-to-register)
+(key-chord-define-global "'j" 'jump-to-register)
+
+;; ISpell (I)
+(global-set-key (kbd "C-S-i") 'flycheck-next-error)
+(key-chord-define-global "qi" 'flycheck-next-error)
+(key-chord-define-global "'i" 'flycheck-next-error)
+
+(global-set-key (kbd "C-M-_") 'text-scale-decrease)
+(global-set-key (kbd "C-M-+") 'text-scale-increase)
+(key-chord-define-global "q-" 'text-scale-decrease)
+(key-chord-define-global "q+" 'text-scale-increase)
+
+;; Swiper obviates these.
+;; (global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
+;; (key-chord-define-global ",s" 'isearch-forward-symbol-at-point)
+;; CHORD: t -- toggle-truncate-lines
+(key-chord-define-global "'t" 'toggle-truncate-lines)
+
+;; (global-set-key (kbd "M-o") 'ace-window)
+(key-chord-define-global "'w" 'ace-window)
+(key-chord-define-global "qw" 'ace-window)
+
+(key-chord-define-global "\"W" 'hydra-frame-window/body)
+
+;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
+;; Background window (Z: like shell's C-z)
+(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
+(key-chord-define-global "'z" 'delete-window-balancedly)
+
+;; Kill (K)
+(global-set-key (kbd "C-S-k") 'kill-window-balancedly)
+;; (key-chord-define-global "'k" 'kill-window-balancedly)
+(key-chord-define-global "qk" 'kill-window-balancedly)
+
+;; Window buffer switching (O: Only)
+(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
+;; (key-chord-define-global ",o" 'delete-other-windows)
+
+;; Just use C-c left-arrow
+;; (global-set-key (kbd "C-S-g") 'winner-undo)
+;; (global-set-key (kbd "C-S-+") 'balance-windows)
+
+;; Window buffer switching (O: Only)
+(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
+;; Just use C-c left-arrow
+
+(global-set-key (kbd "C-S-n") 'split-window-balancedly)
+(key-chord-define-global "'n" 'split-window-balancedly)
+(key-chord-define-global "qn" 'split-window-balancedly)
+(key-chord-define-global "QN" 'split-window-vertically-balancedly)
+(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
+(global-set-key (kbd "C-S-E") 'scroll-up-stay)
+(global-set-key (kbd "C-S-Y") 'scroll-down-stay)
+(key-chord-define-global "'e" 'scroll-up-stay)
+(key-chord-define-global "qy" 'scroll-down-stay)
+
+;; Magit: came with Super-based shortcuts; use C-c g ... instead
+;; maGit (G)
+(global-set-key (kbd "C-S-g") 'magit-status)
+(key-chord-define-global "'g" 'magit-status)
+(key-chord-define-global "qg" 'magit-status)
+;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
+(global-set-key (kbd "C-c C-g B") 'git-link)
+(global-set-key (kbd "C-c C-g a") 'vc-annotate)
+(global-set-key (kbd "C-c C-g b") 'magit-blame)
+(global-set-key (kbd "C-c C-g g") 'magit-status)
+(global-set-key (kbd "C-c C-g h") 'github-browse-file)
+(global-set-key (kbd "C-c C-g i") 'git-messenger:popup-message)
+(global-set-key (kbd "C-c C-g l") 'magit-log-buffer-file)
+(global-set-key (kbd "C-c C-g m") 'diff-hl-mark-hunk)
+(global-set-key (kbd "C-c C-g n") 'diff-hl-next-hunk)
+(global-set-key (kbd "C-c C-g p") 'diff-hl-previous-hunk)
+(global-set-key (kbd "C-c C-g r") 'diff-hl-revert-hunk)
+(global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
+;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
+
+(setq key-chord-two-keys-delay .1 ; default is .1
+      key-chord-one-key-delay  .6) ; default is .2
+
+(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "'c" 'avy-goto-word-1)
+(key-chord-define-global "qc" 'avy-goto-word-1)
+;; (key-chord-define-global "'d" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'treemacs)
+(key-chord-define-global "'d" 'treemacs-select-window)
+(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+(key-chord-define-global "\"F" 'windmove-right)
+(key-chord-define-global "\"S" 'windmove-left)
+(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "''" 'aw-flip-window)
+(key-chord-define-global "qq" 'aw-flip-window)
+
+(global-set-key (kbd "C-S-x") 'avy-goto-word-1)
+;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
+
+;; (key-chord-define-global ",u" 'undo-tree-visualize)
+;; (key-chord-define-global ",x" 'execute-extended-command)
+;; (key-chord-define-global ",y" 'browse-kill-ring)
+(global-set-key (kbd "C-S-f") 'counsel-recentf)
+(key-chord-define-global "'f" 'counsel-recentf)
+(key-chord-define-global "qf" 'counsel-recentf)
+(key-chord-define-global "QO" 'my-clj-open-above-let)
+
+(global-set-key (kbd "M-i") 'symbol-overlay-put)
+(global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
+(global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
+(global-set-key (kbd "<f7>") 'symbol-overlay-mode)
+(global-set-key (kbd "<f8>") 'symbol-overlay-remove-all)
+
+;; mimic popular IDEs binding, note that it doesn't work in a terminal session
+(global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
+(global-set-key [(shift return)] 'crux-smart-open-line)
+(global-set-key (kbd "M-o") 'crux-smart-open-line)
+(global-set-key (kbd "M-O") 'crux-smart-open-line)
+(global-set-key [(control shift return)] 'crux-smart-open-line-above)
+(global-set-key (kbd "C-c e") 'crux-eval-and-replace)
+(global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
+(global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
+(global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
+(global-set-key (kbd "C-c I") 'crux-find-user-init-file)
+
+(global-set-key [(meta shift up)]  'move-text-up)
+(global-set-key [(meta shift down)]  'move-text-down)
+
+(global-set-key (kbd "C-s") 'swiper-isearch)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "<f2> j") 'counsel-set-variable)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+;; Buffers (B) and File (F)
+(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
+
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-p") 'previous-line)
+(global-set-key (kbd "C-c T") 'typo-mode)
+
+;; Simpler attempt at typography.
+(global-set-key (kbd "C-c '") "’")
+(global-set-key (kbd "C-c `'") "‘")
+(global-set-key (kbd "C-c \"") "“")
+(global-set-key (kbd "C-c /") "”")
+(global-set-key (kbd "C-c -") "—")
+
+;; (global-set-key (kbd "C-'") 'toggle-quotes)
+;; TEST: Can't "do" this.
+;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
+
+;; Planck-friendly
+(global-set-key (kbd "M-{") 'backward-paragraph)
+(global-set-key (kbd "M-<") 'forward-paragraph)
+(global-set-key (kbd "M->") 'end-of-buffer)
+(global-set-key (kbd "M-}") 'beginning-of-buffer)
+(global-set-key (kbd "C-S-L") 'nlinum-mode)
+(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
+(global-set-key (kbd "C-?") 'undo-tree-redo) ; GUIONLY
+(global-set-key (kbd "M-Q") 'unfill-paragraph)
+;; (global-set-key (kbd "M-S-q") 'unfill-paragraph)
+
+;; Disable prompt for kill
+;; http://superuser.com/questions/354849/emacs-kill-buffer-without-prompt
+;; (global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
+(global-set-key (kbd "C-c k") 'kill-current-buffer)
+(global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
+                                       (message "Dot mode activated.")))
+
+;; Prelude badly sets C-- to zoom out, so keep as negative argument
+(global-set-key (kbd "C--") 'negative-argument)
+
+(global-set-key (kbd "C-c q") 'auto-fill-mode)
+
+;; http://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
+(global-set-key "\C-x2"
+                (lambda () (interactive) (split-window-vertically) (other-window 1)))
+(global-set-key "\C-x3" (lambda () (interactive) (split-window-horizontally) (other-window 1)))
+
+
+(global-set-key (kbd "C-<tab>") 'aw-flip-window) ; GUIONLY
+(global-set-key (kbd "M-<tab>") 'ace-window) ; GUIONLY
+
+
+(global-set-key (kbd "M-<right>") 'windmove-right)
+(global-set-key (kbd "M-<left>") 'windmove-left)
+(global-set-key (kbd "M-<up>") 'windmove-up)
+(global-set-key (kbd "M-<down>") 'windmove-down)
+
+;; Fastest window switching: http://emacs.stackexchange.com/a/3471/11025
+;; (global-set-key (kbd "C-.") 'other-window)
+;; (global-set-key (kbd "C-,") 'prev-window)
+;; Switch windows; lower case version is used in too many shells/menus
+(global-set-key (kbd "M-P") 'prev-window)
+(global-set-key (kbd "M-N") 'other-window)
+(defun prev-window () (interactive) (other-window -1))
+;; other-window
+;; Default
+(global-set-key (kbd "C-x o") (lambda () (interactive) (other-window 1)))
+;; C-x C-o is common an easer for switching back window
+(global-set-key (kbd "C-x o") 'other-window)
+(global-set-key (kbd "C-x C-o") (lambda () (interactive) (other-window -1)))
+(global-set-key "\C-xO"    (lambda () (interactive) (delete-blank-lines)))
+
+
+(global-set-key (kbd "C-S-<up>")     'buf-move-up)
+(global-set-key (kbd "C-S-<left>")   'buf-move-left)
+(global-set-key (kbd "C-S-<down>")   'buf-move-down)
+(global-set-key (kbd "C-S-<right>")  'buf-move-right)
+(global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
+(global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
+(global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
+(global-set-key (kbd "C-c K") 'string-inflection-kebab-case) ;; Cycle through Java styles
+
+;; smartparens overrides M-r, so changing default
+(global-set-key "\M-R" 'move-to-window-line-top-bottom)
+(global-set-key "\M-\C-R" 'jump-to-bottom)
+;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
+(global-set-key (kbd "M-L") 'recenter-top-bottom)
+(global-set-key (kbd "M-;") 'comment-dwim-2)
+
+(global-set-key [(meta m)] 'jump-char-forward)
+;; (global-set-key [(shift meta m)] 'jump-char-backward)
+;; (global-set-key (kbd "C-=") 'er/expand-region)
+;; (global-set-key (kbd "C-'") 'toggle-quotes)
+;; TEST: Can't "do" this.
+;; (global-set-key (kbd "C-c T") 'typo-mode)
+;; ISSUE: Need to auto-enter typo-mode only while inside strings.
+(global-set-key [remap mark-sexp] 'easy-mark)
+(global-set-key [remap kill-ring-save] 'easy-kill)
+;; (global-set-key [remap kill-ring-save] 'easy-mark)
+;; (global-set-key (kbd "M-%") 'anzu-query-replace)
+;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
+
+(global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
+(global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
+(global-set-key (kbd "C-\"") 'popup-imenu)
+;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
+(global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
+(global-set-key (kbd "C-c c") 'my-copy-filename)
+(global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
+
+(global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
+(global-set-key (kbd "M-`") 'jump-to-mark)
 
 
 ;;; UI
@@ -351,8 +631,6 @@
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
 (beacon-mode +1)
-(global-set-key (kbd "C-S-c") 'beacon-blink)
-(key-chord-define-global "\"C" 'beacon-blink)
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -371,16 +649,10 @@
 ;; Highlight symbols with keymap-enabled overlays
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
-(global-set-key (kbd "M-i") 'symbol-overlay-put)
-(global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
-(global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
-(global-set-key (kbd "<f7>") 'symbol-overlay-mode)
-(global-set-key (kbd "<f8>") 'symbol-overlay-remove-all)
 
 ;; ENABLE??
 ;; https://github.com/magnars/expand-region.el
 ;; (require 'expand-region)
-;; (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;;; Perpectives/Sessions
 ;; https://github.com/Bad-ptr/persp-mode.el
@@ -423,23 +695,7 @@
 
 (require 'crux)
 
-;; mimic popular IDEs binding, note that it doesn't work in a terminal session
-(global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
-(global-set-key [(shift return)] 'crux-smart-open-line)
-(global-set-key (kbd "M-o") 'crux-smart-open-line)
-(global-set-key (kbd "M-O") 'crux-smart-open-line)
-(key-chord-define-global "qo" 'crux-smart-open-line)
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
-(global-set-key [(control shift return)] 'crux-smart-open-line-above)
-(global-set-key (kbd "C-c e") 'crux-eval-and-replace)
-(global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
-(global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
-(global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
-(global-set-key (kbd "C-c I") 'crux-find-user-init-file)
-
 (require 'move-text)
-(global-set-key [(meta shift up)]  'move-text-up)
-(global-set-key [(meta shift down)]  'move-text-down)
 
 
 
@@ -510,35 +766,10 @@
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 (setq ivy-rich-path-style 'abbrev)
 
-(global-set-key (kbd "C-s") 'swiper-isearch)
-(global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "<f1> f") 'counsel-describe-function)
-(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-(global-set-key (kbd "<f1> l") 'counsel-find-library)
-(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-(global-set-key (kbd "<f2> j") 'counsel-set-variable)
-(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-(global-set-key (kbd "C-c v") 'ivy-push-view)
-(global-set-key (kbd "C-c V") 'ivy-pop-view)
-
-;; Buffers (B) and File (F)
-(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-;; (key-chord-define-global "\"B" 'counsel-ibuffer)
-;; (key-chord-define-global "\"B" 'counsel-switch-buffer)
-;; (key-chord-define-global "\"B" 'counsel-buffer-or-recentf)
-(key-chord-define-global "\"B" 'counsel-projectile-switch-to-buffer)
-
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
 (require 'counsel-projectile)
 (counsel-projectile-mode)
-
-(global-set-key (kbd "C-c g") 'counsel-git)
-(global-set-key (kbd "C-c j") 'counsel-git-grep)
-(global-set-key (kbd "C-x l") 'counsel-locate)
 
 ;; Projectile
 ;; Use C-u to alter grepping behavior.
@@ -547,16 +778,9 @@
 (define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-(key-chord-define-global "'p" 'projectile-command-map)
-(key-chord-define-global "qp" 'projectile-command-map)
-(global-set-key (kbd "C-p") 'previous-line)
 ;; https://github.com/nlamirault/ripgrep.el
 (require 'ripgrep)
 
-
-;; Treemacs
-(key-chord-define-global "'d" 'treemacs)
-(key-chord-define-global "qd" 'treemacs)
 
 
 ;;; LINTERS
@@ -572,7 +796,6 @@
 ;; (typopunct-mode 1)
 ;; https://github.com/jorgenschaefer/typoel
 (setq-default typo-language "English")
-(global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
 ;; M-x typo-mode
 
@@ -584,18 +807,6 @@
 ;; (require 'cycle-quotes)
 ;; https://github.com/toctan/toggle-quotes.el
 ;; (require 'toggle-quotes)
-;; (global-set-key (kbd "C-'") 'toggle-quotes)
-;; TEST: Can't "do" this.
-
-;; Simpler attempt at typography.
-(global-set-key (kbd "C-c '") "’")
-(global-set-key (kbd "C-c `'") "‘")
-(global-set-key (kbd "C-c \"") "“")
-(global-set-key (kbd "C-c /") "”")
-(global-set-key (kbd "C-c -") "—")
-
-;; (global-set-key (kbd "C-'") 'toggle-quotes)
-;; TEST: Can't "do" this.
 
 
 ;; Defvault to using typo mode for better/fancy typography
@@ -641,13 +852,6 @@
 
 ;; Wow, hide comments!! Just blanks them out.
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
-;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
-
-;; Planck-friendly
-(global-set-key (kbd "M-{") 'backward-paragraph)
-(global-set-key (kbd "M-<") 'forward-paragraph)
-(global-set-key (kbd "M->") 'end-of-buffer)
-(global-set-key (kbd "M-}") 'beginning-of-buffer)
 
 
 
@@ -667,11 +871,6 @@
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
-(global-set-key (kbd "C-S-L") 'nlinum-mode)
-(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
-(key-chord-define-global "ql" 'nlinum-relative-toggle)
-(key-chord-define-global "QL" 'nlinum-mode)
-;; (key-chord-define-global "" 'nlinum-relative-toggle)
 
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
@@ -691,39 +890,12 @@
 ;; Undo-tree: C-/ undo, M-_ redo
 ;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
 (global-undo-tree-mode 1)
-(global-set-key (kbd "C-?") 'undo-tree-redo) ; GUIONLY
 
 ;; Auto-save
 ;; (add-hook 'focus-out-hook 'save-buffer)
 (add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
-
-;; Register marking/jumping, closer to vim
-(global-set-key (kbd "C-S-M") 'point-to-register)
-(key-chord-define-global "qm" 'point-to-register)
-(key-chord-define-global "'m" 'point-to-register)
-(key-chord-define-global "QM" 'counsel-bookmark)
-
-;; Hmm, M-J is needed for sp-join-sexp
-;; (global-set-key (kbd "M-J") 'jump-to-register)
-(global-set-key (kbd "C-S-J") 'jump-to-register)
-(key-chord-define-global "qj" 'jump-to-register)
-(key-chord-define-global "'j" 'jump-to-register)
-
-;; ISpell (I)
-(global-set-key (kbd "C-S-i") 'flycheck-next-error)
-(key-chord-define-global "qi" 'flycheck-next-error)
-(key-chord-define-global "'i" 'flycheck-next-error)
-
-(global-set-key (kbd "C-M-_") 'text-scale-decrease)
-(global-set-key (kbd "C-M-+") 'text-scale-increase)
-(key-chord-define-global "q-" 'text-scale-decrease)
-(key-chord-define-global "q+" 'text-scale-increase)
-
-;; Swiper obviates these.
-;; (global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
-;; (key-chord-define-global ",s" 'isearch-forward-symbol-at-point)
 
 ;; Extra file extensions to support
 (push '("/LICENSE\\'" . text-mode) auto-mode-alist)
@@ -758,8 +930,6 @@
 ;; https://github.com/purcell/unfill
 ;; http://stackoverflow.com/questions/6707758/inverse-of-m-q-an-unfill-paragraph-function
 (require 'unfill)
-(global-set-key (kbd "M-Q") 'unfill-paragraph)
-;; (global-set-key (kbd "M-S-q") 'unfill-paragraph)
 
 ;; Spelling/grammar help
 ;; https://github.com/mhayashi1120/Emacs-langtool
@@ -771,12 +941,6 @@
 ;; Zsh, hopefully
 (setq indent-tabs-mode t)
 (setq tab-width 2)
-
-;; Disable prompt for kill
-;; http://superuser.com/questions/354849/emacs-kill-buffer-without-prompt
-;; (global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "C-x k") 'kill-current-buffer)
-(global-set-key (kbd "C-c k") 'kill-current-buffer)
 
 
 ;; Don't want to suspend emacs!
@@ -790,19 +954,13 @@
 ;; (dot-mode t)
 (global-dot-mode t)
 ;; FIXME: prbly not working since flyspell rebinds
-(global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
-                                       (message "Dot mode activated.")))
 
 ;; Make number colorful.
 ;; ENABLE??
 ;; (require 'highlight-numbers)
 ;; (add-hook 'prog-mode-hook 'highlight-numbers-mode)
 
-;; Prelude badly sets C-- to zoom out, so keep as negative argument
-(global-set-key (kbd "C--") 'negative-argument)
-
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
 
 ;; TODO: hydra for visible things
 ;; - toggle-truncate-lines
@@ -814,8 +972,6 @@
 
 ;; Line wrap is called "truncate" in emacs
 (setq-default truncate-lines t)
-;; CHORD: t -- toggle-truncate-lines
-(key-chord-define-global "'t" 'toggle-truncate-lines)
 
 ;; Line breaks are shown as pretty horizontal lines
 ;; https://stackoverflow.com/a/7577628/326516
@@ -852,11 +1008,6 @@
 ;; http://stackoverflow.com/questions/36506141/emacs-dispatch-help-window-from-original-buffer
 (setq help-window-select t)
 
-;; http://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
-(global-set-key "\C-x2"
-                (lambda () (interactive) (split-window-vertically) (other-window 1)))
-(global-set-key "\C-x3" (lambda () (interactive) (split-window-horizontally) (other-window 1)))
-
 ;; Winner mode: C-<left> C-<right>
 (winner-mode)
 
@@ -864,10 +1015,6 @@
 ;; https://github.com/abo-abo/ace-window/wiki
 ;; https://github.com/abo-abo/ace-window
 (require 'ace-window)
-
-;; (global-set-key (kbd "M-o") 'ace-window)
-(key-chord-define-global "'w" 'ace-window)
-(key-chord-define-global "qw" 'ace-window)
 
 (defvar aw-dispatch-alist
 
@@ -916,8 +1063,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   ("k" shrink-window)
   ("j" enlarge-window)
   ("l" enlarge-window-horizontally))
-
-(key-chord-define-global "\"W" 'hydra-frame-window/body)
 
 
 ;; Nice size for the default window to match screen height
@@ -1117,41 +1262,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (key-chord-define-global "yy" 'hydra-window/body)
 
 
-
-(global-set-key (kbd "C-<tab>") 'aw-flip-window) ; GUIONLY
-(global-set-key (kbd "M-<tab>") 'ace-window) ; GUIONLY
-
-
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
-
-(global-set-key (kbd "M-<right>") 'windmove-right)
-(global-set-key (kbd "M-<left>") 'windmove-left)
-(global-set-key (kbd "M-<up>") 'windmove-up)
-(global-set-key (kbd "M-<down>") 'windmove-down)
-
-;; Fastest window switching: http://emacs.stackexchange.com/a/3471/11025
-;; (global-set-key (kbd "C-.") 'other-window)
-;; (global-set-key (kbd "C-,") 'prev-window)
-;; Switch windows; lower case version is used in too many shells/menus
-(global-set-key (kbd "M-P") 'prev-window)
-(global-set-key (kbd "M-N") 'other-window)
-(defun prev-window () (interactive) (other-window -1))
-;; other-window
-;; Default
-(global-set-key (kbd "C-x o") (lambda () (interactive) (other-window 1)))
-;; C-x C-o is common an easer for switching back window
-(global-set-key (kbd "C-x o") 'other-window)
-(global-set-key (kbd "C-x C-o") (lambda () (interactive) (other-window -1)))
-(global-set-key "\C-xO"    (lambda () (interactive) (delete-blank-lines)))
 
 ;; Shuffle/swap windows around
 (require 'buffer-move)
 ;; https://github.com/bbatsov/prelude/issues/106
-(global-set-key (kbd "C-S-<up>")     'buf-move-up)
-(global-set-key (kbd "C-S-<left>")   'buf-move-left)
-(global-set-key (kbd "C-S-<down>")   'buf-move-down)
-(global-set-key (kbd "C-S-<right>")  'buf-move-right)
 
 ;; move line up/down (already enabled) -- M-S-up
 ;; move-text-up, move-text-down
@@ -1171,27 +1287,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (kill-current-buffer)
   (delete-window)
   (balance-windows))
-;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
-;; Background window (Z: like shell's C-z)
-(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
-(key-chord-define-global "'z" 'delete-window-balancedly)
 
-;; Kill (K)
-(global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-;; (key-chord-define-global "'k" 'kill-window-balancedly)
-(key-chord-define-global "qk" 'kill-window-balancedly)
-
-;; Window buffer switching (O: Only)
-(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
-;; (key-chord-define-global ",o" 'delete-other-windows)
-
-;; Just use C-c left-arrow
-;; (global-set-key (kbd "C-S-g") 'winner-undo)
-;; (global-set-key (kbd "C-S-+") 'balance-windows)
-
-;; Window buffer switching (O: Only)
-(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
-;; Just use C-c left-arrow
 
 ;; Should change focus to new window.
 (defun split-window-balancedly ()
@@ -1205,11 +1301,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (balance-windows)
   (other-window 1))
 ;; New window (N)
-(global-set-key (kbd "C-S-n") 'split-window-balancedly)
-(key-chord-define-global "'n" 'split-window-balancedly)
-(key-chord-define-global "qn" 'split-window-balancedly)
-(key-chord-define-global "QN" 'split-window-vertically-balancedly)
-(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
 
 ;; Scroll without moving point; like Vim's C-y, C-e
 ;; http://stackoverflow.com/a/10541426/326516
@@ -1221,10 +1312,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (interactive "p")
   (scroll-down arg)
   (forward-line arg))
-(global-set-key (kbd "C-S-E") 'scroll-up-stay)
-(global-set-key (kbd "C-S-Y") 'scroll-down-stay)
-(key-chord-define-global "'e" 'scroll-up-stay)
-(key-chord-define-global "qy" 'scroll-down-stay)
 
 
 
@@ -1235,10 +1322,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; camel, kebab cases
 ;; https://stackoverflow.com/a/27422814/326516
 (require 'string-inflection)
-(global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
-(global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
-(global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
-(global-set-key (kbd "C-c K") 'string-inflection-kebab-case) ;; Cycle through Java styles
 
 
 (defun jump-to-bottom ()
@@ -1246,16 +1329,9 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (move-to-window-line-top-bottom)
   (move-to-window-line-top-bottom))
 
-;; smartparens overrides M-r, so changing default
-(global-set-key "\M-R" 'move-to-window-line-top-bottom)
-(global-set-key "\M-\C-R" 'jump-to-bottom)
-;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
-(global-set-key (kbd "M-L") 'recenter-top-bottom)
-
 
 ;;; Commenter: still stuggling with this
 (require 'comment-dwim-2)
-(global-set-key (kbd "M-;") 'comment-dwim-2)
 
 
 
@@ -1264,16 +1340,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; ENABLE??
 ;; (require 'typo)
 ;; (setq-default typo-language "English")
-;; (global-set-key (kbd "C-c T") 'typo-mode)
-;; ISSUE: Need to auto-enter typo-mode only while inside strings.
-
-
-;; Simpler attempt at typography.
-(global-set-key (kbd "C-c '") "’")
-(global-set-key (kbd "C-c `'") "‘")
-(global-set-key (kbd "C-c \"") "“")
-(global-set-key (kbd "C-c /") "”")
-(global-set-key (kbd "C-c -") "—")
 
 
 ;;; GIT
@@ -1285,26 +1351,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (require 'git-timemachine)
 (require 'diff-hl)
 (global-diff-hl-mode)
-
-;; Magit: came with Super-based shortcuts; use C-c g ... instead
-;; maGit (G)
-(global-set-key (kbd "C-S-g") 'magit-status)
-(key-chord-define-global "'g" 'magit-status)
-(key-chord-define-global "qg" 'magit-status)
-;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
-(global-set-key (kbd "C-c C-g B") 'git-link)
-(global-set-key (kbd "C-c C-g a") 'vc-annotate)
-(global-set-key (kbd "C-c C-g b") 'magit-blame)
-(global-set-key (kbd "C-c C-g g") 'magit-status)
-(global-set-key (kbd "C-c C-g h") 'github-browse-file)
-(global-set-key (kbd "C-c C-g i") 'git-messenger:popup-message)
-(global-set-key (kbd "C-c C-g l") 'magit-log-buffer-file)
-(global-set-key (kbd "C-c C-g m") 'diff-hl-mark-hunk)
-(global-set-key (kbd "C-c C-g n") 'diff-hl-next-hunk)
-(global-set-key (kbd "C-c C-g p") 'diff-hl-previous-hunk)
-(global-set-key (kbd "C-c C-g r") 'diff-hl-revert-hunk)
-(global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
-;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
 
 (setq git-identity-default-username "Micah Elliott")
 (require 'git-identity)
@@ -1322,9 +1368,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; https://github.com/leoliu/easy-kill
 ;; http://stackoverflow.com/a/36631886/326516
 (require 'easy-kill)
-(global-set-key [remap mark-sexp] 'easy-mark)
-(global-set-key [remap kill-ring-save] 'easy-kill)
-;; (global-set-key [remap kill-ring-save] 'easy-mark)
 
 
 ;; Hide-Show (V: visible), like folding
@@ -1341,8 +1384,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; But what about `back-to-indentation' (bound to M-m by default)?
 ;; You should customize C-a to toggle between indentation and
 ;; beginning of line like a civilized human being.
-(global-set-key [(meta m)] 'jump-char-forward)
-;; (global-set-key [(shift meta m)] 'jump-char-backward)
 
 
 ;;; Key Chords
@@ -1354,26 +1395,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; delay is really short, so combos on the same hand might be too slow
 ;; to type.
 
-(setq key-chord-two-keys-delay .1 ; default is .1
-      key-chord-one-key-delay  .6) ; default is .2
-
-(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "'c" 'avy-goto-word-1)
-(key-chord-define-global "qc" 'avy-goto-word-1)
-;; (key-chord-define-global "'d" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'treemacs)
-(key-chord-define-global "'d" 'treemacs-select-window)
-(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
-(key-chord-define-global "\"F" 'windmove-right)
-(key-chord-define-global "\"S" 'windmove-left)
-(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "''" 'aw-flip-window)
-(key-chord-define-global "qq" 'aw-flip-window)
-
-(global-set-key (kbd "C-S-x") 'avy-goto-word-1)
-;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
 
 
 ;; avy allows us to effectively navigate to visible things
@@ -1385,8 +1406,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; If we ever want to abandon swiper, anzu will be useful
 ;; (require 'anzu)
 ;; (global-anzu-mode)
-;; (global-set-key (kbd "M-%") 'anzu-query-replace)
-;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -1414,10 +1433,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; .zsh file is shell script too
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 
-
-;; (key-chord-define-global ",u" 'undo-tree-visualize)
-;; (key-chord-define-global ",x" 'execute-extended-command)
-;; (key-chord-define-global ",y" 'browse-kill-ring)
 
 ;; AVY: https://github.com/abo-abo/avy/wiki/defcustom
 ;; confine avy's characters for ease of typing/finding
@@ -1529,9 +1544,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 ;; save recent files
 (require 'recentf)
-(global-set-key (kbd "C-S-f") 'counsel-recentf)
-(key-chord-define-global "'f" 'counsel-recentf)
-(key-chord-define-global "qf" 'counsel-recentf)
 (recentf-mode t)
 (setq
       ;; recentf-save-file (expand-file-name "recentf" savefile-dir)
@@ -1768,7 +1780,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 	(company-indent-or-complete-common t)
 	(forward-line -1)
 	(end-of-line))
-(key-chord-define-global "QO" 'my-clj-open-above-let)
 
 
 
@@ -1777,9 +1788,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 
 (require 'imenu-list)
 (require 'popup-imenu)
-(global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
-(global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
-(global-set-key (kbd "C-\"") 'popup-imenu)
 
 
 
@@ -1793,8 +1801,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (beginning-of-defun)
   (forward-word 2)
   (backward-word))
-;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
-(global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
 
 
 ;; Copy filename to clipboard
@@ -1805,7 +1811,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (let ((fname (buffer-file-name)))
     (kill-new fname)
     (message "Copied buffer file name '%s' to the clipboard." fname)))
-(global-set-key (kbd "C-c c") 'my-copy-filename)
 
 (require 'dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
@@ -1826,14 +1831,12 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
   (forward-page)
   (forward-char)
   (recenter-top-bottom 1))
-(global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
 (defun my-backward-jump-to-line-break ()
   (interactive)
   (backward-char 2)
   (backward-page)
   (backward-char)
   (recenter-top-bottom 1))
-(global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 
 ;; https://github.com/kai2nenobu/guide-key/blob/master/guide-key.el#L578
 ;; key-chord hack
@@ -1937,14 +1940,12 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)
   (message "Pushed mark to ring"))
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
 
 (defun jump-to-mark ()
   "Jumps to the local mark, respecting the `mark-ring' order.
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-(global-set-key (kbd "M-`") 'jump-to-mark)
 
 (defun exchange-point-and-mark-no-activate ()
   "Identical to \\[exchange-point-and-mark] but will not activate the region."
