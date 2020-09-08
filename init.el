@@ -222,6 +222,132 @@
 
 ;;; BINDINGS
 
+(require 'key-chord)
+(key-chord-mode +1)
+(setq key-chord-two-keys-delay .1 ; default is .1
+      key-chord-one-key-delay  .6) ; default is .2
+
+;; Special
+(key-chord-define-global "''" 'aw-flip-window)
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
+(key-chord-define-global "q-" 'text-scale-decrease)
+(key-chord-define-global "q+" 'text-scale-increase)
+;; A
+;; B
+(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
+;; C
+(key-chord-define-global "'c" 'avy-goto-word-1) ; character
+(key-chord-define-global "qc" 'avy-goto-word-1)
+(key-chord-define-global "\"C" 'beacon-blink) ; cursor
+;; D (treemacs Directory)
+;; (key-chord-define-global "'d" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'neotree-toggle)
+;; (key-chord-define-global "qd" 'treemacs)
+(key-chord-define-global "'d" 'treemacs-select-window) ; directory
+(key-chord-define-global "'d" 'treemacs)
+(key-chord-define-global "qd" 'treemacs)
+(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+;; E
+;; (key-chord-define-global "'e" 'scroll-up-stay)
+;; F (Find)
+(key-chord-define-global "'f" 'counsel-recentf)
+(key-chord-define-global "qf" 'counsel-recentf)
+(key-chord-define-global "\"F" 'windmove-right)
+;; G
+(key-chord-define-global "'g" 'magit-status)
+(key-chord-define-global "qg" 'magit-status)
+;; H
+(key-chord-define-global "'h" 'hs-hide-block)
+(key-chord-define-global "qh" 'my-hs-hide-block)
+(key-chord-define-global "QH" 'hs-hide-all)
+;; I
+(key-chord-define-global "'i" 'flycheck-next-error)
+(key-chord-define-global "qi" 'flycheck-next-error)
+;; J
+(key-chord-define-global "'j" 'jump-to-register)
+(key-chord-define-global "qj" 'jump-to-register)
+;; K
+(key-chord-define-global "qk" 'kill-window-balancedly)
+;; L
+(key-chord-define-global "ql" 'nlinum-relative-toggle)
+(key-chord-define-global "'l" 'nlinum-relative-toggle)
+(key-chord-define-global "QL" 'nlinum-mode)
+;; M
+(key-chord-define-global "'m" 'point-to-register)
+(key-chord-define-global "qm" 'point-to-register)
+(key-chord-define-global "QM" 'counsel-bookmark)
+;; N
+(key-chord-define-global "'n" 'split-window-balancedly)
+(key-chord-define-global "qn" 'split-window-balancedly)
+(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
+(key-chord-define-global "QN" 'split-window-vertically-balancedly)
+;; O (Open, Other)
+(key-chord-define-global "qo" 'crux-smart-open-line)
+(key-chord-define-global "QO" 'my-clj-open-above-let)
+;; P
+(key-chord-define-global "'p" 'projectile-command-map)
+(key-chord-define-global "qp" 'projectile-command-map)
+(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
+;; Q
+(key-chord-define-global "qq" 'aw-flip-window)
+;; R
+;; S
+;; (key-chord-define-global "'s" 'hs-show-block)
+(key-chord-define-global "'s" 'persp-switch)
+(key-chord-define-global "qs" 'hs-show-block)
+;; (key-chord-define-global "\"S" 'windmove-left)
+(key-chord-define-global "\"S" 'hs-show-all)
+;; T (Truncate)
+(key-chord-define-global "'t" 'toggle-truncate-lines)
+;; U
+;; (key-chord-define-global ",u" 'undo-tree-visualize)
+;; V
+(key-chord-define-global "'v" 'hs-toggle-hiding)
+(key-chord-define-global "qv" 'hs-toggle-hiding)
+;; W
+(key-chord-define-global "'w" 'ace-window)
+(key-chord-define-global "qw" 'ace-window)
+(key-chord-define-global "\"W" 'hydra-frame-window/body)
+;; X
+;; (key-chord-define-global ",x" 'execute-extended-command)
+;; Y
+;; (key-chord-define-global ",y" 'browse-kill-ring)
+(key-chord-define-global "qy" 'scroll-down-stay)
+;; Z
+(key-chord-define-global "'z" 'delete-window-balancedly)
+
+
+
+
+;; Register marking/jumping, closer to vim
+(global-set-key (kbd "C-S-M") 'point-to-register)
+(global-set-key (kbd "C-p") 'previous-line)
+
+;; ISpell (I)
+(global-set-key (kbd "C-S-i") 'flycheck-next-error)
+
+;; Hmm, M-J is needed for sp-join-sexp
+;; (global-set-key (kbd "M-J") 'jump-to-register)
+(global-set-key (kbd "C-S-J") 'jump-to-register)
+(global-set-key (kbd "C-M-_") 'text-scale-decrease)
+(global-set-key (kbd "C-M-+") 'text-scale-increase)
+
+;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
+;; Background window (Z: like shell's C-z)
+(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
+
+;; Kill (K)
+(global-set-key (kbd "C-S-k") 'kill-window-balancedly)
+
+;; Window buffer switching (O: Only)
+(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
+
+;; Just use C-c left-arrow
+;; (global-set-key (kbd "C-S-g") 'winner-undo)
+;; (global-set-key (kbd "C-S-+") 'balance-windows)
+
 (global-set-key (kbd "C-S-v H") 'hs-hide-all)
 (global-set-key (kbd "C-S-v S") 'hs-show-all)
 (global-set-key (kbd "C-S-v h") 'hs-hide-block)
@@ -230,99 +356,17 @@
 (global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
 (global-set-key (kbd "C-S-c") 'beacon-blink)
 
-(key-chord-define-global "QH" 'hs-hide-all)
-(key-chord-define-global "qh" 'my-hs-hide-block)
-(key-chord-define-global "'h" 'hs-hide-block)
-(key-chord-define-global "\"S" 'hs-show-all)
-;; (key-chord-define-global "'s" 'hs-show-block)
-(key-chord-define-global "'s" 'persp-switch)
-(key-chord-define-global "qs" 'hs-show-block)
-(key-chord-define-global "'v" 'hs-toggle-hiding)
-(key-chord-define-global "qv" 'hs-toggle-hiding)
-(key-chord-define-global "\"C" 'beacon-blink)
-(key-chord-define-global "qo" 'crux-smart-open-line)
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
-(key-chord-define-global "qo" 'crux-smart-open-line)
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
-
-;; Treemacs
-(key-chord-define-global "'d" 'treemacs)
-(key-chord-define-global "qd" 'treemacs)
-
-;; Register marking/jumping, closer to vim
-(global-set-key (kbd "C-S-M") 'point-to-register)
-(key-chord-define-global "ql" 'nlinum-relative-toggle)
-(key-chord-define-global "QL" 'nlinum-mode)
-;; (key-chord-define-global "" 'nlinum-relative-toggle)
-(key-chord-define-global "qm" 'point-to-register)
-(key-chord-define-global "'m" 'point-to-register)
-(key-chord-define-global "QM" 'counsel-bookmark)
-
-;; Hmm, M-J is needed for sp-join-sexp
-;; (global-set-key (kbd "M-J") 'jump-to-register)
-(global-set-key (kbd "C-S-J") 'jump-to-register)
-(key-chord-define-global "qj" 'jump-to-register)
-(key-chord-define-global "'j" 'jump-to-register)
-
-;; ISpell (I)
-(global-set-key (kbd "C-S-i") 'flycheck-next-error)
-(key-chord-define-global "qi" 'flycheck-next-error)
-(key-chord-define-global "'i" 'flycheck-next-error)
-
-(global-set-key (kbd "C-M-_") 'text-scale-decrease)
-(global-set-key (kbd "C-M-+") 'text-scale-increase)
-(key-chord-define-global "q-" 'text-scale-decrease)
-(key-chord-define-global "q+" 'text-scale-increase)
-
-;; Swiper obviates these.
-;; (global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
-;; (key-chord-define-global ",s" 'isearch-forward-symbol-at-point)
-;; CHORD: t -- toggle-truncate-lines
-(key-chord-define-global "'t" 'toggle-truncate-lines)
-
-;; (global-set-key (kbd "M-o") 'ace-window)
-(key-chord-define-global "'w" 'ace-window)
-(key-chord-define-global "qw" 'ace-window)
-
-(key-chord-define-global "\"W" 'hydra-frame-window/body)
-
-;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
-;; Background window (Z: like shell's C-z)
-(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
-(key-chord-define-global "'z" 'delete-window-balancedly)
-
-;; Kill (K)
-(global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-;; (key-chord-define-global "'k" 'kill-window-balancedly)
-(key-chord-define-global "qk" 'kill-window-balancedly)
-
-;; Window buffer switching (O: Only)
-(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
-;; (key-chord-define-global ",o" 'delete-other-windows)
-
-;; Just use C-c left-arrow
-;; (global-set-key (kbd "C-S-g") 'winner-undo)
-;; (global-set-key (kbd "C-S-+") 'balance-windows)
-
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
 ;; Just use C-c left-arrow
 
 (global-set-key (kbd "C-S-n") 'split-window-balancedly)
-(key-chord-define-global "'n" 'split-window-balancedly)
-(key-chord-define-global "qn" 'split-window-balancedly)
-(key-chord-define-global "QN" 'split-window-vertically-balancedly)
-(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
 (global-set-key (kbd "C-S-E") 'scroll-up-stay)
 (global-set-key (kbd "C-S-Y") 'scroll-down-stay)
-(key-chord-define-global "'e" 'scroll-up-stay)
-(key-chord-define-global "qy" 'scroll-down-stay)
 
 ;; Magit: came with Super-based shortcuts; use C-c g ... instead
 ;; maGit (G)
 (global-set-key (kbd "C-S-g") 'magit-status)
-(key-chord-define-global "'g" 'magit-status)
-(key-chord-define-global "qg" 'magit-status)
 ;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
 (global-set-key (kbd "C-c C-g B") 'git-link)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
@@ -338,35 +382,10 @@
 (global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
 ;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
 
-(setq key-chord-two-keys-delay .1 ; default is .1
-      key-chord-one-key-delay  .6) ; default is .2
-
-(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "'c" 'avy-goto-word-1)
-(key-chord-define-global "qc" 'avy-goto-word-1)
-;; (key-chord-define-global "'d" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'treemacs)
-(key-chord-define-global "'d" 'treemacs-select-window)
-(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
-(key-chord-define-global "\"F" 'windmove-right)
-(key-chord-define-global "\"S" 'windmove-left)
-(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "''" 'aw-flip-window)
-(key-chord-define-global "qq" 'aw-flip-window)
-
 (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
 ;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
 
-;; (key-chord-define-global ",u" 'undo-tree-visualize)
-;; (key-chord-define-global ",x" 'execute-extended-command)
-;; (key-chord-define-global ",y" 'browse-kill-ring)
 (global-set-key (kbd "C-S-f") 'counsel-recentf)
-(key-chord-define-global "'f" 'counsel-recentf)
-(key-chord-define-global "qf" 'counsel-recentf)
-(key-chord-define-global "QO" 'my-clj-open-above-let)
-
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
 (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
 (global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
@@ -520,9 +539,6 @@
 
 
 ;;; UI
-
-(require 'key-chord)
-(key-chord-mode +1)
 
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
@@ -973,7 +989,7 @@
 ;; Line wrap is called "truncate" in emacs
 (setq-default truncate-lines t)
 
-;; Line breaks are shown as pretty horizontal lines
+;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
 ;; https://stackoverflow.com/a/7577628/326516
 (require 'page-break-lines)
 (global-page-break-lines-mode)
