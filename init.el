@@ -122,6 +122,7 @@
     popup-imenu
     projectile
     rainbow-delimiters
+    rainbow-identifiers
     restclient
     ripgrep
     rubocop
@@ -258,7 +259,7 @@
 (key-chord-define-global "qc" 'avy-goto-word-1)
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
 
-;; D (treemacs Directory)
+;; D — treemacs
 ;; (key-chord-define-global "'d" 'neotree-toggle)
 ;; (key-chord-define-global "qd" 'neotree-toggle)
 ;; (key-chord-define-global "qd" 'treemacs)
@@ -267,7 +268,7 @@
 (key-chord-define-global "qd" 'treemacs)
 (key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 
-;; E (Errors)
+;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
   (define-key my-flycheck-keymap "e" 'flycheck-next-error) ; default
   (define-key my-flycheck-keymap "c" 'flycheck-buffer) ; not working?
@@ -278,13 +279,13 @@
   (define-key my-flycheck-keymap "C" 'flycheck-compile)
   (key-chord-define-global "qe" my-flycheck-keymap))
 
-;; F (Find/search)
+;; F - Find/search
 (let ((my-find-keymap (make-sparse-keymap)))
   (define-key my-find-keymap "f" 'swiper-isearch)
   (key-chord-define-global "qf" my-find-keymap)
   (key-chord-define-global "'f" my-find-keymap))
 
-;; G (maGit)
+;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
   (define-key my-git-keymap "g" 'magit-status) ; default
   (define-key my-git-keymap "B" 'git-link) ; browse
@@ -303,7 +304,7 @@
 
 ;; H
 
-;; I (Imenu)
+;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
   (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
   (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
@@ -315,7 +316,7 @@
 (key-chord-define-global "'j" 'jump-to-register)
 (key-chord-define-global "qj" 'jump-to-register)
 
-;; K (Kill)
+;; K — Kill
 (let ((my-kill-keymap (make-sparse-keymap)))
   (define-key my-kill-keymap "z" 'delete-window-balancedly)
   (define-key my-kill-keymap "k" 'kill-window-balancedly)
@@ -324,7 +325,7 @@
   (key-chord-define-global "'k" my-kill-keymap)
   (key-chord-define-global "qk" my-kill-keymap))
 
-;; L (Line numbering/viewing)
+;; L — Line-numbering/viewing
 (let ((my-lines-keymap (make-sparse-keymap)))
   (define-key my-lines-keymap "l" 'nlinum-relative-toggle)
   (define-key my-lines-keymap "x" 'nlinum-mode)
@@ -332,22 +333,22 @@
   (key-chord-define-global "'l" my-lines-keymap)
   (key-chord-define-global "ql" my-lines-keymap))
 
-;; M (Mark)
+;; M — Mark
 (key-chord-define-global "'m" 'point-to-register)
 (key-chord-define-global "qm" 'point-to-register)
 (key-chord-define-global "QM" 'counsel-bookmark)
 
-;; N (New windows)
+;; N — New windows
 (key-chord-define-global "'n" 'split-window-balancedly)
 (key-chord-define-global "qn" 'split-window-balancedly)
 (key-chord-define-global "\"N" 'split-window-vertically-balancedly)
 (key-chord-define-global "QN" 'split-window-vertically-balancedly)
 
-;; O (Open, Other)
+;; O — Open,Other
 (key-chord-define-global "qo" 'crux-smart-open-line)
 ;; (key-chord-define-global "QO" 'my-clj-open-above-let)
 
-;; P
+;; P — Projectile
 (let ((my-projectile-keymap (make-sparse-keymap)))
   (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "g" 'projectile-grep)
@@ -367,11 +368,12 @@
 ;; Q
 
 ;; R — Refactoring
+(key-chord-define-global "'r" 'makey-key-mode-popup-clj-refactor)
 
 ;; S — Spaces
 (key-chord-define-global "'s" 'persp-switch)
 
-;; T Typography
+;; T — Typography
 ;; —  ’ “ ‘ ‘ ’ “
 (let ((my-typo-keymap (make-sparse-keymap)))
   (define-key my-typo-keymap "'" "’")
@@ -388,7 +390,7 @@
 
 ;; V
 
-;; W (Windowing)
+;; W — Windowing
 (key-chord-define-global "'w" 'ace-window)
 (key-chord-define-global "qw" 'ace-window)
 
@@ -397,7 +399,7 @@
 ;; Y
 ;; (key-chord-define-global "qy" 'scroll-down-stay)
 
-;; Z (folding/hide-show)
+;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
 ;; https://emacs.stackexchange.com/questions/33684/proper-way-to-change-prefix-key-for-minor-mode-map
 (let ((my-hs-keymap (make-sparse-keymap)))
@@ -409,7 +411,8 @@
   (key-chord-define-global "'z" my-hs-keymap))
 
 
-
+
+;;; Other Bindings
 
 (global-set-key (kbd "C-S-b") 'counsel-ibuffer)
 
@@ -897,6 +900,7 @@
 ;; Like imenu, but for pages/sections nav/highlighting.
 ;; Has `outshine-imenu' as my main use
 (require 'outshine)
+(outshine-mode t)
 
 
 
@@ -1443,10 +1447,15 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 ;;; PARENS
 
-;;; Rainbow Parens (already part of prelude?)
+;; Rainbow all the things
+
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (rainbow-delimiters-mode +1)
+
+;; https://github.com/Fanael/rainbow-identifiers
+(require 'rainbow-identifiers)
+(add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
 
 ;; https://www.emacswiki.org/emacs/ShowParenMode
 ;; (setq show-paren-delay 0)
@@ -1651,7 +1660,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 
 
-;; CLOJURE
+;;; Clojure
 
 ;; Still need to highleight and press TAB to make work.
 (setq clojure-align-forms-automatically t)
@@ -2052,7 +2061,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'right)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
@@ -2061,6 +2070,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(projectile-indexing-method 'hybrid)
  '(projectile-mode t nil (projectile))
  '(projectile-sort-order 'recently-active)
+ '(rainbow-identifiers-face-count 15)
  '(safe-local-variable-values
    '((eval with-eval-after-load 'cider
 	   (setq cider-default-cljs-repl 'figwheel))
