@@ -95,6 +95,7 @@
     git-link
     git-messenger
     git-timemachine
+    helpful
     highlight-parentheses
     highlight-thing
     httprepl
@@ -114,6 +115,7 @@
     mode-icons
     move-text
     neotree
+    outshine
     page-break-lines
     paren-face
     popup
@@ -135,6 +137,7 @@
     toggle-quotes
     total-lines
     treemacs
+    treemacs-persp
     treemacs-projectile
     treemacs-all-the-icons
     treemacs-icons-dired
@@ -173,6 +176,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
+ '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(company-box-background ((t (:background "black" :inverse-video nil))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -228,121 +232,211 @@
       key-chord-one-key-delay  .6) ; default is .2
 
 ;; Special
-(key-chord-define-global "''" 'aw-flip-window)
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
 (key-chord-define-global "q'" 'crux-smart-open-line-above)
 (key-chord-define-global "q-" 'text-scale-decrease)
 (key-chord-define-global "q+" 'text-scale-increase)
+(key-chord-define-global "qq" 'aw-flip-window)
+(key-chord-define-global "''" 'aw-flip-window)
+;; TODO: multiple cursors or
+
 ;; A
-;; B
-(key-chord-define-global "'b" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "qb" 'crux-switch-to-previous-buffer)
-;; C
+
+;; B — Buffer/file
+(let ((my-buffer-keymap (make-sparse-keymap)))
+  (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
+  (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
+  (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
+  (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
+  (define-key my-buffer-keymap "F" 'counsel-buffer-or-recentf)
+  (define-key my-buffer-keymap "f" 'counsel-recentf) ; file
+  (key-chord-define-global "qb" my-buffer-keymap)
+  (key-chord-define-global "'b" my-buffer-keymap))
+
+;; FIXME: Case
+;; C — Cursor (fast)
 (key-chord-define-global "'c" 'avy-goto-word-1) ; character
 (key-chord-define-global "qc" 'avy-goto-word-1)
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
+
 ;; D (treemacs Directory)
 ;; (key-chord-define-global "'d" 'neotree-toggle)
 ;; (key-chord-define-global "qd" 'neotree-toggle)
 ;; (key-chord-define-global "qd" 'treemacs)
-(key-chord-define-global "'d" 'treemacs-select-window) ; directory
-(key-chord-define-global "'d" 'treemacs)
+(key-chord-define-global "'d" 'treemacs-select-window) ; directory; keeps open
+;; (key-chord-define-global "'d" 'treemacs) ; toggles closing
 (key-chord-define-global "qd" 'treemacs)
 (key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
-;; E
-;; (key-chord-define-global "'e" 'scroll-up-stay)
-;; F (Find)
-(key-chord-define-global "'f" 'counsel-recentf)
-(key-chord-define-global "qf" 'counsel-recentf)
-(key-chord-define-global "\"F" 'windmove-right)
-;; G
-(key-chord-define-global "'g" 'magit-status)
-(key-chord-define-global "qg" 'magit-status)
+
+;; E (Errors)
+(let ((my-flycheck-keymap (make-sparse-keymap)))
+  (define-key my-flycheck-keymap "e" 'flycheck-next-error) ; default
+  (define-key my-flycheck-keymap "c" 'flycheck-buffer) ; not working?
+  (define-key my-flycheck-keymap "E" 'flycheck-explain-error-at-point) ; not useful
+  (define-key my-flycheck-keymap "l" 'flycheck-list-errors)
+  (define-key my-flycheck-keymap "n" 'flycheck-next-error)
+  (define-key my-flycheck-keymap "p" 'flycheck-previous-error)
+  (define-key my-flycheck-keymap "C" 'flycheck-compile)
+  (key-chord-define-global "qe" my-flycheck-keymap))
+
+;; F (Find/search)
+(let ((my-find-keymap (make-sparse-keymap)))
+  (define-key my-find-keymap "f" 'swiper-isearch)
+  (key-chord-define-global "qf" my-find-keymap)
+  (key-chord-define-global "'f" my-find-keymap))
+
+;; G (maGit)
+(let ((my-git-keymap (make-sparse-keymap)))
+  (define-key my-git-keymap "g" 'magit-status) ; default
+  (define-key my-git-keymap "B" 'git-link) ; browse
+  (define-key my-git-keymap "a" 'vc-annotate)
+  (define-key my-git-keymap "b" 'magit-blame)
+  (define-key my-git-keymap "h" 'github-browse-file) ; FIXME
+  (define-key my-git-keymap "i" 'git-messenger:popup-message)
+  (define-key my-git-keymap "l" 'magit-log-buffer-file)
+  (define-key my-git-keymap "m" 'diff-hl-mark-hunk)
+  (define-key my-git-keymap "n" 'diff-hl-next-hunk)
+  (define-key my-git-keymap "p" 'diff-hl-previous-hunk)
+  (define-key my-git-keymap "r" 'diff-hl-revert-hunk)
+  (define-key my-git-keymap "t" 'git-timemachine-toggle)
+  (key-chord-define-global "'g" my-git-keymap)
+  (key-chord-define-global "qg" my-git-keymap))
+
 ;; H
-(key-chord-define-global "'h" 'hs-hide-block)
-(key-chord-define-global "qh" 'my-hs-hide-block)
-(key-chord-define-global "QH" 'hs-hide-all)
-;; I
-(key-chord-define-global "'i" 'flycheck-next-error)
-(key-chord-define-global "qi" 'flycheck-next-error)
+
+;; I (Imenu)
+(let ((my-imenu-keymap (make-sparse-keymap)))
+  (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
+  (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
+  (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
+  (define-key my-imenu-keymap "o" 'outshine-imenu) ; outline
+  (key-chord-define-global "qi" my-imenu-keymap))
+
 ;; J
 (key-chord-define-global "'j" 'jump-to-register)
 (key-chord-define-global "qj" 'jump-to-register)
-;; K
-(key-chord-define-global "qk" 'kill-window-balancedly)
-;; L
-(key-chord-define-global "ql" 'nlinum-relative-toggle)
-(key-chord-define-global "'l" 'nlinum-relative-toggle)
-(key-chord-define-global "QL" 'nlinum-mode)
-;; M
+
+;; K (Kill)
+(let ((my-kill-keymap (make-sparse-keymap)))
+  (define-key my-kill-keymap "z" 'delete-window-balancedly)
+  (define-key my-kill-keymap "k" 'kill-window-balancedly)
+  (define-key my-kill-keymap "x" 'kill-current-buffer)
+  (define-key my-kill-keymap "p" 'projectile-kill-buffers)
+  (key-chord-define-global "'k" my-kill-keymap)
+  (key-chord-define-global "qk" my-kill-keymap))
+
+;; L (Line numbering/viewing)
+(let ((my-lines-keymap (make-sparse-keymap)))
+  (define-key my-lines-keymap "l" 'nlinum-relative-toggle)
+  (define-key my-lines-keymap "x" 'nlinum-mode)
+  (define-key my-lines-keymap "t" 'toggle-truncate-lines)
+  (key-chord-define-global "'l" my-lines-keymap)
+  (key-chord-define-global "ql" my-lines-keymap))
+
+;; M (Mark)
 (key-chord-define-global "'m" 'point-to-register)
 (key-chord-define-global "qm" 'point-to-register)
 (key-chord-define-global "QM" 'counsel-bookmark)
-;; N
+
+;; N (New windows)
 (key-chord-define-global "'n" 'split-window-balancedly)
 (key-chord-define-global "qn" 'split-window-balancedly)
 (key-chord-define-global "\"N" 'split-window-vertically-balancedly)
 (key-chord-define-global "QN" 'split-window-vertically-balancedly)
+
 ;; O (Open, Other)
 (key-chord-define-global "qo" 'crux-smart-open-line)
-(key-chord-define-global "QO" 'my-clj-open-above-let)
+;; (key-chord-define-global "QO" 'my-clj-open-above-let)
+
 ;; P
-(key-chord-define-global "'p" 'projectile-command-map)
-(key-chord-define-global "qp" 'projectile-command-map)
-(key-chord-define-global "\"P" 'crux-switch-to-previous-buffer)
+(let ((my-projectile-keymap (make-sparse-keymap)))
+  (define-key my-projectile-keymap "s" 'projectile-ag)
+  (define-key my-projectile-keymap "g" 'projectile-grep)
+  (define-key my-projectile-keymap "e" 'projectile-recentf)
+  (define-key my-projectile-keymap "D" 'projectile-dired)
+  (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
+  (define-key my-projectile-keymap "d" 'projectile-find-dir)
+  (define-key my-projectile-keymap "e" 'projectile-recentf)
+  (define-key my-projectile-keymap "f" 'projectile-find-file)
+  (define-key my-projectile-keymap "i" 'projectile-invalidate-cache)
+  (define-key my-projectile-keymap "o" 'projectile-multi-occur)
+  (define-key my-projectile-keymap "p" 'projectile-switch-project)
+  (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
+  (key-chord-define-global "'p" my-projectile-keymap)
+  (key-chord-define-global "qp" my-projectile-keymap))
+
 ;; Q
-(key-chord-define-global "qq" 'aw-flip-window)
-;; R
-;; S
-;; (key-chord-define-global "'s" 'hs-show-block)
+
+;; R — Refactoring
+
+;; S — Spaces
 (key-chord-define-global "'s" 'persp-switch)
-(key-chord-define-global "qs" 'hs-show-block)
-;; (key-chord-define-global "\"S" 'windmove-left)
-(key-chord-define-global "\"S" 'hs-show-all)
-;; T (Truncate)
-(key-chord-define-global "'t" 'toggle-truncate-lines)
+
+;; T Typography
+;; —  ’ “ ‘ ‘ ’ “
+(let ((my-typo-keymap (make-sparse-keymap)))
+  (define-key my-typo-keymap "'" "’")
+  (define-key my-typo-keymap "`" "‘")
+  (define-key my-typo-keymap "\"" "”")
+  (define-key my-typo-keymap "~" "“")
+  (define-key my-typo-keymap "-"  "—")
+  (define-key my-typo-keymap "t" 'typo-mode)
+  (key-chord-define-global "'t" my-typo-keymap)
+  (key-chord-define-global "qt" my-typo-keymap))
+
 ;; U
 ;; (key-chord-define-global ",u" 'undo-tree-visualize)
+
 ;; V
-(key-chord-define-global "'v" 'hs-toggle-hiding)
-(key-chord-define-global "qv" 'hs-toggle-hiding)
-;; W
+
+;; W (Windowing)
 (key-chord-define-global "'w" 'ace-window)
 (key-chord-define-global "qw" 'ace-window)
-(key-chord-define-global "\"W" 'hydra-frame-window/body)
+
 ;; X
-;; (key-chord-define-global ",x" 'execute-extended-command)
+
 ;; Y
-;; (key-chord-define-global ",y" 'browse-kill-ring)
-(key-chord-define-global "qy" 'scroll-down-stay)
-;; Z
-(key-chord-define-global "'z" 'delete-window-balancedly)
+;; (key-chord-define-global "qy" 'scroll-down-stay)
+
+;; Z (folding/hide-show)
+;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
+;; https://emacs.stackexchange.com/questions/33684/proper-way-to-change-prefix-key-for-minor-mode-map
+(let ((my-hs-keymap (make-sparse-keymap)))
+  (define-key my-hs-keymap "c" 'hs-hide-block)
+  (define-key my-hs-keymap "C" 'hs-hide-all)
+  (define-key my-hs-keymap "o" 'hs-show-block)
+  (define-key my-hs-keymap "O" 'hs-show-all)
+  (define-key my-hs-keymap "z" 'hs-toggle-hiding)
+  (key-chord-define-global "'z" my-hs-keymap))
 
 
 
 
-;; Register marking/jumping, closer to vim
-(global-set-key (kbd "C-S-M") 'point-to-register)
-(global-set-key (kbd "C-p") 'previous-line)
+(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
+
+(global-set-key (kbd "C-S-c") 'beacon-blink)
+
+(global-set-key (kbd "C-S-e") 'scroll-up-stay)
+(global-set-key (kbd "C-S-f") 'counsel-recentf)
+
+(global-set-key (kbd "C-S-g") 'magit-status)
 
 ;; ISpell (I)
 (global-set-key (kbd "C-S-i") 'flycheck-next-error)
 
 ;; Hmm, M-J is needed for sp-join-sexp
 ;; (global-set-key (kbd "M-J") 'jump-to-register)
-(global-set-key (kbd "C-S-J") 'jump-to-register)
-(global-set-key (kbd "C-M-_") 'text-scale-decrease)
-(global-set-key (kbd "C-M-+") 'text-scale-increase)
-
-;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
-;; Background window (Z: like shell's C-z)
-(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
+(global-set-key (kbd "C-S-j") 'jump-to-register)
 
 ;; Kill (K)
 (global-set-key (kbd "C-S-k") 'kill-window-balancedly)
 
+;; Register marking/jumping, closer to vim
+(global-set-key (kbd "C-S-m") 'point-to-register)
+
+(global-set-key (kbd "C-S-n") 'split-window-balancedly)
 ;; Window buffer switching (O: Only)
 (global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
+;; Just use C-c left-arrow
 
 ;; Just use C-c left-arrow
 ;; (global-set-key (kbd "C-S-g") 'winner-undo)
@@ -354,19 +448,23 @@
 (global-set-key (kbd "C-S-v s") 'hs-show-block)
 (global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
 (global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
-(global-set-key (kbd "C-S-c") 'beacon-blink)
+;; (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
+(global-set-key (kbd "C-S-y") 'scroll-down-stay)
 
-;; Window buffer switching (O: Only)
-(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
-;; Just use C-c left-arrow
+;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
+;; Background window (Z: like shell's C-z)
+(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
 
-(global-set-key (kbd "C-S-n") 'split-window-balancedly)
-(global-set-key (kbd "C-S-E") 'scroll-up-stay)
-(global-set-key (kbd "C-S-Y") 'scroll-down-stay)
+
+
+
+(global-set-key (kbd "C-p") 'previous-line)
+
+(global-set-key (kbd "C-M-_") 'text-scale-decrease)
+(global-set-key (kbd "C-M-+") 'text-scale-increase)
 
 ;; Magit: came with Super-based shortcuts; use C-c g ... instead
 ;; maGit (G)
-(global-set-key (kbd "C-S-g") 'magit-status)
 ;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
 (global-set-key (kbd "C-c C-g B") 'git-link)
 (global-set-key (kbd "C-c C-g a") 'vc-annotate)
@@ -382,10 +480,6 @@
 (global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
 ;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
 
-(global-set-key (kbd "C-S-x") 'avy-goto-word-1)
-;; (global-set-key (kbd "C-S-x") 'crux-switch-to-previous-buffer)
-
-(global-set-key (kbd "C-S-f") 'counsel-recentf)
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
 (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
 (global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
@@ -395,17 +489,17 @@
 ;; mimic popular IDEs binding, note that it doesn't work in a terminal session
 (global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
 (global-set-key [(shift return)] 'crux-smart-open-line)
-(global-set-key (kbd "M-o") 'crux-smart-open-line)
-(global-set-key (kbd "M-O") 'crux-smart-open-line)
-(global-set-key [(control shift return)] 'crux-smart-open-line-above)
+;; (global-set-key (kbd "M-o") 'crux-smart-open-line)
+;; (global-set-key (kbd "M-O") 'crux-smart-open-line-above)
+;; (global-set-key [(control shift return)] 'crux-smart-open-line-above)
 (global-set-key (kbd "C-c e") 'crux-eval-and-replace)
 (global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
 (global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
 (global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
 (global-set-key (kbd "C-c I") 'crux-find-user-init-file)
 
-(global-set-key [(meta shift up)]  'move-text-up)
-(global-set-key [(meta shift down)]  'move-text-down)
+(global-set-key [(meta shift up)] 'move-text-up)
+(global-set-key [(meta shift down)] 'move-text-down)
 
 (global-set-key (kbd "C-s") 'swiper-isearch)
 (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -420,9 +514,6 @@
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
-
-;; Buffers (B) and File (F)
-(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
 
 (global-set-key (kbd "C-c g") 'counsel-git)
 (global-set-key (kbd "C-c j") 'counsel-git-grep)
@@ -519,7 +610,7 @@
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
-(global-set-key [remap mark-sexp] 'easy-mark)
+;; (global-set-key [remap mark-sexp] 'easy-mark) ; TRIAL
 (global-set-key [remap kill-ring-save] 'easy-kill)
 ;; (global-set-key [remap kill-ring-save] 'easy-mark)
 ;; (global-set-key (kbd "M-%") 'anzu-query-replace)
@@ -797,6 +888,17 @@
 ;; https://github.com/nlamirault/ripgrep.el
 (require 'ripgrep)
 
+;;; imenu
+;; (require 'imenu-anywhere)
+(require 'imenu-list)
+(require 'popup-imenu)
+
+;;; Outshine (like "outline")
+;; Like imenu, but for pages/sections nav/highlighting.
+;; Has `outshine-imenu' as my main use
+(require 'outshine)
+
+
 
 
 ;;; LINTERS
@@ -990,6 +1092,7 @@
 (setq-default truncate-lines t)
 
 ;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
+;; Navigate: C-x ] and C-x [
 ;; https://stackoverflow.com/a/7577628/326516
 (require 'page-break-lines)
 (global-page-break-lines-mode)
@@ -1024,6 +1127,12 @@
 ;; http://stackoverflow.com/questions/36506141/emacs-dispatch-help-window-from-original-buffer
 (setq help-window-select t)
 
+;; https://github.com/Wilfred/helpful
+(require 'helpful)
+;; (global-set-key (kbd "C-h k") #'helpful-key)
+(setq counsel-describe-function-function #'helpful-callable)
+(setq counsel-describe-variable-function #'helpful-variable)
+
 ;; Winner mode: C-<left> C-<right>
 (winner-mode)
 
@@ -1031,9 +1140,9 @@
 ;; https://github.com/abo-abo/ace-window/wiki
 ;; https://github.com/abo-abo/ace-window
 (require 'ace-window)
+(ace-window-display-mode t)
 
 (defvar aw-dispatch-alist
-
   '((?x aw-delete-window "Delete Window")
     (?m aw-swap-window "Swap Window")
     (?M aw-move-window "Move Window")
@@ -1047,38 +1156,6 @@
     (?o delete-other-windows)
     (?? aw-show-dispatch-help))
   "List of actions for `aw-dispatch-default'.")
-
-;; hydra-frame-window is designed from ace-window (C-x f) and
-;; matches aw-dispatch-alist with a few extra
-(defhydra hydra-frame-window (:color red :hint nil)
-  "
-^Delete^                       ^Frame resize^             ^Window^                Window Size^^^^^^   ^Text^                         (__)
-_0_: delete-frame              _g_: resize-frame-right    _t_: toggle               ^ ^ _k_ ^ ^        _K_                           (oo)
-_1_: delete-other-frames       _H_: resize-frame-left     _e_: ace-swap-win         _h_ ^+^ _l_        ^+^                     /------\\/
-_2_: make-frame                _F_: fullscreen            ^ ^                       ^ ^ _j_ ^ ^        _J_                    / |    ||
-_d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window    _b_alance^^^^      ^ ^                   *  /\\---/\\  ~~  C-x f ;
-"
-  ("0" delete-frame :exit t)
-  ("1" delete-other-frames :exit t)
-  ("2" make-frame  :exit t)
-  ("b" balance-windows)
-  ;; ("d" kill-and-delete-frame :exit t)
-  ("e" ace-swap-window)
-  ("F" toggle-frame-fullscreen)   ;; is <f11>
-  ;; ("g" resize-frame-right :exit t)
-  ;; ("H" resize-frame-left :exit t)  ;; aw-dispatch-alist uses h, I rebind here so hjkl can be used for size
-  ("n" split-window-balancedly :exit t)
-  ("z" delete-window-balancedly :exit t)
-  ;; ("r" reverse-windows)
-  ;; ("t" toggle-window-spilt) ; MISSING
-  ("w" ace-delete-window :exit t)
-  ("x" delete-frame :exit t)
-  ("K" text-scale-decrease)
-  ("J" text-scale-increase)
-  ("h" shrink-window-horizontally)
-  ("k" shrink-window)
-  ("j" enlarge-window)
-  ("l" enlarge-window-horizontally))
 
 
 ;; Nice size for the default window to match screen height
@@ -1127,102 +1204,46 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;;   (setq persp-autokill-buffer-on-remove 'kill-weak)
 ;;   (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
 
-;; This is actually perspec
+;; This is actually perspective, not persp.
 (persp-mode)
-(add-hook 'kill-emacs-hook #'persp-state-save)
+;; Maybe this causes problems??
+;; (add-hook 'kill-emacs-hook #'persp-state-save)
 (setq persp-state-default-file "~/.emacs.d/persp-mde")
 
 
 ;; HYDRAS
+;; Consider also: Discover menus:
+;; https://github.com/mickeynp/discover.el
 
-(defhydra hydra-window-size (:color red)
-  "Windows size"
-  ("h" shrink-window-horizontally "shrink horizontal")
-  ("j" shrink-window "shrink vertical")
-  ("k" enlarge-window "enlarge vertical")
-  ("l" enlarge-window-horizontally "enlarge horizontal"))
-(defhydra hydra-window-frame (:color red)
-  "Frame"
-  ("f" make-frame "new frame")
-  ("x" delete-frame "delete frame"))
-(defhydra hydra-window-scroll (:color red)
-  "Scroll other window"
-  ("n" joe-scroll-other-window "scroll")
-  ("p" joe-scroll-other-window-down "scroll down"))
-(add-to-list 'aw-dispatch-alist '(?w hydra-window-size/body) t)
-(add-to-list 'aw-dispatch-alist '(?o hydra-window-scroll/body) t)
-(add-to-list 'aw-dispatch-alist '(?\; hydra-window-frame/body) t)
+(require 'hydra)
 
-(ace-window-display-mode t)
+;; Tiny example
+(defhydra hydra-zoom (:color blue)
+  "
+Press _g_ to zoom.
+"
+  ("g" text-scale-increase "in")
+  ("l" text-scale-decrease "out"))
+(global-set-key (kbd "<f5>") 'hydra-zoom/body)
 
-
-
-;; (defhydra hydra-window ()
-;;   "
-;;     Movement^   ^Split^         ^Switch^       ^^^Resize^         ^Window Purpose^
-;;     ------------------------------------------------------------------------------------------------------
-;;     _h_ ←        _|_ vertical    ^_b_uffer       _<left>_  X←     choose window _P_urpose
-;;     _j_ ↓        _-_ horizontal  ^_f_ind files   _<down>_  X↓     switch to _B_uffer w/ same purpose
-;;     _k_ ↑        _u_ undo        ^_a_ce window   _<up>_    X↑     Purpose-dedication(_!_)
-;;     _l_ →        _r_ reset       ^_s_wap         _<right>_ X→     Buffer-dedication(_#_)
-;;     ^^^^^^^                                      _M_aximize
-;;     ^^^^^^^                                      _d_elete
-;;     _x_ M-x      _q_ quit
-;;     "
-;;   ("h" windmove-left)
-;;   ("j" windmove-down)
-;;   ("k" windmove-up)
-;;   ("l" windmove-right)
-;;   ("|" (lambda ()
-;;          (interactive)
-;;          (split-window-right)
-;;          (windmove-right)))
-;;   ("-" (lambda ()
-;;          (interactive)
-;;          (split-window-below)
-;;          (windmove-down)))
-;;   ("u" (progn
-;;          (winner-undo)
-;;          (setq this-command 'winner-undo)))
-;;   ("r" winner-redo)
-;;   ;; ("b" ivy -purpose-switch-buffer-without-purpose)
-;;   ("f" counsel-find-file)
-;;   ("a" (lambda ()
-;;          (interactive)
-;;          (ace-window 1)
-;;          (add-hook 'ace-window-end-once-hook
-;;                    'hydra-window/body)))
-;;   ("s" (lambda ()
-;;          (interactive)
-;;          (ace-swap-window)
-;;          (add-hook 'ace-window-end-once-hook
-;;                    'hydra-window/body)))
-;;   ("<left>" hydra-move-splitter-left)
-;;   ("<down>" hydra-move-splitter-down)
-;;   ("<up>" hydra-move-splitter-up)
-;;   ("<right>" hydra-move-splitter-right)
-;;   ("M" delete-other-windows)
-;;   ("d" delete-window)
-
-  ;; ("P" purpose-set-window-purpose)
-  ;; ("B" ivy-purpose-switch-buffer-with-purpose)
-  ;; ("!" purpose-toggle-window-purpose-dedicated)
-  ;; ("#" purpose-toggle-window-buffer-dedicated)
-
-  ;; ;; ("K" ace-delete-other-windows)
-  ;; ;; ("S" save-buffer)
-  ;; ;; ("d" delete-window)
-  ;; ;; ("D" (lambda ()
-  ;; ;;        (interactive)
-  ;; ;;        (ace-delete-window)
-  ;; ;;        (add-hook 'ace-window-end-once-hook
-  ;; ;;                  'hydra-window/body))
-  ;; ;;  )
-
-  ;; ("x" counsel-M-x)
-  ;; ("q" nil)
-  ;; )
-;; (global-set-key (kbd "<f1>") 'hydra-window/body)
+;;** Example 7: toggle with Ruby-style docstring
+(defvar whitespace-mode nil)
+(defhydra hydra-toggle (:color pink)
+  "
+_a_ abbrev-mode:       %`abbrev-mode
+_d_ debug-on-error:    %`debug-on-error
+_f_ auto-fill-mode:    %`auto-fill-function
+_t_ truncate-lines:    %`truncate-lines
+_w_ whitespace-mode:   %`whitespace-mode
+"
+  ("a" abbrev-mode nil)
+  ("d" toggle-debug-on-error nil)
+  ("f" auto-fill-mode nil)
+  ("t" toggle-truncate-lines nil)
+  ("w" whitespace-mode nil)
+  ("q" nil "quit"))
+;; Recommended binding:
+(global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
 
 
 
@@ -1234,48 +1255,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (setq aw-scope 'frame) ; or 'global
 
 ;; (ace-window-display-mode t)
-
-
-;; (key-chord-define-global
-;;  "yy"
-;;  (sacha/def-rep-command
-;;   '(nil
-;;     ("<left>" . windmove-left)
-;;     ("<right>" . windmove-right)
-;;     ("<down>" . windmove-down)
-;;     ("<up>" . windmove-up)
-;;     ("y" . other-window)
-;;     ("h" . ace-window)
-;;     ("s" . (lambda () (interactive) (ace-window 4)))
-;;     ("d" . (lambda () (interactive) (ace-window 16))))))
-
-(defvar sacha/windmove-map (make-sparse-keymap))
-(define-key sacha/windmove-map "h" 'windmove-left)
-(define-key sacha/windmove-map "t" 'windmove-up)
-(define-key sacha/windmove-map "n" 'windmove-down)
-(define-key sacha/windmove-map "s" 'windmove-right)
-(define-key sacha/windmove-map "[left]" 'windmove-left)
-(define-key sacha/windmove-map "[up]" 'windmove-up)
-(define-key sacha/windmove-map "[down]" 'windmove-down)
-(define-key sacha/windmove-map "[right]" 'windmove-right)
-;; (key-chord-define-global "yy"     sacha/windmove-map)
-
-
-(require 'hydra)
-;; (defhydra hydra-window (global-map "C-M-o")
-;;   "window"
-;;   ("h" windmove-left "left")
-;;   ("j" windmove-down "down")
-;;   ("k" windmove-up "up")
-;;   ("l" windmove-right "right")
-;;   ("a" ace-window "ace")
-;;   ("u" hydra-universal-argument "universal")
-;;   ("s" (lambda () (interactive) (ace-window 4)) "swap")
-;;   ("d" (lambda () (interactive) (ace-window 16)) "delete")
-;;   ;; ("o")
-;;   )
-
-;; (key-chord-define-global "yy" 'hydra-window/body)
 
 
 (when (fboundp 'windmove-default-keybindings)
@@ -1386,7 +1365,7 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 (require 'easy-kill)
 
 
-;; Hide-Show (V: visible), like folding
+;;; Hide-Show (V: visible), like folding
 (defun my-hs-hide-block ()
   (interactive)
   (my-beginning-of-defun)
@@ -1762,7 +1741,9 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 ;; (setq ac-delay 0.1)
 ;; (setq ac-quick-help-delay 0.1)
 
-(require 'discover-clj-refactor)
+;; Refactor Menu: https://github.com/maio/discover-clj-refactor.el
+;; https://github.com/maio/discover-clj-refactor.el
+(require 'discover-clj-refactor) ; C-c j
 
 (defun my-cider-find-var (arg)
   (interactive "p")
@@ -1796,14 +1777,6 @@ _d_: kill-and-delete-frame     _n_: new-frame-right       _w_: ace-delete-window
 	(company-indent-or-complete-common t)
 	(forward-line -1)
 	(end-of-line))
-
-
-
-;;; TRIALS
-;; (require 'imenu-anywhere)
-
-(require 'imenu-list)
-(require 'popup-imenu)
 
 
 
@@ -1986,7 +1959,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (re-search-forward "[0-9]+" (match-end 1))))
 (font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
 
-
 (provide 'init)
 
 ;;; init ends here
@@ -1996,6 +1968,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-dim-other-buffers-mode t)
+ '(aw-char-position 'center)
  '(beacon-blink-duration 0.4)
  '(beacon-blink-when-focused t)
  '(beacon-blink-when-point-moves-vertically 5)
@@ -2070,6 +2043,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
+ '(ivy-initial-inputs-alist nil)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
@@ -2078,7 +2052,8 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'right)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(perspective eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+ '(page-break-lines-max-width 80)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
