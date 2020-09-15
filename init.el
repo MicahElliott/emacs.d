@@ -102,6 +102,7 @@
     ibuffer-vc
     ido
     ido-completing-read+
+    imenu-anywhere
     imenu-list
     ivy
     ivy-rich
@@ -116,6 +117,7 @@
     move-text
     neotree
     outshine
+    navi-mode
     page-break-lines
     paren-face
     popup
@@ -260,13 +262,12 @@
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
 
 ;; D — treemacs
-;; (key-chord-define-global "'d" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'neotree-toggle)
-;; (key-chord-define-global "qd" 'treemacs)
-(key-chord-define-global "'d" 'treemacs-select-window) ; directory; keeps open
+(key-chord-define-global "'d" 'neotree-show)
+(key-chord-define-global "\"D" 'neotree-toggle)
+;; (key-chord-define-global "'d" 'treemacs-select-window) ; directory; keeps open
 ;; (key-chord-define-global "'d" 'treemacs) ; toggles closing
-(key-chord-define-global "qd" 'treemacs)
-(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+;; (key-chord-define-global "qd" 'treemacs)
+;; (key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -307,19 +308,20 @@
 ;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
   (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
+  (define-key my-imenu-keymap "I" 'ivy-imenu-anywhere) ; across all project buffers
   (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
   (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
-  (define-key my-imenu-keymap "o" 'outshine-imenu) ; outline
+  (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
+  (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
   (key-chord-define-global "qi" my-imenu-keymap))
 
 ;; J
-(key-chord-define-global "'j" 'jump-to-register)
-(key-chord-define-global "qj" 'jump-to-register)
 
-;; K — Kill
+;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
+  (define-key my-kill-keymap "k" 'delete-window-balancedly)
   (define-key my-kill-keymap "z" 'delete-window-balancedly)
-  (define-key my-kill-keymap "k" 'kill-window-balancedly)
+  (define-key my-kill-keymap "K" 'kill-window-balancedly)
   (define-key my-kill-keymap "x" 'kill-current-buffer)
   (define-key my-kill-keymap "p" 'projectile-kill-buffers)
   (key-chord-define-global "'k" my-kill-keymap)
@@ -350,36 +352,57 @@
 
 ;; P — Projectile
 (let ((my-projectile-keymap (make-sparse-keymap)))
-  (define-key my-projectile-keymap "s" 'projectile-ag)
-  (define-key my-projectile-keymap "g" 'projectile-grep)
-  (define-key my-projectile-keymap "e" 'projectile-recentf)
-  (define-key my-projectile-keymap "D" 'projectile-dired)
-  (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
+  (define-key my-projectile-keymap "a" 'projectile-add-known-project)
+  (define-key my-projectile-keymap "b" 'counsel-projectile-switch-to-buffer)
   (define-key my-projectile-keymap "d" 'projectile-find-dir)
   (define-key my-projectile-keymap "e" 'projectile-recentf)
   (define-key my-projectile-keymap "f" 'projectile-find-file)
+  (define-key my-projectile-keymap "g" 'projectile-grep)
   (define-key my-projectile-keymap "i" 'projectile-invalidate-cache)
   (define-key my-projectile-keymap "o" 'projectile-multi-occur)
   (define-key my-projectile-keymap "p" 'projectile-switch-project)
+  (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
+  (define-key my-projectile-keymap "v" 'projectile-run-vterm)
+  (define-key my-projectile-keymap "D" 'projectile-dired)
+  (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
+  (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
   (key-chord-define-global "'p" my-projectile-keymap)
   (key-chord-define-global "qp" my-projectile-keymap))
 
 ;; Q
 
 ;; R — Refactoring
-(key-chord-define-global "'r" 'makey-key-mode-popup-clj-refactor)
+;; (key-chord-define-global "'r" 'makey-key-mode-popup-clj-refactor)
+(let ((my-cljr-keymap (make-sparse-keymap)))
+  (define-key my-cljr-keymap "c" 'cljr-clean-ns)
+  (define-key my-cljr-keymap "d" 'cljr-destructure-keys)
+  (define-key my-cljr-keymap "f" 'cljr-rename-file-or-dir)
+  (define-key my-cljr-keymap "h" 'cljr-hotload-dependency)
+  (define-key my-cljr-keymap "u" 'cljr-find-usages)
+  (define-key my-cljr-keymap "p" 'cljr-add-project-dependency)
+  (define-key my-cljr-keymap "r" 'cljr-add-require-to-ns)
+  (define-key my-cljr-keymap "s" 'cljr-auto-sort-ns)
+  (define-key my-cljr-keymap "x" 'cljr-toggle-debug-mode)
+  (define-key my-cljr-keymap "S" 'cljr-sort-project-dependencies)
+  (key-chord-define-global "'r" my-cljr-keymap))
 
-;; S — Spaces
-(key-chord-define-global "'s" 'persp-switch)
+;; S — Spaces (perspectives)
+(let ((my-spaces-keymap (make-sparse-keymap)))
+  (define-key my-spaces-keymap "s" 'persp-switch)
+  (define-key my-spaces-keymap "r" 'persp-rename)
+  (define-key my-spaces-keymap "S" 'persp-state-save)
+  (define-key my-spaces-keymap "L" 'persp-state-load)
+  (key-chord-define-global "'s" my-spaces-keymap))
+;; (key-chord-define-global "'s" 'persp-switch)
 
 ;; T — Typography
 ;; —  ’ “ ‘ ‘ ’ “
 (let ((my-typo-keymap (make-sparse-keymap)))
-  (define-key my-typo-keymap "'" "’")
   (define-key my-typo-keymap "`" "‘")
-  (define-key my-typo-keymap "\"" "”")
+  (define-key my-typo-keymap "'" "’")
   (define-key my-typo-keymap "~" "“")
+  (define-key my-typo-keymap "\"" "”")
   (define-key my-typo-keymap "-"  "—")
   (define-key my-typo-keymap "t" 'typo-mode)
   (key-chord-define-global "'t" my-typo-keymap)
@@ -388,7 +411,12 @@
 ;; U
 ;; (key-chord-define-global ",u" 'undo-tree-visualize)
 
-;; V
+;; V — Vterm
+(let ((my-vterm-keymap (make-sparse-keymap)))
+  (define-key my-vterm-keymap "v" 'vterm-toggle)
+  (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
+  (define-key my-vterm-keymap "n" 'vterm)
+  (key-chord-define-global "'v" my-vterm-keymap))
 
 ;; W — Windowing
 (key-chord-define-global "'w" 'ace-window)
@@ -900,6 +928,7 @@
 ;; Like imenu, but for pages/sections nav/highlighting.
 ;; Has `outshine-imenu' as my main use
 (require 'outshine)
+;; Had to install navi-mode for parts to work.
 (outshine-mode t)
 
 
@@ -1122,6 +1151,11 @@
 ;; (setq confirm-kill-emacs 'yes-or-no-p)
 (global-unset-key (kbd "C-x C-c"))
 
+;; TRIAL
+(add-hook 'neotree-mode-hook
+	  (lambda ()
+	    ;; already s/S
+	    (define-key neotree-mode-map (kbd "N") 'neotree-select-next-sibling-node)))
 
 
 
@@ -1447,7 +1481,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 ;;; PARENS
 
-;; Rainbow all the things
+`';; Rainbow all the things
 
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
@@ -1712,7 +1746,7 @@ _w_ whitespace-mode:   %`whitespace-mode
        (setq cider-prompt-for-symbol nil)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
-       (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
+       ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
        (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
        (cljr-add-keybindings-with-prefix "C-c m")
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
@@ -1900,6 +1934,8 @@ chord."
 ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
 (require 'vterm)
 (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
+(require 'vterm-toggle)
+(global-set-key [f2] 'vterm-toggle)
 
 (defun tws-region-to-process (arg beg end)
   "Send the current region to a process buffer.
@@ -2056,12 +2092,15 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
+ '(neo-autorefresh t)
  '(neo-show-hidden-files t)
+ '(neo-show-slash-for-folder nil)
+ '(neo-smart-open t)
  '(neo-theme 'icons)
- '(neo-window-position 'right)
+ '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
