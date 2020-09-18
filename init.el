@@ -1,13 +1,17 @@
-;;; personal-init --- Micah's customizations
+;;; personal-init --- Micah
 
 ;;; Commentary:
-;; Personal config instructions:
-;; https://github.com/bbatsov/prelude/issues/596
+;;
+;; Editor Features/Subsystems/Windows:
+;; - help system/browser
+;; - terminal (vterm)
+;; - menu nav (imenu)
+;; - git (magit)
+;; - buffer browser
+;; - tree viewer (neotree)
+;; - popup search (ivy etc)
+;; - workspace switcher (perspectives)
 
-;; Process for updating:
-;; https://help.github.com/articles/syncing-a-fork/
-;; git fetch upstream
-;; git pull upstream master
 
 ;;; Code:
 
@@ -79,6 +83,7 @@
     edbi
     easy-kill
     edit-indirect
+    envrc
     eyebrowse
     exec-path-from-shell
     expand-region
@@ -91,6 +96,7 @@
     flycheck-pos-tip
     flycheck-yamllint
     flymd
+    focus
     git-identity
     git-link
     git-messenger
@@ -105,6 +111,7 @@
     imenu-anywhere
     imenu-list
     ivy
+    ivy-hydra
     ivy-rich
     jump-char
     key-chord
@@ -130,8 +137,6 @@
     rubocop
     shrink-whitespace
     smartparens
-    smart-mode-line
-    smart-mode-line-powerline-theme
     string-inflection
     smex
     symbol-overlay
@@ -139,12 +144,6 @@
     terraform-mode
     toggle-quotes
     total-lines
-    treemacs
-    treemacs-persp
-    treemacs-projectile
-    treemacs-all-the-icons
-    treemacs-icons-dired
-    treemacs-magit
     typo
     undo-tree
     unfill
@@ -152,7 +151,8 @@
     vterm
     vterm-toggle
     which-key
-    yaml-mode))
+    yaml-mode
+    zoom))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -242,32 +242,28 @@
 (key-chord-define-global "''" 'aw-flip-window)
 ;; TODO: multiple cursors or
 
-;; A
+;; A — EMPTY
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
+  (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
+  (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
-  (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
   (define-key my-buffer-keymap "F" 'counsel-buffer-or-recentf)
   (define-key my-buffer-keymap "f" 'counsel-recentf) ; file
   (key-chord-define-global "qb" my-buffer-keymap)
   (key-chord-define-global "'b" my-buffer-keymap))
 
-;; FIXME: Case
-;; C — Cursor (fast)
-(key-chord-define-global "'c" 'avy-goto-word-1) ; character
-(key-chord-define-global "qc" 'avy-goto-word-1)
+;; C — Character goto (fast)
+(key-chord-define-global "'c" 'avy-goto-char-timer) ; character
+(key-chord-define-global "qc" 'avy-goto-char-timer)
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
 
-;; D — treemacs
+;; D — neotree
 (key-chord-define-global "'d" 'neotree-show)
 (key-chord-define-global "\"D" 'neotree-toggle)
-;; (key-chord-define-global "'d" 'treemacs-select-window) ; directory; keeps open
-;; (key-chord-define-global "'d" 'treemacs) ; toggles closing
-;; (key-chord-define-global "qd" 'treemacs)
-;; (key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -288,7 +284,7 @@
 
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
-  (define-key my-git-keymap "g" 'magit-status) ; default
+  (define-key my-git-keymap "g" 'my-magit-status) ; default
   (define-key my-git-keymap "B" 'git-link) ; browse
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
@@ -303,7 +299,11 @@
   (key-chord-define-global "'g" my-git-keymap)
   (key-chord-define-global "qg" my-git-keymap))
 
-;; H
+;; H — Help system
+;; maybe
+;; - cheat-sh here
+;; - clojure docs bindings
+;; - emacs help system (C-h is pretty easy though)
 
 ;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
@@ -316,13 +316,17 @@
   (key-chord-define-global "qi" my-imenu-keymap))
 
 ;; J
+(key-chord-define-global "'j" 'jump-to-register)
+(key-chord-define-global "qj" 'jump-to-register)
+
 
 ;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
   (define-key my-kill-keymap "k" 'delete-window-balancedly)
-  (define-key my-kill-keymap "z" 'delete-window-balancedly)
+  (define-key my-kill-keymap "z" 'delete-window-balancedly) ; like backgrounding
   (define-key my-kill-keymap "K" 'kill-window-balancedly)
   (define-key my-kill-keymap "x" 'kill-current-buffer)
+  (define-key my-kill-keymap "X" 'kill-current-buffer)
   (define-key my-kill-keymap "p" 'projectile-kill-buffers)
   (key-chord-define-global "'k" my-kill-keymap)
   (key-chord-define-global "qk" my-kill-keymap))
@@ -404,6 +408,7 @@
   (define-key my-typo-keymap "~" "“")
   (define-key my-typo-keymap "\"" "”")
   (define-key my-typo-keymap "-"  "—")
+  (define-key my-typo-keymap ">"  "→")
   (define-key my-typo-keymap "t" 'typo-mode)
   (key-chord-define-global "'t" my-typo-keymap)
   (key-chord-define-global "qt" my-typo-keymap))
@@ -426,6 +431,8 @@
 
 ;; Y
 ;; (key-chord-define-global "qy" 'scroll-down-stay)
+(key-chord-define-global "'y" 'prev-window)
+(key-chord-define-global "qw" 'other-window)
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -721,13 +728,6 @@
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
 ;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
 
-;; (require 'smart-mode-line)
-;; (setq sml/no-confirm-load-theme t)
-;; ;; delegate theming  to the currently active theme
-;; (setq sml/theme nil)
-;; (add-hook 'after-init-hook #'sml/setup)
-;; (require 'smart-mode-line-powerline-theme)
-
 ;; (setq flycheck-set-indication-mode 'left-margin)
 ;; (flycheck-set-indication-mode 'left-fringe)
 
@@ -797,6 +797,11 @@
 (setq wg-morph-on nil)
 
 
+;; https://github.com/cyrus-and/zoom
+(require 'zoom)
+;; (zoom-mode)
+(global-set-key (kbd "C-x +") 'zoom)
+
 
 ;;; TUNING
 
@@ -833,7 +838,10 @@
 
 (require 'crux)
 
+;; move line up/down (already enabled) -- M-S-up
+;; move-text-up, move-text-down
 (require 'move-text)
+
 
 
 
@@ -875,6 +883,8 @@
 ;; (add-hook 'yaml-mode-hook 'my-buffer-face-mode-fixed)
 ;; (add-hook 'markdown-mode-hook 'my-buffer-face-mode-variable)
 
+;; Focus
+(require 'focus)
 
 
 
@@ -929,8 +939,29 @@
 ;; Has `outshine-imenu' as my main use
 (require 'outshine)
 ;; Had to install navi-mode for parts to work.
-(outshine-mode t)
+;; (outshine-mode t)
+(add-hook 'prog-mode-hook 'outshine-mode)
 
+
+(require 'ido)
+(require 'ido-completing-read+)
+(require 'flx-ido)
+
+(setq ido-enable-prefix nil
+      ido-enable-flex-matching t
+      ido-create-new-buffer 'always
+      ido-use-filename-at-point 'guess
+      ido-max-prospects 10
+      ;; ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
+      ido-default-file-method 'selected-window
+      ido-auto-merge-work-directories-length -1)
+(ido-mode +1)
+(ido-ubiquitous-mode +1)
+
+;;; smarter fuzzy matching for ido
+(flx-ido-mode +1)
+;; disable ido faces to see flx highlights
+(setq ido-use-faces nil)
 
 
 
@@ -960,6 +991,9 @@
 ;; (require 'toggle-quotes)
 
 
+;; Typo fancy typography/punctuation
+;; https://github.com/jorgenschaefer/typoel
+
 ;; Defvault to using typo mode for better/fancy typography
 (typo-global-mode 1)
 (add-hook 'text-mode-hook 'typo-mode)
@@ -967,39 +1001,13 @@
 
 
 
-(require 'ido)
-(require 'ido-completing-read+)
-(require 'flx-ido)
 
-(setq ido-enable-prefix nil
-      ido-enable-flex-matching t
-      ido-create-new-buffer 'always
-      ido-use-filename-at-point 'guess
-      ido-max-prospects 10
-      ;; ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
-      ido-default-file-method 'selected-window
-      ido-auto-merge-work-directories-length -1)
-(ido-mode +1)
-(ido-ubiquitous-mode +1)
-
-;;; smarter fuzzy matching for ido
-(flx-ido-mode +1)
-;; disable ido faces to see flx highlights
-(setq ido-use-faces nil)
-
-
-
-
-
-
-;; CONTINUE FROM OLD INIT.RD
 
 
 
 ;; special treatment of FIXME, etc
-;; ENABLE??
-;; (require 'fic-mode)
-;; (add-hook 'prog-mode-hook 'fic-mode)
+(require 'fic-mode)
+(add-hook 'prog-mode-hook 'fic-mode)
 
 ;; Wow, hide comments!! Just blanks them out.
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
@@ -1158,6 +1166,17 @@
 	    (define-key neotree-mode-map (kbd "N") 'neotree-select-next-sibling-node)))
 
 
+;; (require 'tldr)
+;; (require 'cheat-sh)
+
+;; https://github.com/wbolster/emacs-direnv
+(require 'direnv)
+(direnv-mode)
+
+
+;;; HELP SYSTEM
+
+
 
 ;;; WINDOWING
 
@@ -1302,9 +1321,6 @@ _w_ whitespace-mode:   %`whitespace-mode
 (require 'buffer-move)
 ;; https://github.com/bbatsov/prelude/issues/106
 
-;; move line up/down (already enabled) -- M-S-up
-;; move-text-up, move-text-down
-
 
 
 
@@ -1368,12 +1384,6 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 
 
-;; Typo fancy typography/punctuation
-;; https://github.com/jorgenschaefer/typoel
-;; ENABLE??
-;; (require 'typo)
-;; (setq-default typo-language "English")
-
 
 ;;; GIT
 
@@ -1389,6 +1399,11 @@ _w_ whitespace-mode:   %`whitespace-mode
 (require 'git-identity)
 ;; (git-identity-magit-mode 1)
 (define-key magit-status-mode-map (kbd "I") 'git-identity-info)
+
+(defun my-magit-status ()
+  (interactive)
+  (magit-status)
+  (balance-windows))
 
 
 ;;; RESTCLIENT
@@ -1995,7 +2010,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
       (error "No number at point"))
   (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
-;; Highlight numbers in groups of three.
+;; Highlight numbers in groups of three, thousands, rather than using commas
 ;; https://emacs.stackexchange.com/questions/54505/how-to-highlight-digit-groups-of-3-in-numerals
 (defun my-matcher (limit)
   (when (re-search-forward
@@ -2003,6 +2018,24 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (goto-char (match-beginning 1))
     (re-search-forward "[0-9]+" (match-end 1))))
 (font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
+
+(defun my/company-show-doc-buffer ()
+  "Temporarily show the documentation buffer for the selection."
+  (interactive)
+  (let* ((selected (nth company-selection company-candidates))
+         (doc-buffer (or (company-call-backend 'doc-buffer selected)
+                         (error "No documentation available"))))
+    (with-current-buffer doc-buffer
+      (goto-char (point-min)))
+    (display-buffer doc-buffer t)))
+(define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
+
+
+;; Use direnv — supposed to be near bottom in init.el
+;; https://github.com/purcell/envrc (seems berrer than direnv emacs package)
+(require 'envrc)
+(envrc-global-mode)
+
 
 (provide 'init)
 
@@ -2100,8 +2133,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
+ '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -2119,13 +2153,16 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
+ '(split-height-threshold 120)
+ '(split-width-threshold 30)
  '(standard-indent 2)
  '(symbol-overlay-faces
    '(symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8))
  '(text-scale-mode-step 1.1)
+ '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
  '(treemacs-width 45)
  '(which-key-max-description-length 45))
- ;; Local Variables:
+;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
