@@ -56,7 +56,10 @@
     buffer-move
     cider
     cider-eval-sexp-fu
+    cljr-ivy
     clj-refactor
+    clojure-essential-ref
+    clojure-essential-ref-nov
     clojure-mode
     clojure-mode-extra-font-locking
     comment-dwim-2
@@ -101,6 +104,7 @@
     git-link
     git-messenger
     git-timemachine
+    github-browse-file
     helpful
     highlight-parentheses
     highlight-thing
@@ -123,6 +127,7 @@
     mode-icons
     move-text
     neotree
+    nov
     outshine
     navi-mode
     page-break-lines
@@ -279,6 +284,7 @@
 ;; F - Find/search
 (let ((my-find-keymap (make-sparse-keymap)))
   (define-key my-find-keymap "f" 'swiper-isearch)
+  (define-key my-find-keymap "o" 'ivy-occur)
   (key-chord-define-global "qf" my-find-keymap)
   (key-chord-define-global "'f" my-find-keymap))
 
@@ -288,7 +294,7 @@
   (define-key my-git-keymap "B" 'git-link) ; browse
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
-  (define-key my-git-keymap "h" 'github-browse-file) ; FIXME
+  (define-key my-git-keymap "h" 'github-browse-file)
   (define-key my-git-keymap "i" 'git-messenger:popup-message)
   (define-key my-git-keymap "l" 'magit-log-buffer-file)
   (define-key my-git-keymap "m" 'diff-hl-mark-hunk)
@@ -296,6 +302,7 @@
   (define-key my-git-keymap "p" 'diff-hl-previous-hunk)
   (define-key my-git-keymap "r" 'diff-hl-revert-hunk)
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
+  (define-key my-git-keymap "u" 'github-browse-file)
   (key-chord-define-global "'g" my-git-keymap)
   (key-chord-define-global "qg" my-git-keymap))
 
@@ -409,6 +416,24 @@
   (define-key my-typo-keymap "\"" "”")
   (define-key my-typo-keymap "-"  "—")
   (define-key my-typo-keymap ">"  "→")
+  (define-key my-typo-keymap "+"  "±")
+  (define-key my-typo-keymap "v"  "✓")
+  (define-key my-typo-keymap "x"  "✗")
+  (define-key my-typo-keymap "f"  "☞")
+  (define-key my-typo-keymap "t"  "†")
+  (define-key my-typo-keymap "a"  "★")
+  (define-key my-typo-keymap "o"  "□")
+  (define-key my-typo-keymap "r"  "⏎")
+  (define-key my-typo-keymap "l"  "λ")
+  (define-key my-typo-keymap "e"  "∴")
+  (define-key my-typo-keymap "m"  "μ")
+  (define-key my-typo-keymap "p"  "π")
+  (define-key my-typo-keymap "n"  "♫")
+  (define-key my-typo-keymap "d"  "♢")
+  (define-key my-typo-keymap "h"  "♡")
+  (define-key my-typo-keymap "s"  "♤")
+  (define-key my-typo-keymap "c"  "♧")
+  (define-key my-typo-keymap "b"  "₿")
   (define-key my-typo-keymap "t" 'typo-mode)
   (key-chord-define-global "'t" my-typo-keymap)
   (key-chord-define-global "qt" my-typo-keymap))
@@ -784,7 +809,7 @@
 ;; (setq highlight-thing-delay-seconds 0.9)
 ;; (setq highlight-thing-exclude-thing-under-point t)
 
-;; Highlight symbols with keymap-enabled overlays
+;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
 
@@ -910,7 +935,7 @@
 
 (require 'ivy-rich)
 (ivy-rich-mode 1)
-(all-the-icons-ivy-rich-mode 1)
+(all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 (setq ivy-rich-path-style 'abbrev)
 
@@ -1189,6 +1214,8 @@
 ;; (global-set-key (kbd "C-h k") #'helpful-key)
 (setq counsel-describe-function-function #'helpful-callable)
 (setq counsel-describe-variable-function #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
 ;; Winner mode: C-<left> C-<right>
 (winner-mode)
@@ -1724,7 +1751,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; (prelude-require-package 'clojure-cheatsheet)
 (require 'flycheck-clojure)
 ;; (require 'company-flx)
-(require 'flycheck-joker)
+;; (require 'flycheck-joker)
 (require 'kibit-helper)
 ;; (require 'sotclojure)
 (require 'clojure-mode-extra-font-locking)
@@ -1741,6 +1768,9 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;;                     (clj-kondo-edn . edn-joker)))
 ;;   (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
 
+(require 'clojure-essential-ref)
+(require 'clojure-essential-ref-nov)
+(setq clojure-essential-ref-nov-epub-path "~/Downloads/Clojure_The_Essential_Reference_v30_MEAP.epub")
 
 ;; Trying to get rid of the prompt to save before load.
 (defun my-cider-load-buffer ()
@@ -1762,14 +1792,17 @@ _w_ whitespace-mode:   %`whitespace-mode
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
-       (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
+       ;; (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
+       (key-chord-define-global "qr" 'cljr-ivy)
        (cljr-add-keybindings-with-prefix "C-c m")
+       (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
        ;; (global-set-key (kbd "C-c r") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-T") 'cider-test-commands-map)
        ;; Disable flycheck next error in favor of Cider
        (global-set-key (kbd "C-c C-n") 'cider-ns-map)
+       (global-set-key (kbd "C-c C-d C-r") 'clojure-essential-ref)
        (global-unset-key (kbd "C-c C-p"))
        (global-set-key (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
@@ -2030,6 +2063,41 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (display-buffer doc-buffer t)))
 (define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
 
+;; https://www.reddit.com/r/emacs/comments/6ddr7p/snippet_search_cheatsh_using_ivy/di2eyaz/?utm_source=reddit&utm_medium=web2x&context=3
+(defun counsel-tldr ()
+  "Search https://github.com/tldr-pages/tldr."
+  (interactive)
+  (let* ((default-directory "~/src/tldr")
+         (cands (split-string
+                 (shell-command-to-string
+                  "git ls-files --full-name -- pages/")
+                 nil t)))
+    (ivy-read "Topic: " cands
+              :action #'find-file
+              :caller 'counsel-tldr)))
+
+(defun my-find-file-below (fname)
+  (interactive)
+  (split-window-vertically-balancedly)
+  ;; (other-window 1)
+  (find-file fname))
+
+(defun counsel-refcards ()
+  "Search local refcards of your own devising."
+  (interactive)
+  (let* ((default-directory "~/doc/refcards")
+         (cands (split-string (shell-command-to-string "ls") nil t)))
+    ;; (ivy-read "Topic: " cands :action #'split-window-vertically-balancedly :caller 'counsel-refcards)))
+    (ivy-read "Topic: " cands :action #'my-find-file-below)))
+(global-set-key (kbd "C-h r") 'counsel-refcards)
+
+(defun org-toggle-emphasis ()
+  "Toggle hiding/showing of org emphasize markers."
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t)))
+(define-key org-mode-map (kbd "C-c e") 'org-toggle-emphasis)
 
 ;; Use direnv — supposed to be near bottom in init.el
 ;; https://github.com/purcell/envrc (seems berrer than direnv emacs package)
@@ -2133,7 +2201,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
@@ -2153,7 +2221,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
- '(split-height-threshold 120)
+ '(split-height-threshold 180)
  '(split-width-threshold 30)
  '(standard-indent 2)
  '(symbol-overlay-faces
