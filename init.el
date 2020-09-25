@@ -124,10 +124,13 @@
     magit
     markdown-mode
     mic-paren
+    mixed-pitch
     mode-icons
     move-text
     neotree
     nov
+    org-bullets
+    org-preview-html
     outshine
     navi-mode
     page-break-lines
@@ -206,6 +209,10 @@
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fira Code"))))
  '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
+ '(org-document-title ((t (:inherit variable-pitch :foreground "pale turquoise" :weight bold :height 2.0))))
+ '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :height 2.0))))
+ '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
+ '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
  '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fira Code"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
@@ -217,6 +224,7 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
  '(swiper-line-face ((t (:background "purple4"))))
+ '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
@@ -911,6 +919,10 @@
 ;; Focus
 (require 'focus)
 
+;; Mixed pitch fonts
+;; https://gitlab.com/jabranham/mixed-pitch
+(require 'mixed-pitch)
+(add-hook 'text-mode 'mixed-pitch-mode)
 
 
 ;;; IVY, COUNSEL, SWIPER
@@ -1376,7 +1388,6 @@ _w_ whitespace-mode:   %`whitespace-mode
   (split-window-vertically)
   (balance-windows)
   (other-window 1))
-;; New window (N)
 
 ;; Scroll without moving point; like Vim's C-y, C-e
 ;; http://stackoverflow.com/a/10541426/326516
@@ -1870,6 +1881,27 @@ _w_ whitespace-mode:   %`whitespace-mode
 	(end-of-line))
 
 
+
+;;; ORG MODE
+
+;; https://stackoverflow.com/questions/4333467/override-ctrl-tab-in-emacs-org-mode
+(add-hook 'org-mode-hook
+          '(lambda ()
+             (define-key org-mode-map [(control tab)] nil)
+             (define-key org-mode-map (kbd "C-M-u") 'org-up-element)
+             (define-key org-mode-map (kbd "C-M-d") 'org-down-element)
+             (define-key org-mode-map (kbd "C-M-f") 'org-forward-element)
+             (define-key org-mode-map (kbd "C-M-b") 'org-backward-element)
+             (define-key org-mode-map (kbd "C-C C-x l") 'org-toggle-link-display)
+             (define-key org-mode-map (kbd "M-}") 'beginning-of-buffer)))
+
+(require 'org-preview-html)
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+;; Insert datestamp, useful outside of org-mode.
+(global-set-key (kbd "C-c D") 'org-date-from-calendar)
+
 
 
 ;;; EXTRA stuff
@@ -2079,7 +2111,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (defun my-find-file-below (fname)
   (interactive)
   (split-window-vertically-balancedly)
-  ;; (other-window 1)
   (find-file fname))
 
 (defun counsel-refcards ()
@@ -2087,7 +2118,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (let* ((default-directory "~/doc/refcards")
          (cands (split-string (shell-command-to-string "ls") nil t)))
-    ;; (ivy-read "Topic: " cands :action #'split-window-vertically-balancedly :caller 'counsel-refcards)))
     (ivy-read "Topic: " cands :action #'my-find-file-below)))
 (global-set-key (kbd "C-h r") 'counsel-refcards)
 
@@ -2193,6 +2223,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
+ '(mixed-pitch-fixed-pitch-faces
+   '(diff-added diff-context diff-file-header diff-function diff-header diff-hunk-header diff-removed font-latex-math-face font-latex-sedate-face font-latex-warning-face font-latex-sectioning-5-face font-lock-builtin-face font-lock-comment-delimiter-face font-lock-constant-face font-lock-doc-face font-lock-function-name-face font-lock-keyword-face font-lock-negation-char-face font-lock-preprocessor-face font-lock-regexp-grouping-backslash font-lock-regexp-grouping-construct font-lock-string-face font-lock-type-face font-lock-variable-name-face line-number line-number-current-line line-number-major-tick line-number-minor-tick markdown-code-face markdown-gfm-checkbox-face markdown-inline-code-face markdown-language-info-face markdown-language-keyword-face markdown-math-face message-header-name message-header-to message-header-cc message-header-newsgroups message-header-xheader message-header-subject message-header-other mu4e-header-key-face mu4e-header-value-face mu4e-link-face mu4e-contact-face mu4e-compose-separator-face mu4e-compose-header-face org-block org-block-begin-line org-block-end-line org-document-info-keyword org-code org-indent org-latex-and-related org-checkbox org-formula org-meta-line org-table org-verbatim))
+ '(mixed-pitch-set-height t)
  '(neo-autorefresh t)
  '(neo-show-hidden-files t)
  '(neo-show-slash-for-folder nil)
@@ -2201,7 +2234,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
