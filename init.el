@@ -259,12 +259,13 @@
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
+  ;; Popups and immmediate changes lower case
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
-  (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
+  (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
-  (define-key my-buffer-keymap "F" 'counsel-buffer-or-recentf)
+  (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
   (define-key my-buffer-keymap "f" 'counsel-recentf) ; file
   (key-chord-define-global "qb" my-buffer-keymap)
   (key-chord-define-global "'b" my-buffer-keymap))
@@ -337,19 +338,20 @@
 
 ;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
-  (define-key my-kill-keymap "k" 'delete-window-balancedly)
   (define-key my-kill-keymap "z" 'delete-window-balancedly) ; like backgrounding
-  (define-key my-kill-keymap "K" 'kill-window-balancedly)
-  (define-key my-kill-keymap "x" 'kill-current-buffer)
-  (define-key my-kill-keymap "X" 'kill-current-buffer)
+  (define-key my-kill-keymap "Z" 'kill-window-balancedly)
+  (define-key my-kill-keymap "k" 'delete-window-balancedly)
+  (define-key my-kill-keymap "K" 'kill-current-buffer)
+  ;; (define-key my-kill-keymap "x" 'kill-current-buffer)
+  ;; (define-key my-kill-keymap "X" 'kill-current-buffer)
   (define-key my-kill-keymap "p" 'projectile-kill-buffers)
   (key-chord-define-global "'k" my-kill-keymap)
   (key-chord-define-global "qk" my-kill-keymap))
 
 ;; L — Line-numbering/viewing
 (let ((my-lines-keymap (make-sparse-keymap)))
-  (define-key my-lines-keymap "l" 'nlinum-relative-toggle)
-  (define-key my-lines-keymap "x" 'nlinum-mode)
+  (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
+  (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (key-chord-define-global "'l" my-lines-keymap)
   (key-chord-define-global "ql" my-lines-keymap))
@@ -787,17 +789,13 @@
 (setq require-final-newline t)
 
 ;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
 
 ;; autosave the undo-tree history
-;; (setq undo-tree-history-directory-alist
-;;       `((".*" . ,temporary-file-directory)))
-(setq undo-tree-auto-save-history t)
-
-
+(setq undo-tree-history-directory-alist
+      `((".*" . ,temporary-file-directory)))
 
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
@@ -1062,7 +1060,7 @@
 ;; Line numbers
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
-(require 'nlinum-relative)
+(require 'nlinum-relative) ; SLOW (for high LOC)
 (global-nlinum-relative-mode 1)
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 1)
@@ -1085,7 +1083,13 @@
 
 ;; Undo-tree: C-/ undo, M-_ redo
 ;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
+;; FIXME: this is really needed package, but have to figure out now to clean its mess!
 (global-undo-tree-mode 1)
+;; Config from prelude:
+;; autosave the undo-tree history
+;; (setq undo-tree-history-directory-alist
+;;       `((".*" . ,temporary-file-directory)))
+(setq undo-tree-auto-save-history t)
 
 ;; Auto-save
 ;; (add-hook 'focus-out-hook 'save-buffer)
@@ -1227,7 +1231,7 @@
 (setq counsel-describe-function-function #'helpful-callable)
 (setq counsel-describe-variable-function #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
-(global-set-key (kbd "C-c C-d") #'helpful-at-point)
+;; (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
 ;; Winner mode: C-<left> C-<right>
 (winner-mode)
@@ -2129,6 +2133,49 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (set-variable 'org-hide-emphasis-markers t)))
 (define-key org-mode-map (kbd "C-c e") 'org-toggle-emphasis)
 
+
+;; Open ivy results in new windows.
+;; https://www.reddit.com/r/emacs/comments/efg362/ivy_open_selection_vertically_or_horizontally/
+(defun find-file-right (filename)
+  (interactive)
+  (split-window-right)
+  (other-window 1)
+  (find-file filename))
+
+(defun find-file-below (filename)
+  (interactive)
+  (split-window-below)
+  (other-window 1)
+  (find-file filename))
+
+(ivy-set-actions
+ 'counsel-projectile-ag
+ '(("|" find-file-right "open right")
+   ("%" find-file-below "open below")))
+
+(ivy-set-actions
+ 'counsel-find-file
+ '(("|" find-file-right "open right")
+   ("%" find-file-below "open below")))
+
+(ivy-set-actions
+ 'counsel-recentf
+ '(("|" find-file-right "open right")
+   ("%" find-file-below "open below")))
+
+(ivy-set-actions
+ 'counsel-buffer-or-recentf
+ '(("|" find-file-right "open right")
+   ("%" find-file-below "open below")))
+
+(ivy-set-actions
+ 'ivy-switch-buffer
+ '(("|" find-file-right "open right")
+   ("%" find-file-below "open below")))
+
+
+;;; END
+
 ;; Use direnv — supposed to be near bottom in init.el
 ;; https://github.com/purcell/envrc (seems berrer than direnv emacs package)
 (require 'envrc)
@@ -2214,6 +2261,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(hl-paren-colors '("red" "IndianRed1"))
  '(hl-paren-delay 0.3)
  '(hl-paren-highlight-adjacent t)
+ '(hs-hide-comments-when-hiding-all nil)
  '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
