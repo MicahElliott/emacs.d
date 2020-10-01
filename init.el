@@ -25,9 +25,6 @@
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
 (defconst IS-BSD     (or IS-MAC (eq system-type 'berkeley-unix)))
 
-;(add-to-list 'load-path (expand-file-name "~/.emacs.d/elisp"))
-;(require 'aweshell)
-
 
 ;;; PACKAGING
 
@@ -199,9 +196,9 @@
  '(hl-line ((t (:background "#000000"))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
- '(markdown-header-face ((t (:foreground "#A6E22E" :weight bold :family "Alegreya Sans SC"))))
- '(markdown-header-face-1 ((t (:inherit markdown-header-face :weight bold :height 1.5))))
- '(markdown-header-face-2 ((t (:inherit markdown-header-face :weight bold :height 1.3))))
+ '(markdown-header-face ((t (:inherit variable-pitch))))
+ '(markdown-header-face-1 ((t (:inherit markdown-header-face :foreground "pale turquoise" :weight bold :height 1.5))))
+ '(markdown-header-face-2 ((t (:inherit markdown-header-face :slant normal :weight bold :height 1.3))))
  '(markdown-header-face-3 ((t (:inherit markdown-header-face :slant italic :height 1.05))))
  '(markdown-header-face-4 ((t (:inherit markdown-header-face :slant italic :height 1.0))))
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
@@ -259,7 +256,7 @@
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
-  ;; Popups and immmediate changes lower case
+  ;; Popups and immediate changes lower case
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
@@ -917,9 +914,10 @@
 ;; Focus
 (require 'focus)
 
-;; Mixed pitch fonts
+;; Mixed pitch fonts (variable width)
 ;; https://gitlab.com/jabranham/mixed-pitch
 (require 'mixed-pitch)
+;; FIXME: seems to need to be run manually
 (add-hook 'text-mode 'mixed-pitch-mode)
 
 
@@ -942,12 +940,6 @@
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
 ;; (ivy-posframe-mode 1)
-
-(require 'ivy-rich)
-(ivy-rich-mode 1)
-(all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
-(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-(setq ivy-rich-path-style 'abbrev)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
@@ -1888,6 +1880,9 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 ;;; ORG MODE
 
+;; https://emacs.stackexchange.com/questions/9709/keep-the-headlines-expanded-in-org-mode
+(setq org-startup-folded nil)
+
 ;; https://stackoverflow.com/questions/4333467/override-ctrl-tab-in-emacs-org-mode
 (add-hook 'org-mode-hook
           '(lambda ()
@@ -2176,8 +2171,14 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 ;;; END
 
+(require 'ivy-rich)
+(all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
+(ivy-rich-mode 1)
+(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+(setq ivy-rich-path-style 'abbrev)
+
 ;; Use direnv — supposed to be near bottom in init.el
-;; https://github.com/purcell/envrc (seems berrer than direnv emacs package)
+;; https://github.com/purcell/envrc (seems better than direnv emacs package)
 (require 'envrc)
 (envrc-global-mode)
 
@@ -2302,7 +2303,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
- '(split-height-threshold 180)
+ '(split-height-threshold 100)
  '(split-width-threshold 30)
  '(standard-indent 2)
  '(symbol-overlay-faces
