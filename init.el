@@ -109,7 +109,6 @@
     ibuffer-vc
     ido
     ido-completing-read+
-    imenu-anywhere
     imenu-list
     ivy
     ivy-hydra
@@ -185,7 +184,7 @@
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
- '(company-box-background ((t (:background "black" :inverse-video nil))))
+ '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
@@ -238,6 +237,8 @@
 
 
 ;;; BINDINGS
+;;
+;; NOTE: Crazy that the combos are not ordered. So qe is the same as eq.
 
 (require 'key-chord)
 (key-chord-mode +1)
@@ -259,6 +260,7 @@
   ;; Popups and immediate changes lower case
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
+  (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
@@ -292,7 +294,8 @@
   (define-key my-find-keymap "f" 'swiper-isearch)
   (define-key my-find-keymap "o" 'ivy-occur)
   (key-chord-define-global "qf" my-find-keymap)
-  (key-chord-define-global "'f" my-find-keymap))
+  (key-chord-define-global "'f" my-find-keymap)
+  (key-chord-define-global "wf" my-find-keymap))
 
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
@@ -310,7 +313,9 @@
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
   (define-key my-git-keymap "u" 'github-browse-file)
   (key-chord-define-global "'g" my-git-keymap)
-  (key-chord-define-global "qg" my-git-keymap))
+  (key-chord-define-global "qg" my-git-keymap)
+  ;; Experement with weird new key-chor
+  (key-chord-define-global "gt" my-git-keymap))
 
 ;; H — Help system
 ;; maybe
@@ -321,7 +326,7 @@
 ;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
   (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
-  (define-key my-imenu-keymap "I" 'ivy-imenu-anywhere) ; across all project buffers
+  ;; (define-key my-imenu-keymap "I" 'ivy-imenu-anywhere) ; across all project buffers
   (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
   (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
   (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
@@ -384,7 +389,7 @@
   (define-key my-projectile-keymap "v" 'projectile-run-vterm)
   (define-key my-projectile-keymap "D" 'projectile-dired)
   (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
-  (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
+  ;; (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
   (key-chord-define-global "'p" my-projectile-keymap)
   (key-chord-define-global "qp" my-projectile-keymap))
 
@@ -463,8 +468,8 @@
 
 ;; Y
 ;; (key-chord-define-global "qy" 'scroll-down-stay)
-(key-chord-define-global "'y" 'prev-window)
-(key-chord-define-global "qw" 'other-window)
+(key-chord-define-global "'y" 'other-window)
+(key-chord-define-global "qw" 'prev-window)
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -477,6 +482,13 @@
   (define-key my-hs-keymap "z" 'hs-toggle-hiding)
   (key-chord-define-global "'z" my-hs-keymap))
 
+;; Other good combos
+;; https://www.johndcook.com/blog/2015/02/01/rare-bigrams/
+;; jj, kk, qq, vv, ww, yy, aa, xx, zz
+;; z<consonant>
+;; j<consonant>
+;; Any pair of caps
+;; Leaders: z / . , (z and / are nice since at opposite corners)
 
 
 ;;; Other Bindings
@@ -737,12 +749,16 @@
 (setq frame-title-format
       '("" invocation-name " MDE - " (:eval (if (buffer-file-name)
                                                     (abbreviate-file-name (buffer-file-name))
-                                                  "%b"))))
+                                              "%b"))))
+
 (require 'ample-theme)
 (load-theme 'ample t t)
 ;; (load-theme 'ample-flat t t)
 ;; (load-theme 'ample-light t t)
 (enable-theme 'ample)
+
+;; (require 'modus-vivendi-theme)
+;; (load-theme 'modus-vivendi)
 
 ;; https://seagle0128.github.io/doom-modeline/
 (require 'doom-modeline)
@@ -796,7 +812,7 @@
 
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
-(beacon-mode +1)
+;; (beacon-mode +1)
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -1537,8 +1553,8 @@ _w_ whitespace-mode:   %`whitespace-mode
 (rainbow-delimiters-mode +1)
 
 ;; https://github.com/Fanael/rainbow-identifiers
-(require 'rainbow-identifiers)
-(add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+;; (require 'rainbow-identifiers)
+;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
 
 ;; https://www.emacswiki.org/emacs/ShowParenMode
 ;; (setq show-paren-delay 0)
@@ -1654,10 +1670,11 @@ _w_ whitespace-mode:   %`whitespace-mode
       )
 ;; (flyspell-mode +1)
 
-(add-hook 'text-mode-hook 'flyspell-mode)
+;; FIXME: why are these so SLOW??
+;; (add-hook 'text-mode-hook 'flyspell-mode)
 ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 ;; Automatically run spell checker.
-(add-hook 'flyspell-mode-hook #'flyspell-buffer)
+;; (add-hook 'flyspell-mode-hook #'flyspell-buffer)
 
 ;; enable change region case commands
 (put 'upcase-region 'disabled nil)
@@ -2011,10 +2028,14 @@ chord."
 (define-key shell-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
 ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
-(require 'vterm)
-(define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
-(require 'vterm-toggle)
-(global-set-key [f2] 'vterm-toggle)
+
+
+;; (require 'vterm) ; TEMPORARY
+;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
+;; (require 'vterm-toggle) ; TEMPORARY
+;; (global-set-key [f2] 'vterm-toggle)
+
+
 
 (defun tws-region-to-process (arg beg end)
   "Send the current region to a process buffer.
@@ -2112,6 +2133,11 @@ This is the same as using \\[set-mark-command] with the prefix argument."
   (split-window-vertically-balancedly)
   (find-file fname))
 
+(defun my-ibuffer ()
+  (interactive)
+  (split-window-balancedly)
+  (ibuffer))
+
 (defun counsel-refcards ()
   "Search local refcards of your own devising."
   (interactive)
@@ -2168,6 +2194,33 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(("|" find-file-right "open right")
    ("%" find-file-below "open below")))
 
+
+;; https://emacs.stackexchange.com/a/13096/11025
+(defun my-reload-dir-locals-for-current-buffer ()
+  "reload dir locals for the current buffer"
+  (interactive)
+  (let ((enable-local-variables :all))
+    (hack-dir-local-variables-non-file-buffer)))
+
+(defun my-reload-dir-locals-for-all-buffer-in-this-directory ()
+  "For every buffer with the same `default-directory` as the
+current buffer's, reload dir-locals."
+  (interactive)
+  (let ((dir default-directory))
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (equal default-directory dir))
+        (my-reload-dir-locals-for-current-buffer)))))
+
+;; (add-hook 'emacs-lisp-mode-hook
+;;           (defun enable-autoreload-for-dir-locals ()
+;;             (when (and (buffer-file-name)
+;;                        (equal dir-locals-file
+;;                               (file-name-nondirectory (buffer-file-name))))
+;;               (add-hook (make-variable-buffer-local 'after-save-hook)
+;;                         'my-reload-dir-locals-for-all-buffer-in-this-directory))))
+
+
 
 ;;; END
 
@@ -2184,6 +2237,14 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 
 (provide 'init)
+
+;; '(safe-local-variable-values
+;;    '((eval with-eval-after-load 'cider
+;; 	   (setq cider-default-cljs-repl 'figwheel))
+;;      (cider-lein-global-options . "with-profile +dev,+test")
+;;      (scss-mode
+;;       (css-indent-offset . 2))))
+
 
 ;;; init ends here
 (custom-set-variables
@@ -2233,7 +2294,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
      ("r" . "reagent.core")
      ("rf" . "re-frame.core")))
  '(custom-safe-themes
-   '("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+   '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(doom-modeline-buffer-file-name-style 'truncate-with-project)
  '(doom-modeline-continuous-word-count-modes nil)
  '(doom-modeline-display-default-persp-name t)
@@ -2259,9 +2320,9 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(global-hl-line-mode nil)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
- '(hl-paren-colors '("red" "IndianRed1"))
- '(hl-paren-delay 0.3)
- '(hl-paren-highlight-adjacent t)
+ '(highlight-parentheses-colors '("red" "IndianRed1"))
+ '(highlight-parentheses-delay 0.3)
+ '(highlight-parentheses-highlight-adjacent t)
  '(hs-hide-comments-when-hiding-all nil)
  '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
@@ -2283,7 +2344,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list imenu-anywhere e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
@@ -2294,12 +2355,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
  '(projectile-mode t nil (projectile))
  '(projectile-sort-order 'recently-active)
  '(rainbow-identifiers-face-count 15)
- '(safe-local-variable-values
-   '((eval with-eval-after-load 'cider
-	   (setq cider-default-cljs-repl 'figwheel))
-     (cider-lein-global-options . "with-profile +dev,+test")
-     (scss-mode
-      (css-indent-offset . 2))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
