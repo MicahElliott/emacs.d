@@ -265,7 +265,8 @@
   (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
   (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
-  (define-key my-buffer-keymap "f" 'counsel-recentf) ; file
+  (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
+  (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   (key-chord-define-global "qb" my-buffer-keymap)
   (key-chord-define-global "'b" my-buffer-keymap))
 
@@ -313,9 +314,7 @@
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
   (define-key my-git-keymap "u" 'github-browse-file)
   (key-chord-define-global "'g" my-git-keymap)
-  (key-chord-define-global "qg" my-git-keymap)
-  ;; Experement with weird new key-chor
-  (key-chord-define-global "gt" my-git-keymap))
+  (key-chord-define-global "qg" my-git-keymap))
 
 ;; H — Help system
 ;; maybe
@@ -342,7 +341,7 @@
 (let ((my-kill-keymap (make-sparse-keymap)))
   (define-key my-kill-keymap "z" 'delete-window-balancedly) ; like backgrounding
   (define-key my-kill-keymap "Z" 'kill-window-balancedly)
-  (define-key my-kill-keymap "k" 'delete-window-balancedly)
+  ;; (define-key my-kill-keymap "k" 'delete-window-balancedly) ; confusing
   (define-key my-kill-keymap "K" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "x" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "X" 'kill-current-buffer)
@@ -462,14 +461,11 @@
 
 ;; W — Windowing
 (key-chord-define-global "'w" 'ace-window)
-(key-chord-define-global "qw" 'ace-window)
+;; (key-chord-define-global "qw" 'ace-window)
 
 ;; X
 
 ;; Y
-;; (key-chord-define-global "qy" 'scroll-down-stay)
-(key-chord-define-global "'y" 'other-window)
-(key-chord-define-global "qw" 'prev-window)
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -480,7 +476,34 @@
   (define-key my-hs-keymap "o" 'hs-show-block)
   (define-key my-hs-keymap "O" 'hs-show-all)
   (define-key my-hs-keymap "z" 'hs-toggle-hiding)
+  (define-key my-hs-keymap "t" 'hs-toggle-hiding)
   (key-chord-define-global "'z" my-hs-keymap))
+;; Don't want to suspend emacs!
+;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-z") 'delete-window-balancedly)
+
+;; MASHINGS
+(key-chord-define-global "'y" 'other-window) ; top-right ring+pinky
+(key-chord-define-global "qw" 'prev-window)  ; top-left ring+pinky
+(key-chord-define-global "xc" 'counsel-M-x)
+(key-chord-define-global "zx" 'delete-window-balancedly)
+(key-chord-define-global "ZX" 'kill-window-balancedly)
+(key-chord-define-global "gt" 'magit-status)
+
+;; Other possible mashings
+;; (key-chord-define-global "jl" '
+;; (key-chord-define-global "./" '
+;; (key-chord-define-global ".," '
+;; (key-chord-define-global "kh" '
+;; (key-chord-define-global "dv" '
+;; (key-chord-define-global "fp" '
+;; (key-chord-define-global "wf" '
+;; (key-chord-define-global "wf" '
+;; (key-chord-define-global "dv" '
+
+
+
 
 ;; Other good combos
 ;; https://www.johndcook.com/blog/2015/02/01/rare-bigrams/
@@ -493,49 +516,8 @@
 
 ;;; Other Bindings
 
-(global-set-key (kbd "C-S-b") 'counsel-ibuffer)
-
-(global-set-key (kbd "C-S-c") 'beacon-blink)
-
-(global-set-key (kbd "C-S-e") 'scroll-up-stay)
-(global-set-key (kbd "C-S-f") 'counsel-recentf)
-
-(global-set-key (kbd "C-S-g") 'magit-status)
-
-;; ISpell (I)
-(global-set-key (kbd "C-S-i") 'flycheck-next-error)
-
-;; Hmm, M-J is needed for sp-join-sexp
-;; (global-set-key (kbd "M-J") 'jump-to-register)
-(global-set-key (kbd "C-S-j") 'jump-to-register)
-
-;; Kill (K)
-(global-set-key (kbd "C-S-k") 'kill-window-balancedly)
-
-;; Register marking/jumping, closer to vim
-(global-set-key (kbd "C-S-m") 'point-to-register)
-
-(global-set-key (kbd "C-S-n") 'split-window-balancedly)
-;; Window buffer switching (O: Only)
-(global-set-key (kbd "C-S-o") 'delete-other-windows) ; think "Only"
-;; Just use C-c left-arrow
-
-;; Just use C-c left-arrow
-;; (global-set-key (kbd "C-S-g") 'winner-undo)
-;; (global-set-key (kbd "C-S-+") 'balance-windows)
-
-(global-set-key (kbd "C-S-v H") 'hs-hide-all)
-(global-set-key (kbd "C-S-v S") 'hs-show-all)
-(global-set-key (kbd "C-S-v h") 'hs-hide-block)
-(global-set-key (kbd "C-S-v s") 'hs-show-block)
-(global-set-key (kbd "C-S-v t") 'hs-toggle-hiding)
-(global-set-key (kbd "C-S-v v") 'hs-toggle-hiding)
-;; (global-set-key (kbd "C-S-x") 'avy-goto-word-1)
-(global-set-key (kbd "C-S-y") 'scroll-down-stay)
-
-;; (global-set-key (kbd "C-z")   'delete-window-balancedly)
-;; Background window (Z: like shell's C-z)
-(global-set-key (kbd "C-S-z") 'delete-window-balancedly)
+(global-set-key (kbd "M-o") 'scroll-up-stay)
+(global-set-key (kbd "M-'") 'scroll-down-stay)
 
 
 
@@ -544,23 +526,6 @@
 
 (global-set-key (kbd "C-M-_") 'text-scale-decrease)
 (global-set-key (kbd "C-M-+") 'text-scale-increase)
-
-;; Magit: came with Super-based shortcuts; use C-c g ... instead
-;; maGit (G)
-;; (global-set-key (kbd "C-c C-g B") 'github-browse-file)
-(global-set-key (kbd "C-c C-g B") 'git-link)
-(global-set-key (kbd "C-c C-g a") 'vc-annotate)
-(global-set-key (kbd "C-c C-g b") 'magit-blame)
-(global-set-key (kbd "C-c C-g g") 'magit-status)
-(global-set-key (kbd "C-c C-g h") 'github-browse-file)
-(global-set-key (kbd "C-c C-g i") 'git-messenger:popup-message)
-(global-set-key (kbd "C-c C-g l") 'magit-log-buffer-file)
-(global-set-key (kbd "C-c C-g m") 'diff-hl-mark-hunk)
-(global-set-key (kbd "C-c C-g n") 'diff-hl-next-hunk)
-(global-set-key (kbd "C-c C-g p") 'diff-hl-previous-hunk)
-(global-set-key (kbd "C-c C-g r") 'diff-hl-revert-hunk)
-(global-set-key (kbd "C-c C-g t") 'git-timemachine-toggle)
-;; (global-set-key (kbd "C-c C-g p") 'git-messenger:popup-message)
 
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
 (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
@@ -619,8 +584,6 @@
 (global-set-key (kbd "M-<") 'forward-paragraph)
 (global-set-key (kbd "M->") 'end-of-buffer)
 (global-set-key (kbd "M-}") 'beginning-of-buffer)
-(global-set-key (kbd "C-S-L") 'nlinum-mode)
-(global-set-key (kbd "C-S-M-L") 'nlinum-relative-toggle)
 (global-set-key (kbd "C-?") 'undo-tree-redo) ; GUIONLY
 (global-set-key (kbd "M-Q") 'unfill-paragraph)
 ;; (global-set-key (kbd "M-S-q") 'unfill-paragraph)
@@ -630,6 +593,7 @@
 ;; (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "C-c k") 'kill-current-buffer)
+
 (global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
                                        (message "Dot mode activated.")))
 
@@ -731,11 +695,11 @@
 ;; https://github.com/kiwanami/emacs-epc/issues/35
 (setq byte-compile-warnings '(cl-functions))
 
-;; ;; nice scrolling
-;; ENABLE
-;; (setq scroll-margin 0
-;;       scroll-conservatively 100000
-;;       scroll-preserve-screen-position 1)
+;; nice scrolling
+;; https://stackoverflow.com/a/1128948/326516
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
 
 ;; mode line settings
 (column-number-mode t)
@@ -769,9 +733,9 @@
 ;; https://github.com/hinrik/total-lines
 (require 'total-lines)
 (global-total-lines-mode)
-(setq global-mode-string
-      `(((12 "%l" "/" (:eval (format "%d,%d" total-lines (1+ (current-column)))))
-	 (-3 "%p"))))
+;; (setq global-mode-string
+;;       `(((12 "%l" "/" (:eval (format "%d,%d" total-lines (1+ (current-column)))))
+;; 	 (-3 "%p"))))
 
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
 ;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
@@ -1151,10 +1115,6 @@
 (setq tab-width 2)
 
 
-;; Don't want to suspend emacs!
-;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
-(global-unset-key (kbd "C-z"))
-
 (require 'dot-mode)
 ;; https://www.emacswiki.org/emacs/dot-mode.el
 ;; C-.  C-M-.  C-c.
@@ -1335,7 +1295,7 @@ Press _g_ to zoom.
 (global-set-key (kbd "<f5>") 'hydra-zoom/body)
 
 ;;** Example 7: toggle with Ruby-style docstring
-(defvar whitespace-mode nil)
+;; (defvar whitespace-mode nil)
 (defhydra hydra-toggle (:color pink)
   "
 _a_ abbrev-mode:       %`abbrev-mode
@@ -1402,16 +1362,19 @@ _w_ whitespace-mode:   %`whitespace-mode
   (other-window 1))
 
 ;; Scroll without moving point; like Vim's C-y, C-e
-;; http://stackoverflow.com/a/10541426/326516
+;; Basis from: http://stackoverflow.com/a/10541426/326516
 (defun scroll-up-stay (arg)
   (interactive "p")
-  (forward-line (* -1 arg))
-  (scroll-up arg))
+  (let ((col (current-column)))
+    (forward-line (* -1 4))
+    (scroll-up 4)
+    (move-to-column col)))
 (defun scroll-down-stay (arg)
   (interactive "p")
-  (scroll-down arg)
-  (forward-line arg))
-
+  (let ((col (current-column)))
+    (scroll-down 4)
+    (forward-line 4)
+    (move-to-column col)))
 
 
 
@@ -1553,8 +1516,8 @@ _w_ whitespace-mode:   %`whitespace-mode
 (rainbow-delimiters-mode +1)
 
 ;; https://github.com/Fanael/rainbow-identifiers
-;; (require 'rainbow-identifiers)
-;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+(require 'rainbow-identifiers)
+(add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
 
 ;; https://www.emacswiki.org/emacs/ShowParenMode
 ;; (setq show-paren-delay 0)
@@ -1801,14 +1764,15 @@ _w_ whitespace-mode:   %`whitespace-mode
   (save-buffer)
   (cider-load-buffer))
 
+(global-set-key (kbd "M-h") 'mark-paragraph)
+
 ;; https://github.com/clojure-emacs/clj-refactor.el
 (defun my-clojure-mode-hook () "Foo bar."
        (message "in my-clojure-mode-hook")
        (clj-refactor-mode 1)
        (yas-minor-mode 1) ; for adding require/use/import statements
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-       (global-set-key (kbd "M-h") 'mark-paragraph)
-       (global-set-key (kbd "C-c C-k") 'my-cider-load-buffer)
+       (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
        (setq cider-repl-pop-to-buffer-on-connect 'display-only)
        (setq cider-repl-result-prefix ";; => ")
        (setq cider-save-file-on-load t)
@@ -1817,7 +1781,7 @@ _w_ whitespace-mode:   %`whitespace-mode
        (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
        ;; (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
-       (key-chord-define-global "qr" 'cljr-ivy)
+       (key-chord-define clojure-mode-map "qr" 'cljr-ivy)
        (cljr-add-keybindings-with-prefix "C-c m")
        (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
@@ -1825,17 +1789,17 @@ _w_ whitespace-mode:   %`whitespace-mode
        ;; (global-set-key (kbd "C-c r") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-T") 'cider-test-commands-map)
        ;; Disable flycheck next error in favor of Cider
-       (global-set-key (kbd "C-c C-n") 'cider-ns-map)
-       (global-set-key (kbd "C-c C-d C-r") 'clojure-essential-ref)
+       (define-key clojure-mode-map (kbd "C-c C-n") 'cider-ns-map)
+       (define-key clojure-mode-map (kbd "C-c C-d C-r") 'clojure-essential-ref)
        (global-unset-key (kbd "C-c C-p"))
-       (global-set-key (kbd "C-c C-p") 'cider-inspect)
+       (define-key clojure-mode-map (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
        ;; (company-flx-mode +1)
-       (global-set-key (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
+       (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
        ;; Make similar to wrapping with M-(
-       (global-set-key (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
+       (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
        ;; Overrides tmm-menubar
-       (global-set-key (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
+       (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
        )
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
@@ -2132,6 +2096,23 @@ This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (split-window-vertically-balancedly)
   (find-file fname))
+
+;; https://irreal.org/blog/?p=3544
+(defun ibuffer-back-to-top ()
+  (interactive)
+  (beginning-of-buffer)
+  (next-line 3))
+(defun ibuffer-jump-to-bottom ()
+  (interactive)
+  (end-of-buffer)
+  (next-line -2))
+(eval-after-load 'ibuffer
+  '(progn
+     (define-key ibuffer-mode-map
+       (vector 'remap 'end-of-buffer) 'ibuffer-jump-to-bottom)
+     (define-key ibuffer-mode-map
+       (vector 'remap 'beginning-of-buffer) 'ibuffer-back-to-top)))
+
 
 (defun my-ibuffer ()
   (interactive)
