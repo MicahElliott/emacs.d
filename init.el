@@ -258,15 +258,15 @@
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
   ;; Popups and immediate changes lower case
-  (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
   (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
+  (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
+  (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
+  (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
+  (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
+  (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   (define-key my-buffer-keymap "P" 'projectile-ibuffer)
-  (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
-  (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
-  (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
-  (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   (key-chord-define-global "qb" my-buffer-keymap)
   (key-chord-define-global "'b" my-buffer-keymap))
 
