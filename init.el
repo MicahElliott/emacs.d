@@ -188,10 +188,10 @@
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "aquamarine3" :slant italic :weight bold))))
- '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "white" :slant italic :weight bold))))
+ '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
- '(font-lock-variable-name-face ((t (:foreground "#A6E22E"))))
+ '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(hl-line ((t (:background "#000000"))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
@@ -205,7 +205,7 @@
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fira Code"))))
  '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
- '(org-document-title ((t (:inherit variable-pitch :foreground "pale turquoise" :weight bold :height 2.0))))
+ '(org-document-title ((t (:inherit (variable-pitch font-lock-constant-face) :weight bold :height 2.0))))
  '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :height 2.0))))
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
@@ -238,22 +238,42 @@
 
 ;;; BINDINGS
 ;;
-;; NOTE: Crazy that the combos are not ordered. So qe is the same as eq.
+;; The '-leader key-chord is symmetric with q-leader. Note that some
+;; combos (s, t, d) are common in the dictionary:
+;;
+;;  1 i
+;;  1 m
+;; 10 d (he'd I'd we'd)
+;; 24 t
+;; 95 s
+;;
+;; and any lisp quote will cause needed pausing/trouble
+;;
+;; Crazy that the combos are not ordered. So qe is the same as eq.
 
 (require 'key-chord)
 (key-chord-mode +1)
 (setq key-chord-two-keys-delay .1 ; default is .1
-      key-chord-one-key-delay  .6) ; default is .2
+      key-chord-one-key-delay  .3) ; default is .2
 
-;; Special
+;; Very special!
 (key-chord-define-global "q'" 'crux-smart-open-line-above)
+
+;; Also special
 (key-chord-define-global "q-" 'text-scale-decrease)
 (key-chord-define-global "q+" 'text-scale-increase)
 (key-chord-define-global "qq" 'aw-flip-window)
 (key-chord-define-global "''" 'aw-flip-window)
 ;; TODO: multiple cursors or
 
-;; A — EMPTY
+;; A — All workspaces
+(let ((my-spaces-keymap (make-sparse-keymap)))
+  (define-key my-spaces-keymap "a" 'persp-switch)
+  (define-key my-spaces-keymap "r" 'persp-rename)
+  (define-key my-spaces-keymap "S" 'persp-state-save)
+  (define-key my-spaces-keymap "L" 'persp-state-load)
+  (key-chord-define-global "'a" my-spaces-keymap))
+;; (key-chord-define-global "'s" 'persp-switch)
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
@@ -392,7 +412,7 @@
   (key-chord-define-global "'p" my-projectile-keymap)
   (key-chord-define-global "qp" my-projectile-keymap))
 
-;; Q
+;; Q — taken by q'
 
 ;; R — Refactoring
 ;; (key-chord-define-global "'r" 'makey-key-mode-popup-clj-refactor)
@@ -409,16 +429,27 @@
   (define-key my-cljr-keymap "S" 'cljr-sort-project-dependencies)
   (key-chord-define-global "'r" my-cljr-keymap))
 
-;; S — Spaces (perspectives)
-(let ((my-spaces-keymap (make-sparse-keymap)))
-  (define-key my-spaces-keymap "s" 'persp-switch)
-  (define-key my-spaces-keymap "r" 'persp-rename)
-  (define-key my-spaces-keymap "S" 'persp-state-save)
-  (define-key my-spaces-keymap "L" 'persp-state-load)
-  (key-chord-define-global "'s" my-spaces-keymap))
-;; (key-chord-define-global "'s" 'persp-switch)
+;; S — (BAD: possessives like Micah's)
 
-;; T — Typography
+;; T — (BAD: contractions like can't)
+
+;; U
+;; (key-chord-define-global ",u" 'undo-tree-visualize)
+
+;; V — Vterm
+(let ((my-vterm-keymap (make-sparse-keymap)))
+  (define-key my-vterm-keymap "v" 'vterm-toggle)
+  (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
+  (define-key my-vterm-keymap "n" 'vterm)
+  (key-chord-define-global "'v" my-vterm-keymap))
+
+;; W — Windowing
+(key-chord-define-global "'w" 'ace-window)
+;; (key-chord-define-global "qw" 'ace-window)
+
+;; X
+
+;; Y — tYpography
 ;; —  ’ “ ‘ ‘ ’ “
 (let ((my-typo-keymap (make-sparse-keymap)))
   (define-key my-typo-keymap "`" "‘")
@@ -446,26 +477,11 @@
   (define-key my-typo-keymap "c"  "♧")
   (define-key my-typo-keymap "b"  "₿")
   (define-key my-typo-keymap "t" 'typo-mode)
-  (key-chord-define-global "'t" my-typo-keymap)
-  (key-chord-define-global "qt" my-typo-keymap))
-
-;; U
-;; (key-chord-define-global ",u" 'undo-tree-visualize)
-
-;; V — Vterm
-(let ((my-vterm-keymap (make-sparse-keymap)))
-  (define-key my-vterm-keymap "v" 'vterm-toggle)
-  (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
-  (define-key my-vterm-keymap "n" 'vterm)
-  (key-chord-define-global "'v" my-vterm-keymap))
-
-;; W — Windowing
-(key-chord-define-global "'w" 'ace-window)
-;; (key-chord-define-global "qw" 'ace-window)
-
-;; X
-
-;; Y
+  (key-chord-define-global "qy" my-typo-keymap))
+(let ((my-typo-keymap (make-sparse-keymap)))
+  (define-key my-typo-keymap "'" "‘")
+  (define-key my-typo-keymap "\"" "“")
+  (key-chord-define-global "QY" my-typo-keymap))
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -484,12 +500,14 @@
 (global-set-key (kbd "C-z") 'delete-window-balancedly)
 
 ;; MASHINGS
-(key-chord-define-global "'y" 'other-window) ; top-right ring+pinky
 (key-chord-define-global "qw" 'prev-window)  ; top-left ring+pinky
+(key-chord-define-global "fp" 'other-window)
+(key-chord-define-global "'y" 'other-window) ; top-right ring+pinky
 (key-chord-define-global "xc" 'counsel-M-x)
 (key-chord-define-global "zx" 'delete-window-balancedly)
 (key-chord-define-global "ZX" 'kill-window-balancedly)
 (key-chord-define-global "gt" 'magit-status)
+(key-chord-define-global "wf" 'save-buffer)
 
 ;; Other possible mashings
 ;; (key-chord-define-global "jl" '
@@ -497,9 +515,6 @@
 ;; (key-chord-define-global ".," '
 ;; (key-chord-define-global "kh" '
 ;; (key-chord-define-global "dv" '
-;; (key-chord-define-global "fp" '
-;; (key-chord-define-global "wf" '
-;; (key-chord-define-global "wf" '
 ;; (key-chord-define-global "dv" '
 
 
@@ -1438,6 +1453,7 @@ _w_ whitespace-mode:   %`whitespace-mode
   (hs-hide-block))
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 
+
 
 ;;; SEARCH/JUMP/MOVEMENT
 
@@ -2030,6 +2046,11 @@ active process."
   #'(define-key (kbd "C-c C-c") 'tws-region-to-process))
 ;; (define-key shell-mode-map (kbd "C-c C-c") 'tws-region-to-process)
 
+;; Show Marks (contrib)
+;; https://www.emacswiki.org/emacs/download/show-marks.el
+;; (require 'fm)
+;; (require 'show-marks)
+
 ;; Fixing the mark commands in transient mark mode
 ;; https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
@@ -2201,6 +2222,13 @@ current buffer's, reload dir-locals."
 ;;               (add-hook (make-variable-buffer-local 'after-save-hook)
 ;;                         'my-reload-dir-locals-for-all-buffer-in-this-directory))))
 
+
+;;; MACROS
+
+(fset 'unthread1
+      (kmacro-lambda-form
+       [?\C-\M-d ?\C-\M-f ?\C-f ?\C-\M-  ?\C-w ?\C-\M-f ?\C-\M-b ?\C-\M-d ?\C-\M-f ?  ?\C-y return ?\C-\M-u ?\M-r ?\C-\M-  tab]
+       0 "%d"))
 
 
 ;;; END
@@ -2325,7 +2353,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
