@@ -146,6 +146,11 @@
     symbol-overlay
     terraform-doc
     terraform-mode
+    treemacs
+    treemacs-projectile
+    treemacs-all-the-icons
+    treemacs-icons-dired
+    treemacs-magit
     toggle-quotes
     total-lines
     typo
@@ -295,9 +300,15 @@
 (key-chord-define-global "qc" 'avy-goto-char-timer)
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
 
-;; D — neotree
-(key-chord-define-global "'d" 'neotree-show)
-(key-chord-define-global "\"D" 'neotree-toggle)
+;; D — Treemacs (Directory viewer)
+;; (key-chord-define-global "'d" 'neotree-show)
+;; (key-chord-define-global "\"D" 'neotree-toggle)
+(key-chord-define-global "'d" 'treemacs-select-window)
+(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+;; (key-chord-define-global "'d" 'treemacs)
+;; (key-chord-define-global "qd" 'treemacs)
+
+
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -576,6 +587,7 @@
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
+(global-set-key (kbd "C-c r") 'ivy-resume)
 
 (global-set-key (kbd "C-c g") 'counsel-git)
 (global-set-key (kbd "C-c j") 'counsel-git-grep)
@@ -1182,6 +1194,9 @@
 ;; http://emacs.stackexchange.com/questions/13662/a-confirmation-after-c-x-c-c
 ;; (setq confirm-kill-emacs 'yes-or-no-p)
 (global-unset-key (kbd "C-x C-c"))
+
+;; https://github.com/jaypei/emacs-neotree/issues/133
+(setq neo-vc-integration nil)
 
 ;; TRIAL
 (add-hook 'neotree-mode-hook
@@ -2331,7 +2346,7 @@ current buffer's, reload dir-locals."
  '(global-yascroll-bar-mode t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
- '(highlight-parentheses-highlight-adjacent t)
+ '(highlight-parentheses-highlight-adjacent nil)
  '(hs-hide-comments-when-hiding-all nil)
  '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
@@ -2346,6 +2361,8 @@ current buffer's, reload dir-locals."
    '(diff-added diff-context diff-file-header diff-function diff-header diff-hunk-header diff-removed font-latex-math-face font-latex-sedate-face font-latex-warning-face font-latex-sectioning-5-face font-lock-builtin-face font-lock-comment-delimiter-face font-lock-constant-face font-lock-doc-face font-lock-function-name-face font-lock-keyword-face font-lock-negation-char-face font-lock-preprocessor-face font-lock-regexp-grouping-backslash font-lock-regexp-grouping-construct font-lock-string-face font-lock-type-face font-lock-variable-name-face line-number line-number-current-line line-number-major-tick line-number-minor-tick markdown-code-face markdown-gfm-checkbox-face markdown-inline-code-face markdown-language-info-face markdown-language-keyword-face markdown-math-face message-header-name message-header-to message-header-cc message-header-newsgroups message-header-xheader message-header-subject message-header-other mu4e-header-key-face mu4e-header-value-face mu4e-link-face mu4e-contact-face mu4e-compose-separator-face mu4e-compose-header-face org-block org-block-begin-line org-block-end-line org-document-info-keyword org-code org-indent org-latex-and-related org-checkbox org-formula org-meta-line org-table org-verbatim))
  '(mixed-pitch-set-height t)
  '(neo-autorefresh t)
+ '(neo-hidden-regexp-list
+   '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "\\.xml$"))
  '(neo-show-hidden-files t)
  '(neo-show-slash-for-folder nil)
  '(neo-smart-open t)
