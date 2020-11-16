@@ -157,14 +157,16 @@
     undo-tree
     unfill
     visible-mark
-    vterm
-    vterm-toggle
     which-key
     yaml-mode
     zoom))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+;; FIXME
+    ;; vterm
+    ;; vterm-toggle
 
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
@@ -296,7 +298,7 @@
   (key-chord-define-global "'b" my-buffer-keymap))
 
 ;; C — Character goto (fast)
-(key-chord-define-global "'c" 'avy-goto-char-timer) ; character
+(key-chord-define-global "'c" 'avy-goto-char-timer) ; character, delay
 (key-chord-define-global "qc" 'avy-goto-char-timer)
 (key-chord-define-global "\"C" 'beacon-blink) ; cursor
 
@@ -385,7 +387,6 @@
   (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
   (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
-  (key-chord-define-global "'l" my-lines-keymap)
   (key-chord-define-global "ql" my-lines-keymap))
 
 ;; M — Mark
@@ -416,7 +417,7 @@
   (define-key my-projectile-keymap "p" 'projectile-switch-project)
   (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
-  (define-key my-projectile-keymap "v" 'projectile-run-vterm)
+  ;; (define-key my-projectile-keymap "v" 'projectile-run-vterm)
   (define-key my-projectile-keymap "D" 'projectile-dired)
   (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
@@ -448,11 +449,11 @@
 ;; (key-chord-define-global ",u" 'undo-tree-visualize)
 
 ;; V — Vterm
-(let ((my-vterm-keymap (make-sparse-keymap)))
-  (define-key my-vterm-keymap "v" 'vterm-toggle)
-  (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
-  (define-key my-vterm-keymap "n" 'vterm)
-  (key-chord-define-global "'v" my-vterm-keymap))
+;; (let ((my-vterm-keymap (make-sparse-keymap)))
+;;   (define-key my-vterm-keymap "v" 'vterm-toggle)
+;;   (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
+;;   (define-key my-vterm-keymap "n" 'vterm)
+;;   (key-chord-define-global "'v" my-vterm-keymap))
 
 ;; W — Windowing
 (key-chord-define-global "'w" 'ace-window)
@@ -468,7 +469,9 @@
   (define-key my-typo-keymap "~" "“")
   (define-key my-typo-keymap "\"" "”")
   (define-key my-typo-keymap "-"  "—")
-  (define-key my-typo-keymap ">"  "→")
+  (define-key my-typo-keymap "="  "→")
+  (define-key my-typo-keymap ">"  "»")
+  (define-key my-typo-keymap "<"  "«")
   (define-key my-typo-keymap "+"  "±")
   (define-key my-typo-keymap "v"  "✓")
   (define-key my-typo-keymap "x"  "✗")
@@ -933,7 +936,7 @@
 (require 'ivy)
 (ivy-mode 1)
 (counsel-mode)
-(setq ivy-height 20)
+(setq ivy-height 30)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
 (setq projectile-completion-system 'ivy)
@@ -1142,8 +1145,9 @@
 (setq tab-width 2)
 
 
-(require 'dot-mode)
+;; Repeat last command, like vim
 ;; https://www.emacswiki.org/emacs/dot-mode.el
+(require 'dot-mode)
 ;; C-.  C-M-.  C-c.
 (autoload 'dot-mode "dot-mode" nil t)
 ;; (dot-mode t)
@@ -1211,6 +1215,23 @@
 ;; https://github.com/wbolster/emacs-direnv
 (require 'direnv)
 (direnv-mode)
+
+;; Treemacs
+;; It treemacs icons are big, try this manually
+(treemacs-resize-icons 12)
+;; https://github.com/Alexander-Miller/treemacs#faq
+
+;; Ignore XML files
+(with-eval-after-load 'treemacs
+  (defun treemacs-ignore-example (filename absolute-path)
+    (or (string-suffix-p filename ".xml")
+	(string-suffix-p filename ".sql")))
+  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-ignore-example))
+
+;; Ignore git ignored
+;; (treemacs-git-mode 'extended)
+(with-eval-after-load 'treemacs
+  (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
 
 
 ;;; HELP SYSTEM
@@ -1537,10 +1558,14 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; make case-sensitive
 (setq avy-case-fold-search nil)
 
+
+
+(global-set-key (kbd "C-c C-u") 'browse-url)
+
 
 ;;; PARENS
 
-`';; Rainbow all the things
+;; Rainbow all the things
 
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
@@ -1558,6 +1583,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; Can be SLOW with long lines!
 ;; (show-smartparens-mode t)
 ;; More matching parens: colors block you're in red (SLOW?)
+;; https://github.com/tsdh/highlight-parentheses.el
 (require 'highlight-parentheses)
 (highlight-parentheses-mode t)
 
@@ -2011,9 +2037,9 @@ chord."
 (defun sh-send-line-or-region-and-step ()
   (interactive)
   (sh-send-line-or-region t))
-(defun sh-switch-to-process-buffer ()
-  (interactive)
-  (pop-to-buffer (process-buffer (get-process "vterm")) t))
+;; (defun sh-switch-to-process-buffer ()
+;;   (interactive)
+;;   (pop-to-buffer (process-buffer (get-process "vterm")) t))
 
 ;; (setq comint-scroll-to-bottom-on-output t)
 
@@ -2277,6 +2303,7 @@ current buffer's, reload dir-locals."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-dim-other-buffers-mode t)
+ '(avy-timeout-seconds 0.1)
  '(aw-char-position 'center)
  '(beacon-blink-duration 0.4)
  '(beacon-blink-when-focused t)
@@ -2346,7 +2373,7 @@ current buffer's, reload dir-locals."
  '(global-yascroll-bar-mode t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
- '(highlight-parentheses-highlight-adjacent nil)
+ '(highlight-parentheses-highlight-adjacent t)
  '(hs-hide-comments-when-hiding-all nil)
  '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
@@ -2370,7 +2397,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode vterm-toggle vterm doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
