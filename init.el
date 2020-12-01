@@ -189,7 +189,7 @@
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
- '(company-box-background ((t (:background "gray24" :inverse-video nil))) t)
+ '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
@@ -386,6 +386,9 @@
   (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
   (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
+  (define-key my-lines-keymap "c" 'crosshairs)
+  (define-key my-lines-keymap "C" 'crosshairs-mode)
+  (define-key my-lines-keymap "b" 'beacon-blink)
   (key-chord-define-global "ql" my-lines-keymap))
 
 ;; M — Mark
@@ -452,6 +455,7 @@
   (define-key my-vterm-keymap "v" 'vterm-toggle)
   (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
   (define-key my-vterm-keymap "n" 'vterm)
+  (define-key my-vterm-keymap "o" 'my-vterm-other)
   (key-chord-define-global "'v" my-vterm-keymap))
 
 ;; W — Windowing
@@ -518,6 +522,7 @@
 (key-chord-define-global "'y" 'other-window) ; top-right ring+pinky
 (key-chord-define-global "xc" 'counsel-M-x)
 (key-chord-define-global "zx" 'delete-window-balancedly)
+;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "kh" 'kill-this-buffer)
 (key-chord-define-global "ZX" 'kill-window-balancedly)
 (key-chord-define-global "gt" 'magit-status)
@@ -807,6 +812,9 @@
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
 ;; (beacon-mode +1)
+
+(require 'crosshairs)
+(crosshairs-toggle-when-idle)
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -1227,6 +1235,10 @@
     (or (string-suffix-p filename ".xml")
 	(string-suffix-p filename ".sql")))
   (add-to-list 'treemacs-ignored-file-predicates #'treemacs-ignore-example))
+
+;; When some-var presents in SQL, treat it as a whole word (not 2 words).
+;; https://emacs.stackexchange.com/a/59010/11025
+(add-hook 'sql-mode-hook #'(lambda () (modify-syntax-entry ?- "w"))) ; not working
 
 ;; Ignore git ignored
 ;; (treemacs-git-mode 'extended)
@@ -2055,7 +2067,12 @@ chord."
 ;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
 ;; (require 'vterm-toggle) ; TEMPORARY
 ;; (global-set-key [f2] 'vterm-toggle)
+;; Not working
+(setq vterm-toggle-hide-method nil)
 
+(defun my-vterm-other ()
+  (interactive)
+  (select-window (get-buffer-window (vterm-toggle--recent-other-buffer))))
 
 
 (defun tws-region-to-process (arg beg end)
@@ -2397,7 +2414,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
@@ -2419,6 +2436,7 @@ current buffer's, reload dir-locals."
  '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
+ '(treemacs-follow-mode nil)
  '(treemacs-width 45)
  '(which-key-max-description-length 45))
 ;; Local Variables:
