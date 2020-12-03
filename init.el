@@ -51,6 +51,7 @@
     avy
     beacon
     buffer-move
+    centaur-tabs
     cider
     cider-eval-sexp-fu
     cljr-ivy
@@ -92,6 +93,7 @@
     flx-ido
     flycheck-clj-kondo
     flycheck-clojure
+    flycheck-inline
     flycheck-joker
     flycheck-pos-tip
     flycheck-yamllint
@@ -110,8 +112,10 @@
     ido
     ido-completing-read+
     imenu-list
+    isend-mode
     ivy
     ivy-hydra
+    ivy-posframe
     ivy-rich
     jump-char
     key-chord
@@ -189,6 +193,7 @@
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
+ '(col-highlight ((t (:background "gray0"))))
  '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
@@ -225,6 +230,9 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
  '(swiper-line-face ((t (:background "purple4"))))
+ '(swiper-match-face-2 ((t (:background "yellow" :foreground "black"))))
+ '(swiper-match-face-3 ((t (:background "orange" :foreground "black"))))
+ '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
@@ -517,16 +525,24 @@
 (global-set-key (kbd "C-z") 'delete-window-balancedly)
 
 ;; MASHINGS
-(key-chord-define-global "qw" 'prev-window)  ; top-left ring+pinky
-(key-chord-define-global "fp" 'other-window)
-(key-chord-define-global "'y" 'other-window) ; top-right ring+pinky
-(key-chord-define-global "xc" 'counsel-M-x)
-(key-chord-define-global "zx" 'delete-window-balancedly)
+(key-chord-define-global "qw" 'windmove-left)  ; top-left ring+pinky
+(key-chord-define-global "fp" 'windmove-right)
+(key-chord-define-global "xc" 'windmove-down)
+(key-chord-define-global "wf" 'windmove-up)
+(key-chord-define-global "'y" 'windmove-right) ; top-right ring+pinky
+(key-chord-define-global "xz" 'counsel-M-x)
+(key-chord-define-global "cd" 'counsel-M-x)
+(key-chord-define-global "az" 'delete-window-balancedly)
+(key-chord-define-global "rz" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "kh" 'kill-this-buffer)
-(key-chord-define-global "ZX" 'kill-window-balancedly)
+(key-chord-define-global "KH" 'kill-window-balancedly)
+(key-chord-define-global "ZR" 'kill-window-balancedly)
 (key-chord-define-global "gt" 'magit-status)
-(key-chord-define-global "wf" 'save-buffer)
+(key-chord-define-global "xs" 'save-buffer)
+
+(key-chord-define-global "pb" 'make-frame-command)
+(key-chord-define-global "PB" 'delete-frame)
 
 ;; Other possible mashings
 ;; (key-chord-define-global "jl" '
@@ -832,7 +848,38 @@
 
 ;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
+
 (require 'symbol-overlay)
+
+;; Overriding: https://github.com/wolray/symbol-overlay/issues/70
+(defvar my-symbol-overlay-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "i") 'symbol-overlay-put)
+    (define-key map (kbd "h") 'symbol-overlay-map-help)
+    (define-key map (kbd "p") 'symbol-overlay-jump-prev)
+    (define-key map (kbd "n") 'symbol-overlay-jump-next)
+    (define-key map (kbd "<") 'symbol-overlay-jump-first)
+    (define-key map (kbd ">") 'symbol-overlay-jump-last)
+    (define-key map (kbd "w") 'symbol-overlay-save-symbol)
+    (define-key map (kbd "t") 'symbol-overlay-toggle-in-scope)
+    (define-key map (kbd "e") 'symbol-overlay-echo-mark)
+    (define-key map (kbd "d") 'symbol-overlay-jump-to-definition)
+    (define-key map (kbd "s") 'swiper-isearch-thing-at-point)
+    (define-key map (kbd "q") 'symbol-overlay-query-replace)
+    (define-key map (kbd "r") 'symbol-overlay-rename)
+    map)
+  "Keymap automatically activated inside overlays.
+You can re-bind the commands to any keys you prefer.")
+
+(setq symbol-overlay-map my-symbol-overlay-map)
+
+;; Override to not insert boundaries
+(defun ivy--insert-symbol-boundaries ()
+  (undo-boundary))
+
+
+;; (define-key symbol-overlay-map (kbd "s") 'any-command)
+
 
 ;; ENABLE??
 ;; https://github.com/magnars/expand-region.el
@@ -949,13 +996,14 @@
 (setq ivy-count-format "(%d/%d) ")
 (setq projectile-completion-system 'ivy)
 
-;; (require 'ivy-posframe)
+;; Disabling since obscures search results
+(require 'ivy-posframe)
 ;; display at `ivy-posframe-style'
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
 ;; (ivy-posframe-mode 1)
 
@@ -1013,6 +1061,9 @@
 ;;; LINTERS
 
 (require 'flycheck-yamllint)
+
+(with-eval-after-load 'flycheck
+  (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
 
 
 ;; Typopunct: fancy/pretty quotes, etc: — ‘’ “”
@@ -1492,6 +1543,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; https://github.com/leoliu/easy-kill
 ;; http://stackoverflow.com/a/36631886/326516
 (require 'easy-kill)
+(global-set-key (kbd "C-M-SPC") 'easy-mark-sexp)
 
 
 ;;; Hide-Show (V: visible), like folding
@@ -2020,14 +2072,13 @@ chord."
 (defun sh-send-line-or-region (&optional step)
   (interactive ())
   ;; (let ((proc (get-process "shell"))
-  (let ((proc (get-process "shell"))
+  (let ((proc (get-process "vterm"))
         pbuf min max command)
     (unless proc
       (let ((currbuff (current-buffer)))
-        (shell)
+        (vterm)
         (switch-to-buffer currbuff)
-        (setq proc (get-process "shell"))
-        ))
+        (setq proc (get-process "vterm"))))
     (setq pbuff (process-buffer proc))
     (if (use-region-p)
         (setq min (region-beginning)
@@ -2040,12 +2091,11 @@ chord."
       (insert command)
       (move-marker (process-mark proc) (point))
       ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
-    (process-send-string  proc command)
+    (process-send-string proc command)
     (display-buffer (process-buffer proc) t)
     (when step
       (goto-char max)
-      (forward-line))
-    ))
+      (forward-line))))
 (defun sh-send-line-or-region-and-step ()
   (interactive)
   (sh-send-line-or-region t))
@@ -2280,6 +2330,29 @@ current buffer's, reload dir-locals."
 ;;               (add-hook (make-variable-buffer-local 'after-save-hook)
 ;;                         'my-reload-dir-locals-for-all-buffer-in-this-directory))))
 
+
+
+(defun my-vterm-send-buffer ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (let ((current-line (thing-at-point 'line t)))
+	(with-current-buffer (get-buffer "vterm")
+	  (vterm-send-string current-line))
+        (forward-line)))))
+
+(defun my-vterm-send-buffer-2 ()
+  (interactive)
+  (let ((buffer-content (buffer-string)))
+    (with-current-buffer (get-buffer "vterm")
+      (vterm-send-string buffer-content))))
+
+
+(define-key shell-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
+
+
+
 
 ;;; MACROS
 
@@ -2361,6 +2434,7 @@ current buffer's, reload dir-locals."
      ("fs" . "me.raynes.fs")
      ("r" . "reagent.core")
      ("rf" . "re-frame.core")))
+ '(col-highlight-show-only 'forward-paragraph)
  '(custom-safe-themes
    '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(doom-modeline-buffer-file-name-style 'truncate-with-project)
@@ -2398,6 +2472,9 @@ current buffer's, reload dir-locals."
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
  '(ivy-initial-inputs-alist nil)
+ '(ivy-posframe-border-width 3)
+ '(ivy-posframe-min-width 120)
+ '(ivy-posframe-width 160)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
@@ -2414,7 +2491,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
