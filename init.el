@@ -120,13 +120,14 @@
     jump-char
     key-chord
     kibit-helper
-    nlinum-relative
+    lispy
     magit
     markdown-mode
     mic-paren
     mixed-pitch
     mode-icons
     move-text
+    nlinum-relative
     neotree
     nov
     org-bullets
@@ -229,9 +230,10 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
+ '(swiper-background-match-face-3 ((t (:inherit swiper-match-face-3 :background "aquamarine3"))))
  '(swiper-line-face ((t (:background "purple4"))))
  '(swiper-match-face-2 ((t (:background "yellow" :foreground "black"))))
- '(swiper-match-face-3 ((t (:background "orange" :foreground "black"))))
+ '(swiper-match-face-3 ((t (:background "aquamarine3" :foreground "black"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
@@ -395,8 +397,9 @@
   (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
-  (define-key my-lines-keymap "C" 'crosshairs-mode)
+  (define-key my-lines-keymap "h" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
+  (define-key my-lines-keymap "C" 'crosshairs-mode)
   (key-chord-define-global "ql" my-lines-keymap))
 
 ;; M — Mark
@@ -1864,6 +1867,8 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; (require 'sotclojure)
 (require 'clojure-mode-extra-font-locking)
 
+(require 'lispy)
+
 (setq error-tip-notify-keep-messages t)
 
 ;; For kondo: https://github.com/borkdude/flycheck-clj-kondo#multiple-linters
@@ -1898,6 +1903,9 @@ _w_ whitespace-mode:   %`whitespace-mode
        (setq cider-repl-result-prefix ";; => ")
        (setq cider-save-file-on-load t)
        (setq cider-prompt-for-symbol nil)
+       (setq cider-repl-wrap-history t)
+       (setq cider-repl-history-size 1000)
+       (setq cider-repl-history-file "~/.cider-repl-history")
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
@@ -2402,6 +2410,7 @@ current buffer's, reload dir-locals."
  '(beacon-push-mark nil)
  '(browse-url-browser-function 'browse-url-firefox)
  '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+ '(cider-repl-history-file cider-history)
  '(cider-special-mode-truncate-lines nil)
  '(cljr-favor-private-functions nil)
  '(cljr-hotload-dependencies t)
@@ -2465,6 +2474,7 @@ current buffer's, reload dir-locals."
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
  '(highlight-parentheses-highlight-adjacent t)
+ '(hl-line-flash-show-period 2.0)
  '(hs-hide-comments-when-hiding-all nil)
  '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
@@ -2491,7 +2501,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
