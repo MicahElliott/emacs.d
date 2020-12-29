@@ -46,6 +46,7 @@
     all-the-icons-dired
     all-the-icons-ivy-rich
     ag
+    aggressive-indent
     ample-theme
     auto-dim-other-buffers
     avy
@@ -79,6 +80,7 @@
     diminish
     discover-clj-refactor
     doom-modeline
+    dotenv-mode
     dot-mode
     dumb-jump
     edbi
@@ -119,6 +121,7 @@
     ivy-rich
     jump-char
     key-chord
+    key-seq
     kibit-helper
     lispy
     magit
@@ -265,6 +268,9 @@
 ;; and any lisp quote will cause needed pausing/trouble
 ;;
 ;; Crazy that the combos are not ordered. So qe is the same as eq.
+;; More details on freqs: https://www.johndcook.com/blog/2015/02/01/rare-bigrams/
+;;
+;; Ordered key chords: https://github.com/vlevit/key-seq.el
 
 (require 'key-chord)
 (key-chord-mode +1)
@@ -297,6 +303,7 @@
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
   (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
+  (define-key my-buffer-keymap "B" 'my-2back-buffers)
   (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
   (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
@@ -318,8 +325,6 @@
 (key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 ;; (key-chord-define-global "'d" 'treemacs)
 ;; (key-chord-define-global "qd" 'treemacs)
-
-
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -378,7 +383,6 @@
 (key-chord-define-global "'j" 'jump-to-register)
 (key-chord-define-global "qj" 'jump-to-register)
 
-
 ;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
   (define-key my-kill-keymap "z" 'delete-window-balancedly) ; like backgrounding
@@ -403,7 +407,6 @@
   (key-chord-define-global "ql" my-lines-keymap))
 
 ;; M — Mark
-(key-chord-define-global "'m" 'point-to-register)
 (key-chord-define-global "qm" 'point-to-register)
 (key-chord-define-global "QM" 'counsel-bookmark)
 
@@ -522,10 +525,6 @@
   (define-key my-hs-keymap "z" 'hs-toggle-hiding)
   (define-key my-hs-keymap "t" 'hs-toggle-hiding)
   (key-chord-define-global "'z" my-hs-keymap))
-;; Don't want to suspend emacs!
-;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
-(global-unset-key (kbd "C-z"))
-(global-set-key (kbd "C-z") 'delete-window-balancedly)
 
 ;; MASHINGS
 (key-chord-define-global "qw" 'windmove-left)  ; top-left ring+pinky
@@ -534,18 +533,43 @@
 (key-chord-define-global "wf" 'windmove-up)
 (key-chord-define-global "'y" 'windmove-right) ; top-right ring+pinky
 (key-chord-define-global "xz" 'counsel-M-x)
-(key-chord-define-global "cd" 'counsel-M-x)
+(key-chord-define-global "cd" 'cider-clojuredocs)
 (key-chord-define-global "az" 'delete-window-balancedly)
-(key-chord-define-global "rz" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "kh" 'kill-this-buffer)
 (key-chord-define-global "KH" 'kill-window-balancedly)
+(key-chord-define-global "zr" 'delete-window-balancedly)
 (key-chord-define-global "ZR" 'kill-window-balancedly)
 (key-chord-define-global "gt" 'magit-status)
 (key-chord-define-global "xs" 'save-buffer)
 
 (key-chord-define-global "pb" 'make-frame-command)
 (key-chord-define-global "PB" 'delete-frame)
+
+(key-chord-define-global "jl" 'beacon-blink)
+(key-chord-define-global "h," 'lispy-describe-inline)
+;; (key-chord-define-global "td" 'cider-test-run-test)
+(key-chord-define-global "td" 'my-cider-eval-and-test-fn)
+;; (key-chord-define-global "xe" 'cider-pprint-eval-last-sexp-to-comment)
+;; (key-chord-define-global "xx" 'cider-eval-defun-to-comment)
+(key-chord-define-global "xx" 'my-cider-eval-to-comment)
+(key-chord-define-global "aa" 'persp-switch-last)
+(key-chord-define-global "BB" 'my-2back-buffers)
+
+;; https://emacs.stackexchange.com/a/37894/11025
+(defun my-2back-buffers ()
+  "Round robin of 3 buffers."
+  (interactive)
+  (switch-to-buffer (elt (buffer-list) 2)))
+
+(defun my-cider-eval-to-comment ()
+  (interactive)
+  (cider-eval-defun-to-comment)
+  (forward-line)
+  (delete-indentation)
+  ;; This part doesn't work
+  (insert " "))
+
 
 ;; Other possible mashings
 ;; (key-chord-define-global "jl" '
@@ -568,6 +592,42 @@
 
 
 ;;; Other Bindings
+
+
+;; https://emacs.stackexchange.com/questions/4271/stop-at-beginning-of-a-word-on-forward-word
+(defun my/forward-word-begin (arg)
+  "Move forward a word and end with point being at beginning of next word.
+Move point forward ARG words (backward if ARG is negative).
+If ARG is omitted or nil, move point forward one word."
+  (interactive "p")
+  (forward-word arg)
+  (forward-word 1)
+  (backward-word 1))
+(defun my/backward-word-begin (arg)
+  (interactive "p")
+  (backward-word arg)
+  (backward-word 1)
+  (forward-word 1))
+(defun modi/forward-word-begin (arg)
+  "Move forward ARG (defaults to 1) number of words.
+Here 'words' are defined as characters separated by whitespace."
+  (interactive "p")
+  (dotimes (_ arg)
+    (forward-whitespace 1)))
+
+;; Don't want to suspend emacs!
+;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-z") 'delete-window-balancedly)
+
+(global-set-key (kbd "M-e") 'forward-word)
+;; (global-set-key (kbd "M-f") 'forward-word)
+;; (global-set-key (kbd "M-b") 'backward-word)
+;; (global-set-key (kbd "M-f") 'forward-to-word)
+;; (global-set-key (kbd "M-b") 'backward-to-word)
+(global-set-key (kbd "M-f") 'my/forward-word-begin)
+;; (global-set-key (kbd "M-b") 'my/backward-word-begin)
+
 
 (global-set-key (kbd "M-o") 'scroll-up-stay)
 (global-set-key (kbd "M-'") 'scroll-down-stay)
@@ -899,10 +959,19 @@ You can re-bind the commands to any keys you prefer.")
 (global-set-key (kbd "C-x +") 'zoom)
 
 
-;;; TUNING
+;;; TUNING / PERFORMANCE
 
 ;; Don’t compact font caches during GC.
 (setq inhibit-compacting-font-caches t)
+
+;; Improve long-line performance.
+;; https://emacs.stackexchange.com/a/603/11025
+(setq bidi-inhibit-bpa t)
+(setq-default bidi-display-reordering nil)
+
+;; Avoid performance issues in files with very long lines.
+;; https://emacs.stackexchange.com/a/19030/11025
+(global-so-long-mode 1)
 
 ;; Follow symlinks.
 (setq find-file-visit-truename t)
@@ -1206,6 +1275,9 @@ You can re-bind the commands to any keys you prefer.")
 (setq indent-tabs-mode t)
 (setq tab-width 2)
 
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+
 
 ;; Repeat last command, like vim
 ;; https://www.emacswiki.org/emacs/dot-mode.el
@@ -1273,10 +1345,6 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; (require 'tldr)
 ;; (require 'cheat-sh)
-
-;; https://github.com/wbolster/emacs-direnv
-(require 'direnv)
-(direnv-mode)
 
 ;; Treemacs
 ;; It treemacs icons are big, try this manually
@@ -1890,6 +1958,12 @@ _w_ whitespace-mode:   %`whitespace-mode
   (save-buffer)
   (cider-load-buffer))
 
+(defun my-cider-eval-and-test-fn ()
+  "Quickly eval and run test."
+  (interactive)
+  (cider-eval-defun-at-point)
+  (cider-test-run-test))
+
 (global-set-key (kbd "M-h") 'mark-paragraph)
 
 ;; https://github.com/clojure-emacs/clj-refactor.el
@@ -2361,6 +2435,13 @@ current buffer's, reload dir-locals."
 
 
 
+(defun my-cider-find-var ()
+  (interactive)
+  (make-frame-command)
+  (cider-find-var))
+(global-set-key (kbd "C-M->") 'my-cider-find-var)
+
+
 
 ;;; MACROS
 
@@ -2368,6 +2449,12 @@ current buffer's, reload dir-locals."
       (kmacro-lambda-form
        [?\C-\M-d ?\C-\M-f ?\C-f ?\C-\M-  ?\C-w ?\C-\M-f ?\C-\M-b ?\C-\M-d ?\C-\M-f ?  ?\C-y return ?\C-\M-u ?\M-r ?\C-\M-  tab]
        0 "%d"))
+
+(fset 'clj-sort-ns
+      (kmacro-lambda-form [?\M-\{ ?\C-n ?\M-f return
+				  ?\C-\M-u ?\C-\M-  tab ?\C-b return
+				  ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?s return
+				  ?\C-\M-n ?\C-\M-e ?\C-x ?\C-e] 0 "%d"))
 
 
 ;;; END
@@ -2377,6 +2464,15 @@ current buffer's, reload dir-locals."
 (ivy-rich-mode 1)
 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
 (setq ivy-rich-path-style 'abbrev)
+
+;; https://github.com/preetpalS/emacs-dotenv-mode
+(require 'dotenv-mode) ; unless installed from a package
+ ;; for optionally supporting additional file extensions such as `.env.test' with this major mode
+(add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode))
+
+;; https://github.com/wbolster/emacs-direnv
+(require 'direnv)
+(direnv-mode)
 
 ;; Use direnv — supposed to be near bottom in init.el
 ;; https://github.com/purcell/envrc (seems better than direnv emacs package)
@@ -2410,6 +2506,7 @@ current buffer's, reload dir-locals."
  '(beacon-push-mark nil)
  '(browse-url-browser-function 'browse-url-firefox)
  '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+ '(cider-comment-prefix ";=> ")
  '(cider-repl-history-file cider-history)
  '(cider-special-mode-truncate-lines nil)
  '(cljr-favor-private-functions nil)
@@ -2501,7 +2598,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
@@ -2523,6 +2620,7 @@ current buffer's, reload dir-locals."
  '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
+ '(treemacs-collapse-dirs 6)
  '(treemacs-follow-mode nil)
  '(treemacs-width 45)
  '(which-key-max-description-length 45))
