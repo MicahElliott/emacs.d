@@ -66,6 +66,7 @@
     company-box
     company-flx
     company-fuzzy
+    company-jedi
     company-quickhelp
     company-posframe
     company-terraform
@@ -86,6 +87,8 @@
     edbi
     easy-kill
     edit-indirect
+    elpy
+    embark
     envrc
     eyebrowse
     exec-path-from-shell
@@ -114,6 +117,7 @@
     ido
     ido-completing-read+
     imenu-list
+    importmagic
     isend-mode
     ivy
     ivy-hydra
@@ -142,11 +146,18 @@
     popup
     popup-imenu
     projectile
+    poetry
+    prescient
+    python
+    pyimport
+    python-black
     rainbow-delimiters
     rainbow-identifiers
     restclient
     ripgrep
     rubocop
+    selectrum
+    selectrum-prescient
     shrink-whitespace
     smartparens
     string-inflection
@@ -169,6 +180,7 @@
     vterm-toggle
     which-key
     yaml-mode
+    zimports
     zoom))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -223,7 +235,7 @@
  '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :height 2.0))))
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
- '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fira Code"))))
+ '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow" :weight bold))))
@@ -281,10 +293,10 @@
 (key-chord-define-global "q'" 'crux-smart-open-line-above)
 
 ;; Also special
-(key-chord-define-global "q-" 'text-scale-decrease)
-(key-chord-define-global "q+" 'text-scale-increase)
-(key-chord-define-global "qq" 'aw-flip-window)
-(key-chord-define-global "''" 'aw-flip-window)
+(key-seq-define-global "q-" 'text-scale-decrease)
+(key-seq-define-global "q+" 'text-scale-increase)
+(key-seq-define-global "qq" 'aw-flip-window)
+(key-seq-define-global "''" 'aw-flip-window)
 ;; TODO: multiple cursors or
 
 ;; A — All workspaces
@@ -294,14 +306,14 @@
   (define-key my-spaces-keymap "K" 'persp-kill)
   (define-key my-spaces-keymap "S" 'persp-state-save)
   (define-key my-spaces-keymap "L" 'persp-state-load)
-  (key-chord-define-global "'a" my-spaces-keymap))
-;; (key-chord-define-global "'s" 'persp-switch)
+  (key-seq-define-global "'a" my-spaces-keymap))
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
   ;; Popups and immediate changes lower case
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
-  (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
+  ;; (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
+  (define-key my-buffer-keymap "A" 'ibuffer) ; all
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
   (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
@@ -310,21 +322,19 @@
   (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   (define-key my-buffer-keymap "P" 'projectile-ibuffer)
-  (key-chord-define-global "qb" my-buffer-keymap)
-  (key-chord-define-global "'b" my-buffer-keymap))
+  (key-seq-define-global "'b" my-buffer-keymap))
 
 ;; C — Character goto (fast)
-(key-chord-define-global "'c" 'avy-goto-char-timer) ; character, delay
-(key-chord-define-global "qc" 'avy-goto-char-timer)
-(key-chord-define-global "\"C" 'beacon-blink) ; cursor
+(key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
+(key-seq-define-global "qc" 'avy-goto-char-timer)
+(key-seq-define-global "\"C" 'beacon-blink) ; cursor
 
 ;; D — Treemacs (Directory viewer)
-;; (key-chord-define-global "'d" 'neotree-show)
-;; (key-chord-define-global "\"D" 'neotree-toggle)
-(key-chord-define-global "'d" 'treemacs-select-window)
-(key-chord-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
-;; (key-chord-define-global "'d" 'treemacs)
-;; (key-chord-define-global "qd" 'treemacs)
+(key-seq-define-global "'d" 'treemacs-select-window)
+;; (key-seq-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+(key-seq-define-global "\"D" 'treemacs-find-file)
+;; (key-seq-define-global "'d" 'treemacs)
+;; (key-seq-define-global "qd" 'treemacs)
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -335,15 +345,14 @@
   (define-key my-flycheck-keymap "n" 'flycheck-next-error)
   (define-key my-flycheck-keymap "p" 'flycheck-previous-error)
   (define-key my-flycheck-keymap "C" 'flycheck-compile)
-  (key-chord-define-global "qe" my-flycheck-keymap))
+  (key-seq-define-global "qe" my-flycheck-keymap)
+  (key-seq-define-global "'e" my-flycheck-keymap))
 
 ;; F - Find/search
 (let ((my-find-keymap (make-sparse-keymap)))
   (define-key my-find-keymap "f" 'swiper-isearch)
   (define-key my-find-keymap "o" 'ivy-occur)
-  (key-chord-define-global "qf" my-find-keymap)
-  (key-chord-define-global "'f" my-find-keymap)
-  (key-chord-define-global "wf" my-find-keymap))
+  (key-seq-define-global "'f" my-find-keymap))
 
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
@@ -360,8 +369,7 @@
   (define-key my-git-keymap "r" 'diff-hl-revert-hunk)
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
   (define-key my-git-keymap "u" 'github-browse-file)
-  (key-chord-define-global "'g" my-git-keymap)
-  (key-chord-define-global "qg" my-git-keymap))
+  (key-seq-define-global "'g" my-git-keymap))
 
 ;; H — Help system
 ;; maybe
@@ -377,11 +385,11 @@
   (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
   (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
   (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
-  (key-chord-define-global "qi" my-imenu-keymap))
+  (key-seq-define-global "qi" my-imenu-keymap))
 
 ;; J
-(key-chord-define-global "'j" 'jump-to-register)
-(key-chord-define-global "qj" 'jump-to-register)
+(key-seq-define-global "'j" 'jump-to-register)
+(key-seq-define-global "qj" 'jump-to-register)
 
 ;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
@@ -392,8 +400,7 @@
   ;; (define-key my-kill-keymap "x" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "X" 'kill-current-buffer)
   (define-key my-kill-keymap "p" 'projectile-kill-buffers)
-  (key-chord-define-global "'k" my-kill-keymap)
-  (key-chord-define-global "qk" my-kill-keymap))
+  (key-seq-define-global "qk" my-kill-keymap))
 
 ;; L — Line-numbering/viewing
 (let ((my-lines-keymap (make-sparse-keymap)))
@@ -404,41 +411,50 @@
   (define-key my-lines-keymap "h" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
   (define-key my-lines-keymap "C" 'crosshairs-mode)
-  (key-chord-define-global "ql" my-lines-keymap))
+  ;; (key-seq-define-global "ql" my-lines-keymap)
+  (key-seq-define-global "'l" my-lines-keymap))
 
 ;; M — Mark
-(key-chord-define-global "qm" 'point-to-register)
-(key-chord-define-global "QM" 'counsel-bookmark)
+(key-seq-define-global "qm" 'point-to-register)
+(key-seq-define-global "QM" 'counsel-bookmark)
 
 ;; N — New windows
-(key-chord-define-global "'n" 'split-window-balancedly)
-(key-chord-define-global "qn" 'split-window-balancedly)
-(key-chord-define-global "\"N" 'split-window-vertically-balancedly)
-(key-chord-define-global "QN" 'split-window-vertically-balancedly)
+(key-seq-define-global "'n" 'split-window-balancedly)
+(key-seq-define-global "qn" 'split-window-balancedly)
+(key-seq-define-global "\"N" 'split-window-vertically-balancedly)
+(key-seq-define-global "QN" 'split-window-vertically-balancedly)
 
 ;; O — Open,Other
-(key-chord-define-global "qo" 'crux-smart-open-line)
-;; (key-chord-define-global "QO" 'my-clj-open-above-let)
+(key-seq-define-global "qo" 'crux-smart-open-line)
+;; (key-seq-define-global "QO" 'my-clj-open-above-let)
 
 ;; P — Projectile
+;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
 (let ((my-projectile-keymap (make-sparse-keymap)))
   (define-key my-projectile-keymap "a" 'projectile-add-known-project)
   (define-key my-projectile-keymap "b" 'counsel-projectile-switch-to-buffer)
   (define-key my-projectile-keymap "d" 'projectile-find-dir)
   (define-key my-projectile-keymap "e" 'projectile-recentf)
   (define-key my-projectile-keymap "f" 'projectile-find-file)
-  (define-key my-projectile-keymap "g" 'projectile-grep)
+  (define-key my-projectile-keymap "g" 'projectile-ripgrep)
   (define-key my-projectile-keymap "i" 'projectile-invalidate-cache)
   (define-key my-projectile-keymap "o" 'projectile-multi-occur)
   (define-key my-projectile-keymap "p" 'projectile-switch-project)
   (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
-  ;; (define-key my-projectile-keymap "v" 'projectile-run-vterm)
+  ;; ag in custom specified dir
+  (define-key my-projectile-keymap "S" (lambda () (interactive)
+					 (let ((current-prefix-arg 4))
+					   (counsel-ag))))
+  ;; ag with options prompt
+  (define-key my-projectile-keymap "G" (lambda () (interactive)
+					 (let ((current-prefix-arg 4))
+					   (counsel-projectile-ag))))
+  (define-key my-projectile-keymap "B" 'projectile-ibuffer)
   (define-key my-projectile-keymap "D" 'projectile-dired)
   (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
-  (key-chord-define-global "'p" my-projectile-keymap)
-  (key-chord-define-global "qp" my-projectile-keymap))
+  (key-seq-define-global "'p" my-projectile-keymap))
 
 ;; Q — taken by q'
 
@@ -455,14 +471,13 @@
   (define-key my-cljr-keymap "s" 'cljr-auto-sort-ns)
   (define-key my-cljr-keymap "x" 'cljr-toggle-debug-mode)
   (define-key my-cljr-keymap "S" 'cljr-sort-project-dependencies)
-  (key-chord-define-global "'r" my-cljr-keymap))
+  (key-seq-define-global "'r" my-cljr-keymap))
 
 ;; S — (BAD: possessives like Micah's)
 
 ;; T — (BAD: contractions like can't)
 
-;; U
-;; (key-chord-define-global ",u" 'undo-tree-visualize)
+;; U — (BAD: qu combo)
 
 ;; V — Vterm
 (let ((my-vterm-keymap (make-sparse-keymap)))
@@ -470,11 +485,10 @@
   (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
   (define-key my-vterm-keymap "n" 'vterm)
   (define-key my-vterm-keymap "o" 'my-vterm-other)
-  (key-chord-define-global "'v" my-vterm-keymap))
+  (key-seq-define-global "'v" my-vterm-keymap))
 
 ;; W — Windowing
-(key-chord-define-global "'w" 'ace-window)
-;; (key-chord-define-global "qw" 'ace-window)
+(key-seq-define-global "'w" 'ace-window)
 
 ;; X
 
@@ -508,11 +522,11 @@
   (define-key my-typo-keymap "c"  "♧")
   (define-key my-typo-keymap "b"  "₿")
   (define-key my-typo-keymap "t" 'typo-mode)
-  (key-chord-define-global "qy" my-typo-keymap))
+  (key-seq-define-global "qy" my-typo-keymap))
 (let ((my-typo-keymap (make-sparse-keymap)))
   (define-key my-typo-keymap "'" "‘")
   (define-key my-typo-keymap "\"" "“")
-  (key-chord-define-global "QY" my-typo-keymap))
+  (key-seq-define-global "QY" my-typo-keymap))
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -524,37 +538,41 @@
   (define-key my-hs-keymap "O" 'hs-show-all)
   (define-key my-hs-keymap "z" 'hs-toggle-hiding)
   (define-key my-hs-keymap "t" 'hs-toggle-hiding)
-  (key-chord-define-global "'z" my-hs-keymap))
+  (key-seq-define-global "'z" my-hs-keymap))
 
 ;; MASHINGS
-(key-chord-define-global "qw" 'windmove-left)  ; top-left ring+pinky
-(key-chord-define-global "fp" 'windmove-right)
-(key-chord-define-global "xc" 'windmove-down)
-(key-chord-define-global "wf" 'windmove-up)
-(key-chord-define-global "'y" 'windmove-right) ; top-right ring+pinky
-(key-chord-define-global "xz" 'counsel-M-x)
-(key-chord-define-global "cd" 'cider-clojuredocs)
-(key-chord-define-global "az" 'delete-window-balancedly)
+(key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
+;; (key-chord-define-global "ST" 'windmove-right)
+(key-chord-define-global "ST" (lambda () (interactive) (windmove-right) (beacon-blink)))
+(key-chord-define-global "ST" (lambda () (interactive) (windmove-right) (hl-line-flash)))
+(key-chord-define-global "AR" (lambda () (interactive) (windmove-left) (beacon-blink)))
+(key-chord-define-global "RS" (lambda () (interactive) (windmove-down) (beacon-blink)))
+(key-chord-define-global "WF" (lambda () (interactive) (windmove-up) (beacon-blink)))
+(key-chord-define-global "RS" 'windmove-down)
+(key-chord-define-global "WF" 'windmove-up)
+(key-chord-define-global "XC" 'counsel-M-x)
+(key-chord-define-global "CD" 'cider-clojuredocs)
+;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
-(key-chord-define-global "kh" 'kill-this-buffer)
-(key-chord-define-global "KH" 'kill-window-balancedly)
-(key-chord-define-global "zr" 'delete-window-balancedly)
-(key-chord-define-global "ZR" 'kill-window-balancedly)
-(key-chord-define-global "gt" 'magit-status)
-(key-chord-define-global "xs" 'save-buffer)
+(key-chord-define-global "KH" 'kill-this-buffer)
+;; (key-chord-define-global "KH" 'kill-window-balancedly)
+(key-chord-define-global "ZX" 'delete-window-balancedly)
+;; (key-chord-define-global "ZR" 'kill-window-balancedly)
+(key-chord-define-global "GT" 'magit-status)
+(key-chord-define-global "XS" 'save-buffer)
 
-(key-chord-define-global "pb" 'make-frame-command)
-(key-chord-define-global "PB" 'delete-frame)
+(key-chord-define-global "PB" 'make-frame-command)
+(key-chord-define-global "BJ" 'delete-frame)
 
-(key-chord-define-global "jl" 'beacon-blink)
-(key-chord-define-global "h," 'lispy-describe-inline)
-;; (key-chord-define-global "td" 'cider-test-run-test)
-(key-chord-define-global "td" 'my-cider-eval-and-test-fn)
-;; (key-chord-define-global "xe" 'cider-pprint-eval-last-sexp-to-comment)
-;; (key-chord-define-global "xx" 'cider-eval-defun-to-comment)
-(key-chord-define-global "xx" 'my-cider-eval-to-comment)
-(key-chord-define-global "aa" 'persp-switch-last)
-(key-chord-define-global "BB" 'my-2back-buffers)
+(key-chord-define-global "JL" 'beacon-blink)
+(key-chord-define-global "H<" 'lispy-describe-inline)
+(key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
+(key-chord-define-global "XX" 'my-cider-eval-to-comment)
+(key-chord-define-global "AA" 'persp-switch-last)
+(key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
+
+(key-chord-define-global "]]" 'my-forward-jump-to-line-break)
+(key-chord-define-global "[[" 'my-backward-jump-to-line-break)
 
 ;; https://emacs.stackexchange.com/a/37894/11025
 (defun my-2back-buffers ()
@@ -614,6 +632,9 @@ Here 'words' are defined as characters separated by whitespace."
   (interactive "p")
   (dotimes (_ arg)
     (forward-whitespace 1)))
+
+;; Work around accidental fast C-s C-x from freezing emacs! (maybe working)
+(define-key ivy-minibuffer-map (kbd "C-x") 'keyboard-quit)
 
 ;; Don't want to suspend emacs!
 ;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
@@ -723,7 +744,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 (global-set-key (kbd "C-<tab>") 'aw-flip-window) ; GUIONLY
-(global-set-key (kbd "M-<tab>") 'ace-window) ; GUIONLY
+;; Disabling since elpy needs this for completion
+;; (global-set-key (kbd "M-<tab>") 'ace-window) ; GUIONLY
 
 
 (global-set-key (kbd "M-<right>") 'windmove-right)
@@ -781,6 +803,7 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-\"") 'popup-imenu)
 ;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
 (global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
+(global-set-key (kbd "C-M-e") 'my-end-of-defun)
 (global-set-key (kbd "C-c c") 'my-copy-filename)
 (global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
 
@@ -1887,6 +1910,14 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 
 
+;;; COLORS / THEMES
+
+(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Banana")
+;; Play with setting dynamically
+;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
+(font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
+
+
 ;;; LANGUAGES
 
 ;;; Ruby
@@ -1924,7 +1955,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 (add-to-list 'package-pinned-packages '(cider . "melpa-stable") t)
 (require 'cider)
 ;; (setq cider-repl-history-file "~/.clojure_history")
-(require 'cider-eval-sexp-fu)
+;; (require 'cider-eval-sexp-fu) ; breaks elpy
 (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
 ;; (prelude-require-package 'clojure-cheatsheet)
@@ -1980,6 +2011,7 @@ _w_ whitespace-mode:   %`whitespace-mode
        (setq cider-repl-wrap-history t)
        (setq cider-repl-history-size 1000)
        (setq cider-repl-history-file "~/.cider-repl-history")
+       (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
@@ -2050,16 +2082,48 @@ _w_ whitespace-mode:   %`whitespace-mode
 (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
 
 (defun my-clj-open-above-let ()
-	"Open a line above while inside a let's top line."
-	(interactive)
-	(beginning-of-line)
-	(sp-down-sexp)
-	(sp-down-sexp)
-	(newline)
-	(company-indent-or-complete-common t)
-	(forward-line -1)
-	(end-of-line))
+  "Open a line above while inside a let's top line."
+  (interactive)
+  (beginning-of-line)
+  (sp-down-sexp)
+  (sp-down-sexp)
+  (newline)
+  (company-indent-or-complete-common t)
+  (forward-line -1)
+  (end-of-line))
 
+
+;;; PYTHON
+
+(require 'python)
+(require 'elpy)
+;; (require 'poetry)
+;; WOW, super SLOW!!
+;; (add-hook 'elpy-mode-hook 'poetry-tracking-mode)
+(elpy-enable)
+
+
+;; importmagic
+;; zimports
+;; pyimport: auto-import
+
+(defun my/python-mode-hook ()
+  (add-to-list 'company-backends 'company-jedi))
+
+(add-hook 'python-mode-hook 'my/python-mode-hook)
+
+;; https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
+(with-eval-after-load 'python
+  (defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+          (python-shell-completion-native-output-timeout
+           python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_"))))
+
+(setq python-shell-completion-native-enable nil)
 
 
 ;;; ORG MODE
@@ -2097,6 +2161,12 @@ _w_ whitespace-mode:   %`whitespace-mode
   (forward-word 2)
   (backward-word))
 
+(defun my-end-of-defun ()
+  "Jump to start of name of function, since often want to search it."
+  (interactive)
+  (end-of-defun)
+  (end-of-defun)
+  (my-beginning-of-defun))
 
 ;; Copy filename to clipboard
 ;; https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
@@ -2270,14 +2340,14 @@ This is the same as using \\[set-mark-command] with the prefix argument."
       (error "No number at point"))
   (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
-;; Highlight numbers in groups of three, thousands, rather than using commas
-;; https://emacs.stackexchange.com/questions/54505/how-to-highlight-digit-groups-of-3-in-numerals
-(defun my-matcher (limit)
-  (when (re-search-forward
-         "\\([0-9]\\{1,3\\}\\)\\(?:[0-9]\\{6\\}\\)*\\(?:[0-9]\\{3\\}\\)\\_>" limit t)
-    (goto-char (match-beginning 1))
-    (re-search-forward "[0-9]+" (match-end 1))))
-(font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
+;; ;; Highlight numbers in groups of three, thousands, rather than using commas
+;; ;; https://emacs.stackexchange.com/questions/54505/how-to-highlight-digit-groups-of-3-in-numerals
+;; (defun my-matcher (limit)
+;;   (when (re-search-forward
+;;          "\\([0-9]\\{1,3\\}\\)\\(?:[0-9]\\{6\\}\\)*\\(?:[0-9]\\{3\\}\\)\\_>" limit t)
+;;     (goto-char (match-beginning 1))
+;;     (re-search-forward "[0-9]+" (match-end 1))))
+;; (font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
 
 (defun my/company-show-doc-buffer ()
   "Temporarily show the documentation buffer for the selection."
@@ -2497,7 +2567,7 @@ current buffer's, reload dir-locals."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-dim-other-buffers-mode t)
- '(avy-timeout-seconds 0.1)
+ '(avy-timeout-seconds 0.3)
  '(aw-char-position 'center)
  '(beacon-blink-duration 0.4)
  '(beacon-blink-when-focused t)
@@ -2553,6 +2623,8 @@ current buffer's, reload dir-locals."
  '(doom-modeline-unicode-fallback t)
  '(doom-modeline-vcs-max-length 40)
  '(ediff-split-window-function 'split-window-horizontally)
+ '(elpy-rpc-python-command "poetry run python")
+ '(elpy-rpc-virtualenv-path "")
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(git-identity-list
@@ -2598,7 +2670,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
