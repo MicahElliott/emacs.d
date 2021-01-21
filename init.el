@@ -8,7 +8,7 @@
 ;; - menu nav (imenu)
 ;; - git (magit)
 ;; - buffer browser
-;; - tree viewer (neotree)
+;; - tree viewer (treemacs)
 ;; - popup search (ivy etc)
 ;; - workspace switcher (perspectives)
 
@@ -44,7 +44,6 @@
     ace-window
     all-the-icons
     all-the-icons-dired
-    all-the-icons-ivy-rich
     ag
     aggressive-indent
     ample-theme
@@ -55,7 +54,6 @@
     centaur-tabs
     cider
     cider-eval-sexp-fu
-    cljr-ivy
     clj-refactor
     clojure-essential-ref
     clojure-essential-ref-nov
@@ -69,13 +67,13 @@
     company-jedi
     company-quickhelp
     company-posframe
-    company-terraform
-    counsel
-    counsel-projectile
+    consult
+    consult-flycheck
+    embark-consult
     crux
     csv
+    ctrlf
     cucumber-goto-step
-    cycle-quotes
     delight
     diff-hl
     diminish
@@ -120,22 +118,20 @@
     importmagic
     isend-mode
     ivy
-    ivy-hydra
-    ivy-posframe
     ivy-rich
+    ivy-posframe
     jump-char
     key-chord
     key-seq
     kibit-helper
-    lispy
     magit
+    marginalia
     markdown-mode
     mic-paren
     mixed-pitch
     mode-icons
     move-text
     nlinum-relative
-    neotree
     nov
     org-bullets
     org-preview-html
@@ -146,32 +142,30 @@
     popup
     popup-imenu
     projectile
-    poetry
     prescient
     python
     pyimport
     python-black
+    quick-peek
     rainbow-delimiters
     rainbow-identifiers
     restclient
+    rg
     ripgrep
     rubocop
     selectrum
     selectrum-prescient
     shrink-whitespace
-    smartparens
-    string-inflection
     smex
+    smartparens
+    sotclojure
+    string-inflection
     symbol-overlay
-    terraform-doc
-    terraform-mode
     treemacs
     treemacs-projectile
     treemacs-all-the-icons
     treemacs-icons-dired
     treemacs-magit
-    toggle-quotes
-    total-lines
     typo
     undo-tree
     unfill
@@ -186,9 +180,18 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+;; DISABLED
+;; all-the-icons-ivy-rich
+;; cljr-ivy
+;; ivy
+;; ivy-hydra
+;; ivy-posframe
+;; ivy-rich
+;; counsel
+;; counsel-projectile
+
+;; Include manually installed packages
 (add-to-list 'load-path "~/.emacs.d/vendor")
-
-
 
 
 ;; '(cursor-type (quote (bar . 2)))
@@ -256,6 +259,7 @@
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
 
+;; Test rainbow parens by uncommenting:
 ;; ((((((((()))))))))
 
 ;; '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1" :weight bold))))
@@ -264,6 +268,51 @@
 ;; '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
 ;; '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
 ;; '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
+
+
+;;; TUNING / PERFORMANCE
+
+;; Don’t compact font caches during GC.
+(setq inhibit-compacting-font-caches t)
+
+;; Improve long-line performance.
+;; https://emacs.stackexchange.com/a/603/11025
+;; https://www.reddit.com/r/emacs/comments/7wezb4/how_can_i_make_line_rendering_faster/du1mige/
+(setq bidi-inhibit-bpa t)
+(setq-default bidi-display-reordering nil)
+
+;; Avoid performance issues in files with very long lines.
+;; https://emacs.stackexchange.com/a/19030/11025
+(global-so-long-mode 1)
+
+;; Follow symlinks.
+(setq find-file-visit-truename t)
+
+;; Turn off warnings from vendor packages.
+;; https://andrewjamesjohnson.com/suppressing-ad-handle-definition-warnings-in-emacs/
+(setq ad-redefinition-action 'accept)
+
+;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
+;; https://www.facebook.com/notes/daniel-colascione/buttery-smooth-emacs/10155313440066102/
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
+
+(setq savehist-autosave-interval 300)
+
+;; each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
+
+;; warn when opening files bigger than 1MB
+(setq large-file-warning-threshold 1000000)
+
+;; Cursor movement lag
+;; https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag
+(setq auto-window-vscroll nil)
+
+
+;; Stop Emacs from processing .Xresources/.Xdefaults
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Resources.html#Resources
+(setq inhibit-x-resources t)
+
 
 
 ;;; BINDINGS
@@ -312,7 +361,7 @@
 (let ((my-buffer-keymap (make-sparse-keymap)))
   ;; Popups and immediate changes lower case
   (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
-  ;; (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
+  (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
   (define-key my-buffer-keymap "A" 'ibuffer) ; all
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
@@ -350,8 +399,8 @@
 
 ;; F - Find/search
 (let ((my-find-keymap (make-sparse-keymap)))
-  (define-key my-find-keymap "f" 'swiper-isearch)
-  (define-key my-find-keymap "o" 'ivy-occur)
+  ;; (define-key my-find-keymap "f" 'swiper-isearch)
+  ;; (define-key my-find-keymap "o" 'ivy-occur)
   (key-seq-define-global "'f" my-find-keymap))
 
 ;; G — maGit
@@ -416,7 +465,7 @@
 
 ;; M — Mark
 (key-seq-define-global "qm" 'point-to-register)
-(key-seq-define-global "QM" 'counsel-bookmark)
+;; (key-seq-define-global "QM" 'counsel-bookmark)
 
 ;; N — New windows
 (key-seq-define-global "'n" 'split-window-balancedly)
@@ -443,13 +492,9 @@
   (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
   ;; ag in custom specified dir
-  (define-key my-projectile-keymap "S" (lambda () (interactive)
-					 (let ((current-prefix-arg 4))
-					   (counsel-ag))))
+  (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
   ;; ag with options prompt
-  (define-key my-projectile-keymap "G" (lambda () (interactive)
-					 (let ((current-prefix-arg 4))
-					   (counsel-projectile-ag))))
+  (define-key my-projectile-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
   (define-key my-projectile-keymap "B" 'projectile-ibuffer)
   (define-key my-projectile-keymap "D" 'projectile-dired)
   (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
@@ -543,15 +588,16 @@
 ;; MASHINGS
 (key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
-(key-chord-define-global "ST" (lambda () (interactive) (windmove-right) (beacon-blink)))
-(key-chord-define-global "ST" (lambda () (interactive) (windmove-right) (hl-line-flash)))
-(key-chord-define-global "AR" (lambda () (interactive) (windmove-left) (beacon-blink)))
-(key-chord-define-global "RS" (lambda () (interactive) (windmove-down) (beacon-blink)))
-(key-chord-define-global "WF" (lambda () (interactive) (windmove-up) (beacon-blink)))
+(key-chord-define-global "ST" (lambda () (interactive) (windmove-right)))
+(key-chord-define-global "ST" (lambda () (interactive) (windmove-right)))
+(key-chord-define-global "AR" (lambda () (interactive) (windmove-left)))
+(key-chord-define-global "RS" (lambda () (interactive) (windmove-down)))
+(key-chord-define-global "WF" (lambda () (interactive) (windmove-up)))
 (key-chord-define-global "RS" 'windmove-down)
 (key-chord-define-global "WF" 'windmove-up)
 (key-chord-define-global "XC" 'counsel-M-x)
-(key-chord-define-global "CD" 'cider-clojuredocs)
+(key-chord-define-global "DV" 'cider-clojuredocs)
+(key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "KH" 'kill-this-buffer)
@@ -561,10 +607,13 @@
 (key-chord-define-global "GT" 'magit-status)
 (key-chord-define-global "XS" 'save-buffer)
 
-(key-chord-define-global "PB" 'make-frame-command)
-(key-chord-define-global "BJ" 'delete-frame)
+;; TODO key seqs for opposited toggle
+(key-seq-define-global "PB" 'make-frame-command)
+(key-seq-define-global "BP" 'delete-frame)
 
-(key-chord-define-global "JL" 'beacon-blink)
+(key-seq-define-global "JL" 'beacon-blink)
+(key-seq-define-global "LJ" 'hl-line-flash)
+(define-key my-lines-keymap "h" 'hl-line-flash)
 (key-chord-define-global "H<" 'lispy-describe-inline)
 (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
 (key-chord-define-global "XX" 'my-cider-eval-to-comment)
@@ -584,9 +633,7 @@
   (interactive)
   (cider-eval-defun-to-comment)
   (forward-line)
-  (delete-indentation)
-  ;; This part doesn't work
-  (insert " "))
+  (let ((current-prefix-arg 4)) (delete-indentation)))
 
 
 ;; Other possible mashings
@@ -609,7 +656,7 @@
 ;; Leaders: z / . , (z and / are nice since at opposite corners)
 
 
-;;; Other Bindings
+;;; OTHER BINDINGS
 
 
 ;; https://emacs.stackexchange.com/questions/4271/stop-at-beginning-of-a-word-on-forward-word
@@ -634,7 +681,7 @@ Here 'words' are defined as characters separated by whitespace."
     (forward-whitespace 1)))
 
 ;; Work around accidental fast C-s C-x from freezing emacs! (maybe working)
-(define-key ivy-minibuffer-map (kbd "C-x") 'keyboard-quit)
+;; (define-key ivy-minibuffer-map (kbd "C-x") 'keyboard-quit)
 
 ;; Don't want to suspend emacs!
 ;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
@@ -649,6 +696,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "M-f") 'my/forward-word-begin)
 ;; (global-set-key (kbd "M-b") 'my/backward-word-begin)
 
+;; TODO
+(global-set-key (kbd "C-S-a") 'embark-act)
 
 (global-set-key (kbd "M-o") 'scroll-up-stay)
 (global-set-key (kbd "M-'") 'scroll-down-stay)
@@ -686,20 +735,16 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "<f1> f") 'counsel-describe-function)
-(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-(global-set-key (kbd "<f1> l") 'counsel-find-library)
-(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-(global-set-key (kbd "<f2> j") 'counsel-set-variable)
-(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-(global-set-key (kbd "C-c v") 'ivy-push-view)
-(global-set-key (kbd "C-c V") 'ivy-pop-view)
-(global-set-key (kbd "C-c r") 'ivy-resume)
+;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+;; (global-set-key (kbd "<f1> l") 'counsel-find-library)
+;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+;; (global-set-key (kbd "<f2> j") 'counsel-set-variable)
 
-(global-set-key (kbd "C-c g") 'counsel-git)
-(global-set-key (kbd "C-c j") 'counsel-git-grep)
-(global-set-key (kbd "C-x l") 'counsel-locate)
+;; (global-set-key (kbd "C-c g") 'counsel-git)
+;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
+;; (global-set-key (kbd "C-x l") 'counsel-locate)
 (global-set-key (kbd "C-p") 'previous-line)
 (global-set-key (kbd "C-c T") 'typo-mode)
 
@@ -788,7 +833,6 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key [(meta m)] 'jump-char-forward)
 ;; (global-set-key [(shift meta m)] 'jump-char-backward)
 ;; (global-set-key (kbd "C-=") 'er/expand-region)
-;; (global-set-key (kbd "C-'") 'toggle-quotes)
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
@@ -812,7 +856,7 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "M-`") 'jump-to-mark)
 
 
-;;; UI
+;;; UI / LOOK-N-FEEL
 
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
@@ -858,21 +902,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (load-theme 'ample-light t t)
 (enable-theme 'ample)
 
-;; (require 'modus-vivendi-theme)
-;; (load-theme 'modus-vivendi)
-
 ;; https://seagle0128.github.io/doom-modeline/
 (require 'doom-modeline)
 (doom-modeline-mode 1)
 (setq doom-modeline-height 10)
-
-;; Put total lines into modeline.
-;; https://github.com/hinrik/total-lines
-(require 'total-lines)
-(global-total-lines-mode)
-;; (setq global-mode-string
-;;       `(((12 "%l" "/" (:eval (format "%d,%d" total-lines (1+ (current-column)))))
-;; 	 (-3 "%p"))))
 
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
 ;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
@@ -890,10 +923,6 @@ Here 'words' are defined as characters separated by whitespace."
 (scroll-bar-mode -1)
 (setq scroll-bar-width 2)
 
-;; Stop Emacs from processing .Xresources/.Xdefaults
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Resources.html#Resources
-(setq inhibit-x-resources t)
-
 ;; No splash screen
 (setq inhibit-startup-message nil)
 (setq inhibit-startup-screen nil)
@@ -906,7 +935,6 @@ Here 'words' are defined as characters separated by whitespace."
 (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
-
 ;; autosave the undo-tree history
 (setq undo-tree-history-directory-alist
       `((".*" . ,temporary-file-directory)))
@@ -916,7 +944,12 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (beacon-mode +1)
 
 (require 'crosshairs)
-(crosshairs-toggle-when-idle)
+;; (crosshairs-toggle-when-idle)
+
+;; flash windows when you change to them
+;; https://github.com/N-Mi/e-other-window
+;; (require 'e-other-window)
+
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -934,9 +967,9 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
-
 (require 'symbol-overlay)
 
+;; FIXME no longer needed since with-eval-after-load below
 ;; Overriding: https://github.com/wolray/symbol-overlay/issues/70
 (defvar my-symbol-overlay-map
   (let ((map (make-sparse-keymap)))
@@ -957,14 +990,14 @@ Here 'words' are defined as characters separated by whitespace."
   "Keymap automatically activated inside overlays.
 You can re-bind the commands to any keys you prefer.")
 
-(setq symbol-overlay-map my-symbol-overlay-map)
+;; (setq symbol-overlay-map my-symbol-overlay-map)
 
 ;; Override to not insert boundaries
-(defun ivy--insert-symbol-boundaries ()
-  (undo-boundary))
+(defun ivy--insert-symbol-boundaries () (undo-boundary))
 
+(with-eval-after-load 'symbol-overlay
+  (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
 
-;; (define-key symbol-overlay-map (kbd "s") 'any-command)
 
 
 ;; ENABLE??
@@ -977,63 +1010,10 @@ You can re-bind the commands to any keys you prefer.")
 
 
 ;; https://github.com/cyrus-and/zoom
-(require 'zoom)
+;; (require 'zoom)
 ;; (zoom-mode)
-(global-set-key (kbd "C-x +") 'zoom)
+;; (global-set-key (kbd "C-x +") 'zoom)
 
-
-;;; TUNING / PERFORMANCE
-
-;; Don’t compact font caches during GC.
-(setq inhibit-compacting-font-caches t)
-
-;; Improve long-line performance.
-;; https://emacs.stackexchange.com/a/603/11025
-(setq bidi-inhibit-bpa t)
-(setq-default bidi-display-reordering nil)
-
-;; Avoid performance issues in files with very long lines.
-;; https://emacs.stackexchange.com/a/19030/11025
-(global-so-long-mode 1)
-
-;; Follow symlinks.
-(setq find-file-visit-truename t)
-
-;; https://andrewjamesjohnson.com/suppressing-ad-handle-definition-warnings-in-emacs/
-(setq ad-redefinition-action 'accept)
-
-;; https://www.reddit.com/r/emacs/comments/7wezb4/how_can_i_make_line_rendering_faster/du1mige/
-(setq-default bidi-display-reordering nil)
-
-;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
-;; https://www.facebook.com/notes/daniel-colascione/buttery-smooth-emacs/10155313440066102/
-(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
-
-(setq savehist-autosave-interval 300)
-
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
-
-;; warn when opening files bigger than 1MB
-(setq large-file-warning-threshold 1000000)
-
-;; https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag
-(setq auto-window-vscroll nil)
-
-;; config changes made through the customize UI will be store here
-;; (setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
-
-
-(require 'crux)
-
-;; move line up/down (already enabled) -- M-S-up
-;; move-text-up, move-text-down
-(require 'move-text)
-
-
-
-
-;;; LOOK-N-FEEL
 
 ;; Displaying of tab widith; like vim's tabstop
 (setq tab-width 20)
@@ -1071,14 +1051,38 @@ You can re-bind the commands to any keys you prefer.")
 ;; (add-hook 'yaml-mode-hook 'my-buffer-face-mode-fixed)
 ;; (add-hook 'markdown-mode-hook 'my-buffer-face-mode-variable)
 
-;; Focus
-(require 'focus)
+(require 'crux)
+
+;; move line up/down (already enabled) -- M-S-up
+;; move-text-up, move-text-down
+(require 'move-text)
+
+;; Focus — Dim the font color of text in surrounding paragraphs
+;; https://github.com/larstvei/Focus
+;; (require 'focus)
 
 ;; Mixed pitch fonts (variable width)
 ;; https://gitlab.com/jabranham/mixed-pitch
-(require 'mixed-pitch)
+;; (require 'mixed-pitch)
 ;; FIXME: seems to need to be run manually
 (add-hook 'text-mode 'mixed-pitch-mode)
+
+
+;;; SELECTRUM, CTRLF, PRESCIENT, CONSULT, MARGINALIA
+
+;; TODO
+
+;; (ctrlf-mode +1)
+;; (selectrum-mode +1)
+;; (selectrum-prescient-mode +1)
+;; ;; save command history on disk, so the sorting gets more intelligent over time
+;; (prescient-persist-mode +1)
+
+;; (marginalia-mode)
+;; ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
+;; (advice-add #'marginalia-cycle :after
+;;             (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
+;; (define-key minibuffer-local-map (kbd "C-M-a") 'marginalia-cycle)
 
 
 ;;; IVY, COUNSEL, SWIPER
@@ -1093,19 +1097,16 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; Disabling since obscures search results
 (require 'ivy-posframe)
-;; display at `ivy-posframe-style'
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
 (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
-;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
-;; (ivy-posframe-mode 1)
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
 (require 'counsel-projectile)
 (counsel-projectile-mode)
+
+;; (require 'oneonone)
+;; (1on1-emacs)
+
 
 ;; Projectile
 ;; Use C-u to alter grepping behavior.
@@ -1176,24 +1177,14 @@ You can re-bind the commands to any keys you prefer.")
 ;; Better than poporg-edit?  Great for markdown.  Can even eval code.
 ;; Keys: C-c ' (start), C-c C-c (commit)
 (require 'typo) ; C-c T
-;; https://github.com/emacsmirror/cycle-quotes/blob/master/cycle-quotes.el
-;; (require 'cycle-quotes)
-;; https://github.com/toctan/toggle-quotes.el
-;; (require 'toggle-quotes)
 
 
 ;; Typo fancy typography/punctuation
 ;; https://github.com/jorgenschaefer/typoel
 
-;; Defvault to using typo mode for better/fancy typography
+;; Default to using typo mode for better/fancy typography
 (typo-global-mode 1)
 (add-hook 'text-mode-hook 'typo-mode)
-
-
-
-
-
-
 
 
 ;; special treatment of FIXME, etc
@@ -1202,7 +1193,6 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; Wow, hide comments!! Just blanks them out.
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
-
 
 
 ;; auto-dim
@@ -1287,6 +1277,8 @@ You can re-bind the commands to any keys you prefer.")
 ;; http://stackoverflow.com/questions/6707758/inverse-of-m-q-an-unfill-paragraph-function
 (require 'unfill)
 
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
 ;; Spelling/grammar help
 ;; https://github.com/mhayashi1120/Emacs-langtool
 ;; ENABLE
@@ -1315,8 +1307,6 @@ You can re-bind the commands to any keys you prefer.")
 ;; ENABLE??
 ;; (require 'highlight-numbers)
 ;; (add-hook 'prog-mode-hook 'highlight-numbers-mode)
-
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 ;; TODO: hydra for visible things
 ;; - toggle-truncate-lines
@@ -1356,18 +1346,6 @@ You can re-bind the commands to any keys you prefer.")
 ;; (setq confirm-kill-emacs 'yes-or-no-p)
 (global-unset-key (kbd "C-x C-c"))
 
-;; https://github.com/jaypei/emacs-neotree/issues/133
-(setq neo-vc-integration nil)
-
-;; TRIAL
-(add-hook 'neotree-mode-hook
-	  (lambda ()
-	    ;; already s/S
-	    (define-key neotree-mode-map (kbd "N") 'neotree-select-next-sibling-node)))
-
-
-;; (require 'tldr)
-;; (require 'cheat-sh)
 
 ;; Treemacs
 ;; It treemacs icons are big, try this manually
@@ -1404,8 +1382,8 @@ You can re-bind the commands to any keys you prefer.")
 ;; https://github.com/Wilfred/helpful
 (require 'helpful)
 ;; (global-set-key (kbd "C-h k") #'helpful-key)
-(setq counsel-describe-function-function #'helpful-callable)
-(setq counsel-describe-variable-function #'helpful-variable)
+;; (setq counsel-describe-function-function #'helpful-callable)
+;; (setq counsel-describe-variable-function #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 ;; (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
@@ -1486,43 +1464,6 @@ You can re-bind the commands to any keys you prefer.")
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
 (setq persp-state-default-file "~/.emacs.d/persp-mde")
 
-
-;; HYDRAS
-;; Consider also: Discover menus:
-;; https://github.com/mickeynp/discover.el
-
-(require 'hydra)
-
-;; Tiny example
-(defhydra hydra-zoom (:color blue)
-  "
-Press _g_ to zoom.
-"
-  ("g" text-scale-increase "in")
-  ("l" text-scale-decrease "out"))
-(global-set-key (kbd "<f5>") 'hydra-zoom/body)
-
-;;** Example 7: toggle with Ruby-style docstring
-;; (defvar whitespace-mode nil)
-(defhydra hydra-toggle (:color pink)
-  "
-_a_ abbrev-mode:       %`abbrev-mode
-_d_ debug-on-error:    %`debug-on-error
-_f_ auto-fill-mode:    %`auto-fill-function
-_t_ truncate-lines:    %`truncate-lines
-_w_ whitespace-mode:   %`whitespace-mode
-"
-  ("a" abbrev-mode nil)
-  ("d" toggle-debug-on-error nil)
-  ("f" auto-fill-mode nil)
-  ("t" toggle-truncate-lines nil)
-  ("w" whitespace-mode nil)
-  ("q" nil "quit"))
-;; Recommended binding:
-(global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
-
-
-
 
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
@@ -1585,10 +1526,6 @@ _w_ whitespace-mode:   %`whitespace-mode
     (move-to-column col)))
 
 
-
-
-
-
 ;; camel, kebab cases
 ;; https://stackoverflow.com/a/27422814/326516
 (require 'string-inflection)
@@ -1600,7 +1537,7 @@ _w_ whitespace-mode:   %`whitespace-mode
   (move-to-window-line-top-bottom))
 
 
-;;; Commenter: still stuggling with this
+;;; Commenter
 (require 'comment-dwim-2)
 
 
@@ -1627,10 +1564,9 @@ _w_ whitespace-mode:   %`whitespace-mode
   (balance-windows))
 
 
-;;; RESTCLIENT
-(require 'restclient)
-
-(require 'httprepl)
+;;; REST CLIENTS
+;; (require 'restclient)
+;; (require 'httprepl)
 
 
 ;; Select/highlight with easy-kill
@@ -1657,26 +1593,6 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; beginning of line like a civilized human being.
 
 
-;;; Key Chords
-
-;; Decide on using key-chords
-;; Key-chords slow down typing of some natural characters; oh well.
-;; It's a built-in feature of emacs, so shoud be pretty first-class.
-;; Best to just use with a leader -like key for now.  Note that the
-;; delay is really short, so combos on the same hand might be too slow
-;; to type.
-
-
-
-;; avy allows us to effectively navigate to visible things
-(require 'avy)
-(setq avy-background t)
-(setq avy-style 'at-full)
-
-;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
-;; If we ever want to abandon swiper, anzu will be useful
-;; (require 'anzu)
-;; (global-anzu-mode)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -1693,10 +1609,6 @@ _w_ whitespace-mode:   %`whitespace-mode
 (require 'ediff)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
-;; clean up obsolete buffers automatically
-;; https://www.emacswiki.org/emacs/MidnightMode
-(require 'midnight)
-
 ;; make a shell script executable automatically on save
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
@@ -1706,6 +1618,10 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 
 ;; AVY: https://github.com/abo-abo/avy/wiki/defcustom
+;; avy allows us to effectively navigate to visible things without a mouse
+(require 'avy)
+(setq avy-background t)
+(setq avy-style 'at-full)
 ;; confine avy's characters for ease of typing/finding
 ;; (setq avy-keys (number-sequence ?a ?f))
 ;; Use only easiest left and right keys
@@ -1899,10 +1815,14 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; (require 'company-quickhelp)
 ;; (company-quickhelp-mode 1)
 
-;; TRIAL
-(require 'popwin)
-(popwin-mode 1)
+;; TODO Decide if really wanted
+;; Popup window manager for short/wide bottom C-g killable popup
+;; https://github.com/emacsorphanage/popwin
+;; (require 'popwin)
+;; (popwin-mode 1)
 
+;; Icons for company popup?
+;; TODO Themeable
 ;; YAY!!!
 ;; https://github.com/sebastiencs/company-box
 (require 'company-box)
@@ -1912,6 +1832,8 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 ;;; COLORS / THEMES
 
+;; Special sectional comments
+;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
 (defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Banana")
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
@@ -1939,11 +1861,20 @@ _w_ whitespace-mode:   %`whitespace-mode
 (require 'feature-mode)
 ;; Just for emacs testing
 ;; (prelude-require-package 'ecukes)
-(require 'cucumber-goto-step)
+;; (require 'cucumber-goto-step)
 
 
-(require 'edbi)
+;; Database UI
+;; (require 'edbi)
 
+;; (require 'popup)
+
+;; https://emacs.stackexchange.com/a/2779/11025
+(defun my-describe-function-at-point ()
+  (interactive)
+  (describe-function (function-called-at-point)))
+;; (key-chord-define-global "CD" 'my-describe-function-at-point)
+;; TODO bind to just elisp mode
 
 
 ;;; Clojure
@@ -1958,15 +1889,40 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; (require 'cider-eval-sexp-fu) ; breaks elpy
 (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
-;; (prelude-require-package 'clojure-cheatsheet)
 (require 'flycheck-clojure)
 ;; (require 'company-flx)
 ;; (require 'flycheck-joker)
 (require 'kibit-helper)
-;; (require 'sotclojure)
-(require 'clojure-mode-extra-font-locking)
+(require 'sotclojure)
+;; (require 'clojure-mode-extra-font-locking)
 
-(require 'lispy)
+;; Quick-Peek for Cider
+;; https://github.com/clojure-emacs/cider/issues/2968
+(require 'quick-peek)
+(defvar my-cider-inline-docs-opened-p nil
+  "Toggle to support an inline help being open (expanded) or not.")
+(defun my-cider-inline-docs-toggle ()
+  "Show a fn or ns docstring's key pieces as inline overlay."
+  (interactive)
+  (if my-cider-inline-docs-opened-p
+      (progn
+	(setq my-cider-inline-docs-opened-p nil)
+	(quick-peek-hide))
+    ;; If not on a word, let it error
+    (let* ((info    (cider-var-info (thing-at-point 'word 'no-properties)))
+           ;; Built-in fns' info are indexed differently from user-defined.
+	   (arglist (nrepl-dict-get info "arglists-str"))
+	   (doc     (nrepl-dict-get info "doc")))
+      (if doc
+	  (progn
+	    (quick-peek-show
+	     (concat (if arglist (concat arglist "\n") "")
+		     (replace-regexp-in-string "^  " "" doc)))
+	    (setq my-cider-inline-docs-opened-p t))
+	(message "Missing docstring or invalid thing at point")))))
+;; (key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
+
+
 
 (setq error-tip-notify-keep-messages t)
 
@@ -1980,9 +1936,10 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;;                     (clj-kondo-edn . edn-joker)))
 ;;   (flycheck-add-next-checker (car checkers) (cons 'error (cdr checkers))))
 
-(require 'clojure-essential-ref)
-(require 'clojure-essential-ref-nov)
-(setq clojure-essential-ref-nov-epub-path "~/Downloads/Clojure_The_Essential_Reference_v30_MEAP.epub")
+;; TODO get these docs working!
+;; (require 'clojure-essential-ref)
+;; (require 'clojure-essential-ref-nov)
+;; (setq clojure-essential-ref-nov-epub-path "~/Downloads/Clojure_The_Essential_Reference_v30_MEAP.epub")
 
 ;; Trying to get rid of the prompt to save before load.
 (defun my-cider-load-buffer ()
@@ -2016,9 +1973,9 @@ _w_ whitespace-mode:   %`whitespace-mode
        (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
        ;; (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
-       (key-chord-define clojure-mode-map "qr" 'cljr-ivy)
+       ;; (key-chord-define clojure-mode-map "qr" 'cljr-ivy)
        (cljr-add-keybindings-with-prefix "C-c m")
-       (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
+       ;; (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
        ;; (global-set-key (kbd "C-c r") 'cljr-helm)
@@ -2097,9 +2054,6 @@ _w_ whitespace-mode:   %`whitespace-mode
 
 (require 'python)
 (require 'elpy)
-;; (require 'poetry)
-;; WOW, super SLOW!!
-;; (add-hook 'elpy-mode-hook 'poetry-tracking-mode)
 (elpy-enable)
 
 
@@ -2360,19 +2314,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (display-buffer doc-buffer t)))
 (define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
 
-;; https://www.reddit.com/r/emacs/comments/6ddr7p/snippet_search_cheatsh_using_ivy/di2eyaz/?utm_source=reddit&utm_medium=web2x&context=3
-(defun counsel-tldr ()
-  "Search https://github.com/tldr-pages/tldr."
-  (interactive)
-  (let* ((default-directory "~/src/tldr")
-         (cands (split-string
-                 (shell-command-to-string
-                  "git ls-files --full-name -- pages/")
-                 nil t)))
-    (ivy-read "Topic: " cands
-              :action #'find-file
-              :caller 'counsel-tldr)))
-
 (defun my-find-file-below (fname)
   (interactive)
   (split-window-vertically-balancedly)
@@ -2416,6 +2357,12 @@ This is the same as using \\[set-mark-command] with the prefix argument."
     (set-variable 'org-hide-emphasis-markers t)))
 (define-key org-mode-map (kbd "C-c e") 'org-toggle-emphasis)
 
+(defun my/ffr (filename)
+  "Foo `FILENAME'."
+  (interactive "P")
+  (split-window-right)
+  (e-other-window 1)
+  (find-file filename))
 
 ;; Open ivy results in new windows.
 ;; https://www.reddit.com/r/emacs/comments/efg362/ivy_open_selection_vertically_or_horizontally/
@@ -2430,31 +2377,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
   (split-window-below)
   (other-window 1)
   (find-file filename))
-
-(ivy-set-actions
- 'counsel-projectile-ag
- '(("|" find-file-right "open right")
-   ("%" find-file-below "open below")))
-
-(ivy-set-actions
- 'counsel-find-file
- '(("|" find-file-right "open right")
-   ("%" find-file-below "open below")))
-
-(ivy-set-actions
- 'counsel-recentf
- '(("|" find-file-right "open right")
-   ("%" find-file-below "open below")))
-
-(ivy-set-actions
- 'counsel-buffer-or-recentf
- '(("|" find-file-right "open right")
-   ("%" find-file-below "open below")))
-
-(ivy-set-actions
- 'ivy-switch-buffer
- '(("|" find-file-right "open right")
-   ("%" find-file-below "open below")))
 
 
 ;; https://emacs.stackexchange.com/a/13096/11025
@@ -2501,7 +2423,15 @@ current buffer's, reload dir-locals."
       (vterm-send-string buffer-content))))
 
 
-(define-key shell-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
+(require 'vterm)
+
+(define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
+
+(define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
+
+(defun ff-new-win ()
+  (find-file))
+
 
 
 
@@ -2529,6 +2459,8 @@ current buffer's, reload dir-locals."
 
 ;;; END
 
+;; https://github.com/Yevgnen/ivy-rich/blob/master/screenshots.org
+;; I think ivy-rich is like marginalia, giving inline docs is ivy
 (require 'ivy-rich)
 (all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
 (ivy-rich-mode 1)
@@ -2576,8 +2508,7 @@ current buffer's, reload dir-locals."
  '(beacon-push-mark nil)
  '(browse-url-browser-function 'browse-url-firefox)
  '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
- '(cider-comment-prefix ";=> ")
- '(cider-repl-history-file cider-history)
+ '(cider-comment-prefix " ;=> ")
  '(cider-special-mode-truncate-lines nil)
  '(cljr-favor-private-functions nil)
  '(cljr-hotload-dependencies t)
@@ -2670,7 +2601,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(quick-peek sotclojure loccur project-explorer rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
