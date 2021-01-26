@@ -74,6 +74,7 @@
     csv
     ctrlf
     cucumber-goto-step
+    dash
     delight
     diff-hl
     diminish
@@ -135,6 +136,7 @@
     nov
     org-bullets
     org-preview-html
+    osc
     outshine
     navi-mode
     page-break-lines
@@ -239,6 +241,7 @@
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
  '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
+ '(quick-peek-background-face ((t (:inherit default :extend t :background "gray22"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow" :weight bold))))
@@ -1073,7 +1076,7 @@ You can re-bind the commands to any keys you prefer.")
 ;; TODO
 
 ;; (ctrlf-mode +1)
-;; (selectrum-mode +1)
+(selectrum-mode +1) ; useful even when ivy for any completing-read
 ;; (selectrum-prescient-mode +1)
 ;; ;; save command history on disk, so the sorting gets more intelligent over time
 ;; (prescient-persist-mode +1)
@@ -1103,6 +1106,10 @@ You can re-bind the commands to any keys you prefer.")
 ;; https://github.com/ericdanan/counsel-projectile
 (require 'counsel-projectile)
 (counsel-projectile-mode)
+
+;; https://github.com/raxod502/prescient.el
+(require 'ivy-prescient)
+(ivy-prescient-mode)
 
 ;; (require 'oneonone)
 ;; (1on1-emacs)
@@ -1903,6 +1910,7 @@ You can re-bind the commands to any keys you prefer.")
   "Toggle to support an inline help being open (expanded) or not.")
 (defun my-cider-inline-docs-toggle ()
   "Show a fn or ns docstring's key pieces as inline overlay."
+  ;; Another way to do this is to use "popup" instead of quick-peek.
   (interactive)
   (if my-cider-inline-docs-opened-p
       (progn
@@ -1923,8 +1931,22 @@ You can re-bind the commands to any keys you prefer.")
 ;; (key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
 
 
+;;; Nofitications
+;; https://github.com/jwiegley/alert
+(setq alert-default-style 'notifier)
+(alert "Tis but an alert" :severity 'high :title "some title")
 
-(setq error-tip-notify-keep-messages t)
+;; (setq hs-special-modes-alist)
+
+(defun my-projectile-ivy-ag ()
+  "Populate ag with a search term of thing at point."
+  (interactive)
+  (let ((counsel-projectile-ag-initial-input
+	 (thing-at-point 'word 'no-properties)))
+    (counsel-projectile-ag)))
+(key-chord-define-global "RF" 'my-projectile-ivy-ag)
+
+
 
 ;; For kondo: https://github.com/borkdude/flycheck-clj-kondo#multiple-linters
 (require 'flycheck-clj-kondo)
@@ -2601,7 +2623,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(quick-peek sotclojure loccur project-explorer rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(ivy-xref ivy-prescient alert sonic-pi quick-peek sotclojure loccur project-explorer rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
