@@ -53,7 +53,6 @@
     buffer-move
     centaur-tabs
     cider
-    cider-eval-sexp-fu
     clj-refactor
     clojure-essential-ref
     clojure-essential-ref-nov
@@ -75,10 +74,8 @@
     ctrlf
     cucumber-goto-step
     dash
-    delight
     diff-hl
     diminish
-    discover-clj-refactor
     doom-modeline
     dotenv-mode
     dot-mode
@@ -94,7 +91,6 @@
     expand-region
     feature-mode
     fic-mode
-    flx-ido
     flycheck-clj-kondo
     flycheck-clojure
     flycheck-inline
@@ -103,6 +99,8 @@
     flycheck-yamllint
     flymd
     focus
+    flx
+    flx-ido
     git-identity
     git-link
     git-messenger
@@ -110,17 +108,10 @@
     github-browse-file
     helpful
     highlight-parentheses
-    highlight-thing
     httprepl
     ibuffer-vc
-    ido
-    ido-completing-read+
     imenu-list
     importmagic
-    isend-mode
-    ivy
-    ivy-rich
-    ivy-posframe
     jump-char
     key-chord
     key-seq
@@ -128,7 +119,6 @@
     magit
     marginalia
     markdown-mode
-    mic-paren
     mixed-pitch
     mode-icons
     move-text
@@ -138,11 +128,9 @@
     org-preview-html
     osc
     outshine
-    navi-mode
     page-break-lines
     paren-face
     popup
-    popup-imenu
     projectile
     prescient
     python
@@ -177,7 +165,7 @@
     which-key
     yaml-mode
     zimports
-    zoom))
+    ))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -191,6 +179,12 @@
 ;; ivy-rich
 ;; counsel
 ;; counsel-projectile
+;; ivy
+;; ivy-rich
+;; ivy-posframe
+;; ido-flx
+;; ido
+;; ido-completing-read+
 
 ;; Include manually installed packages
 (add-to-list 'load-path "~/.emacs.d/vendor")
@@ -251,10 +245,6 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
- '(swiper-background-match-face-3 ((t (:inherit swiper-match-face-3 :background "aquamarine3"))))
- '(swiper-line-face ((t (:background "purple4"))))
- '(swiper-match-face-2 ((t (:background "yellow" :foreground "black"))))
- '(swiper-match-face-3 ((t (:background "aquamarine3" :foreground "black"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
@@ -271,7 +261,10 @@
 ;; '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "dodger blue" :height 1.1 :family "Alegreya Sans"))))
 ;; '(font-lock-function-name-face ((t (:foreground "#A6E22E" :underline t :weight ultra-bold))))
 ;; '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
-
+;; '(swiper-background-match-face-3 ((t (:inherit swiper-match-face-3 :background "aquamarine3"))))
+;; '(swiper-line-face ((t (:background "purple4"))))
+;; '(swiper-match-face-2 ((t (:background "yellow" :foreground "black"))))
+;; '(swiper-match-face-3 ((t (:background "aquamarine3" :foreground "black"))))
 
 ;;; TUNING / PERFORMANCE
 
@@ -349,7 +342,6 @@
 (key-seq-define-global "q+" 'text-scale-increase)
 (key-seq-define-global "qq" 'aw-flip-window)
 (key-seq-define-global "''" 'aw-flip-window)
-;; TODO: multiple cursors or
 
 ;; A — All workspaces
 (let ((my-spaces-keymap (make-sparse-keymap)))
@@ -363,16 +355,20 @@
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
   ;; Popups and immediate changes lower case
-  (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
+  ;; (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
+  (define-key my-buffer-keymap "a" 'switch-to-buffer) ; all
   (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
   (define-key my-buffer-keymap "A" 'ibuffer) ; all
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
-  (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
-  (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
-  (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
-  (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
-  (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
+  ;; (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
+  (define-key my-buffer-keymap "e" 'crux-recentf-find-file)
+  ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
+  (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
+  ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
+  (define-key my-buffer-keymap "i" 'ibuffer) ; ibuffer
+  ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
+  ;; (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (key-seq-define-global "'b" my-buffer-keymap))
 
@@ -431,10 +427,10 @@
 
 ;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
-  (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
+  ;; (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
   ;; (define-key my-imenu-keymap "I" 'ivy-imenu-anywhere) ; across all project buffers
   (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
-  (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
+  ;; (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
   (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
   (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
   (key-seq-define-global "qi" my-imenu-keymap))
@@ -484,7 +480,8 @@
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
 (let ((my-projectile-keymap (make-sparse-keymap)))
   (define-key my-projectile-keymap "a" 'projectile-add-known-project)
-  (define-key my-projectile-keymap "b" 'counsel-projectile-switch-to-buffer)
+  ;; (define-key my-projectile-keymap "b" 'counsel-projectile-switch-to-buffer)
+  (define-key my-projectile-keymap "b" 'projectile-switch-to-buffer)
   (define-key my-projectile-keymap "d" 'projectile-find-dir)
   (define-key my-projectile-keymap "e" 'projectile-recentf)
   (define-key my-projectile-keymap "f" 'projectile-find-file)
@@ -495,9 +492,9 @@
   (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
   ;; ag in custom specified dir
-  (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
+  ;; (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
   ;; ag with options prompt
-  (define-key my-projectile-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
+  ;; (define-key my-projectile-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
   (define-key my-projectile-keymap "B" 'projectile-ibuffer)
   (define-key my-projectile-keymap "D" 'projectile-dired)
   (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
@@ -598,7 +595,7 @@
 (key-chord-define-global "WF" (lambda () (interactive) (windmove-up)))
 (key-chord-define-global "RS" 'windmove-down)
 (key-chord-define-global "WF" 'windmove-up)
-(key-chord-define-global "XC" 'counsel-M-x)
+;; (key-chord-define-global "XC" 'counsel-M-x)
 (key-chord-define-global "DV" 'cider-clojuredocs)
 (key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
@@ -616,8 +613,7 @@
 
 (key-seq-define-global "JL" 'beacon-blink)
 (key-seq-define-global "LJ" 'hl-line-flash)
-(define-key my-lines-keymap "h" 'hl-line-flash)
-(key-chord-define-global "H<" 'lispy-describe-inline)
+;; (key-chord-define-global "H<" 'lispy-describe-inline)
 (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
 (key-chord-define-global "XX" 'my-cider-eval-to-comment)
 (key-chord-define-global "AA" 'persp-switch-last)
@@ -699,6 +695,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "M-f") 'my/forward-word-begin)
 ;; (global-set-key (kbd "M-b") 'my/backward-word-begin)
 
+(global-set-key (kbd "M-y") 'consult-yank-pop)
+
 ;; TODO
 (global-set-key (kbd "C-S-a") 'embark-act)
 
@@ -734,10 +732,10 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key [(meta shift up)] 'move-text-up)
 (global-set-key [(meta shift down)] 'move-text-down)
 
-(global-set-key (kbd "C-s") 'swiper-isearch)
-(global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
+;; (global-set-key (kbd "C-s") 'swiper-isearch)
+;; (global-set-key (kbd "M-x") 'counsel-M-x)
+;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+;; (global-set-key (kbd "M-y") 'counsel-yank-pop)
 ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
 ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
 ;; (global-set-key (kbd "<f1> l") 'counsel-find-library)
@@ -846,8 +844,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 (global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
-(global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
-(global-set-key (kbd "C-\"") 'popup-imenu)
+;; (global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
+;; (global-set-key (kbd "C-\"") 'popup-imenu)
 ;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
 (global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
 (global-set-key (kbd "C-M-e") 'my-end-of-defun)
@@ -972,34 +970,23 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
 
-;; FIXME no longer needed since with-eval-after-load below
-;; Overriding: https://github.com/wolray/symbol-overlay/issues/70
-(defvar my-symbol-overlay-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "i") 'symbol-overlay-put)
-    (define-key map (kbd "h") 'symbol-overlay-map-help)
-    (define-key map (kbd "p") 'symbol-overlay-jump-prev)
-    (define-key map (kbd "n") 'symbol-overlay-jump-next)
-    (define-key map (kbd "<") 'symbol-overlay-jump-first)
-    (define-key map (kbd ">") 'symbol-overlay-jump-last)
-    (define-key map (kbd "w") 'symbol-overlay-save-symbol)
-    (define-key map (kbd "t") 'symbol-overlay-toggle-in-scope)
-    (define-key map (kbd "e") 'symbol-overlay-echo-mark)
-    (define-key map (kbd "d") 'symbol-overlay-jump-to-definition)
-    (define-key map (kbd "s") 'swiper-isearch-thing-at-point)
-    (define-key map (kbd "q") 'symbol-overlay-query-replace)
-    (define-key map (kbd "r") 'symbol-overlay-rename)
-    map)
-  "Keymap automatically activated inside overlays.
-You can re-bind the commands to any keys you prefer.")
-
-;; (setq symbol-overlay-map my-symbol-overlay-map)
-
 ;; Override to not insert boundaries
-(defun ivy--insert-symbol-boundaries () (undo-boundary))
+;; (defun ivy--insert-symbol-boundaries () (undo-boundary))
 
-(with-eval-after-load 'symbol-overlay
-  (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
+;; Make it easier to switch to swiper search from overlay
+;; (with-eval-after-load 'symbol-overlay (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
+;; (define-key symbol-overlay-map (kbd "s") 'symbol-overlay-isearch-literally)
+(define-key symbol-overlay-map (kbd "s") 'symbol-overlay-ctrlf-literally)
+
+
+(defun symbol-overlay-ctrlf-literally ()
+  "CTRLF symbol at point literally."
+  (interactive)
+  (unless (minibufferp)
+    (let ((symbol (symbol-overlay-get-symbol)))
+      (beginning-of-thing 'symbol)
+      (ctrlf-forward-symbol-at-point))))
+
 
 
 
@@ -1070,46 +1057,30 @@ You can re-bind the commands to any keys you prefer.")
 ;; FIXME: seems to need to be run manually
 (add-hook 'text-mode 'mixed-pitch-mode)
 
-
-;;; SELECTRUM, CTRLF, PRESCIENT, CONSULT, MARGINALIA
-
-;; TODO
-
-;; (ctrlf-mode +1)
-(selectrum-mode +1) ; useful even when ivy for any completing-read
-;; (selectrum-prescient-mode +1)
-;; ;; save command history on disk, so the sorting gets more intelligent over time
-;; (prescient-persist-mode +1)
-
-;; (marginalia-mode)
-;; ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
-;; (advice-add #'marginalia-cycle :after
-;;             (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
-;; (define-key minibuffer-local-map (kbd "C-M-a") 'marginalia-cycle)
 
 
 ;;; IVY, COUNSEL, SWIPER
 
-(require 'ivy)
-(ivy-mode 1)
-(counsel-mode)
-(setq ivy-height 30)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
-(setq projectile-completion-system 'ivy)
+;; (require 'ivy)
+;; (ivy-mode 1)
+;; (counsel-mode)
+;; (setq ivy-height 30)
+;; (setq ivy-use-virtual-buffers t)
+;; (setq ivy-count-format "(%d/%d) ")
+;; (setq projectile-completion-system 'ivy)
 
 ;; Disabling since obscures search results
-(require 'ivy-posframe)
-(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
+;; (require 'ivy-posframe)
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
 
 ;; Enable counsel replacements for projectile.
 ;; https://github.com/ericdanan/counsel-projectile
-(require 'counsel-projectile)
-(counsel-projectile-mode)
+;; (require 'counsel-projectile)
+;; (counsel-projectile-mode)
 
 ;; https://github.com/raxod502/prescient.el
-(require 'ivy-prescient)
-(ivy-prescient-mode)
+;; (require 'ivy-prescient)
+;; (ivy-prescient-mode)
 
 ;; (require 'oneonone)
 ;; (1on1-emacs)
@@ -1128,42 +1099,42 @@ You can re-bind the commands to any keys you prefer.")
 ;;; imenu
 ;; (require 'imenu-anywhere)
 (require 'imenu-list)
-(require 'popup-imenu)
+;; (require 'popup-imenu)
 
 ;;; Outshine (like "outline")
 ;; Like imenu, but for pages/sections nav/highlighting.
 ;; Has `outshine-imenu' as my main use
-(require 'outshine)
+;; (require 'outshine)
 ;; Had to install navi-mode for parts to work.
 ;; (outshine-mode t)
-(add-hook 'prog-mode-hook 'outshine-mode)
+;; (add-hook 'prog-mode-hook 'outshine-mode)
 
 
-(require 'ido)
-(require 'ido-completing-read+)
-(require 'flx-ido)
+;; (require 'ido)
+;; (require 'ido-completing-read+)
+;; (require 'flx-ido)
 
-(setq ido-enable-prefix nil
-      ido-enable-flex-matching t
-      ido-create-new-buffer 'always
-      ido-use-filename-at-point 'guess
-      ido-max-prospects 10
-      ;; ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
-      ido-default-file-method 'selected-window
-      ido-auto-merge-work-directories-length -1)
-(ido-mode +1)
-(ido-ubiquitous-mode +1)
+;; (setq ido-enable-prefix nil
+;;       ido-enable-flex-matching t
+;;       ido-create-new-buffer 'always
+;;       ido-use-filename-at-point 'guess
+;;       ido-max-prospects 10
+;;       ;; ido-save-directory-list-file (expand-file-name "ido.hist" prelude-savefile-dir)
+;;       ido-default-file-method 'selected-window
+;;       ido-auto-merge-work-directories-length -1)
+;; ;; (ido-mode +1)
+;; ;; (ido-ubiquitous-mode +1)
 
 ;;; smarter fuzzy matching for ido
-(flx-ido-mode +1)
+;; (flx-ido-mode +1)
 ;; disable ido faces to see flx highlights
-(setq ido-use-faces nil)
+;; (setq ido-use-faces nil)
 
 
 
 ;;; LINTERS
 
-(require 'flycheck-yamllint)
+;; (require 'flycheck-yamllint)
 
 (with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
@@ -1535,7 +1506,7 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; camel, kebab cases
 ;; https://stackoverflow.com/a/27422814/326516
-(require 'string-inflection)
+;; (require 'string-inflection)
 
 
 (defun jump-to-bottom ()
@@ -1846,13 +1817,18 @@ You can re-bind the commands to any keys you prefer.")
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
 
+
+
+;;; Sonic PI
+
+
 
 ;;; LANGUAGES
 
 ;;; Ruby
 
 ;; (prelude-require-package 'chruby)
-(require 'rubocop)
+;; (require 'rubocop)
 (add-hook 'ruby-mode-hook 'rubocop-mode)
 
 
@@ -1865,7 +1841,7 @@ You can re-bind the commands to any keys you prefer.")
 
 
 ;; Gherkin/Cucumber
-(require 'feature-mode)
+;; (require 'feature-mode)
 ;; Just for emacs testing
 ;; (prelude-require-package 'ecukes)
 ;; (require 'cucumber-goto-step)
@@ -1938,14 +1914,20 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; (setq hs-special-modes-alist)
 
-(defun my-projectile-ivy-ag ()
+;; (defun my-projectile-ivy-ag ()
+;;   "Populate ag with a search term of thing at point."
+;;   (interactive)
+;;   (let ((counsel-projectile-ag-initial-input
+;; 	 (thing-at-point 'word 'no-properties)))
+;;     (counsel-projectile-ag)))
+;; ;; (key-chord-define-global "RF" 'my-projectile-ivy-ag)
+
+
+(defun my-projectile-ctrlf-ag ()
   "Populate ag with a search term of thing at point."
   (interactive)
-  (let ((counsel-projectile-ag-initial-input
-	 (thing-at-point 'word 'no-properties)))
-    (counsel-projectile-ag)))
-(key-chord-define-global "RF" 'my-projectile-ivy-ag)
-
+  (projectile-ag (thing-at-point 'word 'no-properties)))
+(key-chord-define-global "RF" 'my-projectile-ctrlf-ag)
 
 
 ;; For kondo: https://github.com/borkdude/flycheck-clj-kondo#multiple-linters
@@ -1980,7 +1962,7 @@ You can re-bind the commands to any keys you prefer.")
 (defun my-clojure-mode-hook () "Foo bar."
        (message "in my-clojure-mode-hook")
        (clj-refactor-mode 1)
-       (yas-minor-mode 1) ; for adding require/use/import statements
+       ;; (yas-minor-mode 1) ; for adding require/use/import statements
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
        (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
        (setq cider-repl-pop-to-buffer-on-connect 'display-only)
@@ -2036,7 +2018,7 @@ You can re-bind the commands to any keys you prefer.")
 
 ;; Refactor Menu: https://github.com/maio/discover-clj-refactor.el
 ;; https://github.com/maio/discover-clj-refactor.el
-(require 'discover-clj-refactor) ; C-c j
+;; (require 'discover-clj-refactor) ; C-c j
 
 (defun my-cider-find-var (arg)
   (interactive "p")
@@ -2363,13 +2345,13 @@ This is the same as using \\[set-mark-command] with the prefix argument."
   (split-window-balancedly)
   (ibuffer))
 
-(defun counsel-refcards ()
-  "Search local refcards of your own devising."
-  (interactive)
-  (let* ((default-directory "~/doc/refcards")
-         (cands (split-string (shell-command-to-string "ls") nil t)))
-    (ivy-read "Topic: " cands :action #'my-find-file-below)))
-(global-set-key (kbd "C-h r") 'counsel-refcards)
+;; (defun counsel-refcards ()
+;;   "Search local refcards of your own devising."
+;;   (interactive)
+;;   (let* ((default-directory "~/doc/refcards")
+;;          (cands (split-string (shell-command-to-string "ls") nil t)))
+;;     (ivy-read "Topic: " cands :action #'my-find-file-below)))
+;; (global-set-key (kbd "C-h r") 'counsel-refcards)
 
 (defun org-toggle-emphasis ()
   "Toggle hiding/showing of org emphasize markers."
@@ -2483,11 +2465,11 @@ current buffer's, reload dir-locals."
 
 ;; https://github.com/Yevgnen/ivy-rich/blob/master/screenshots.org
 ;; I think ivy-rich is like marginalia, giving inline docs is ivy
-(require 'ivy-rich)
-(all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
-(ivy-rich-mode 1)
-(setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-(setq ivy-rich-path-style 'abbrev)
+;; (require 'ivy-rich)
+;; (all-the-icons-ivy-rich-mode 1) ; FIXME: needs manual enabling
+;; (ivy-rich-mode 1)
+;; (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+;; (setq ivy-rich-path-style 'abbrev)
 
 ;; https://github.com/preetpalS/emacs-dotenv-mode
 (require 'dotenv-mode) ; unless installed from a package
@@ -2502,6 +2484,33 @@ current buffer's, reload dir-locals."
 ;; https://github.com/purcell/envrc (seems better than direnv emacs package)
 (require 'envrc)
 (envrc-global-mode)
+
+
+
+
+
+
+
+;;; SELECTRUM, CTRLF, PRESCIENT, CONSULT, MARGINALIA
+
+;; TODO
+
+(ctrlf-mode +1) ; search, like normal emacs but improved
+(selectrum-mode +1) ; useful even when ivy for any completing-read
+(setq completion-styles '(substring partial-completion))
+(selectrum-prescient-mode +1)
+;; ;; save command history on disk, so the sorting gets more intelligent over time
+(prescient-persist-mode +1)
+
+(marginalia-mode)
+;; ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
+(advice-add #'marginalia-cycle :after
+            (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
+(define-key minibuffer-local-map (kbd "C-M-a") 'marginalia-cycle)
+
+
+
+
 
 
 (provide 'init)
@@ -2598,15 +2607,10 @@ current buffer's, reload dir-locals."
  '(highlight-parentheses-highlight-adjacent t)
  '(hl-line-flash-show-period 2.0)
  '(hs-hide-comments-when-hiding-all nil)
- '(ido-default-file-method 'selected-window)
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
- '(ivy-initial-inputs-alist nil)
- '(ivy-posframe-border-width 3)
- '(ivy-posframe-min-width 120)
- '(ivy-posframe-width 160)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
@@ -2623,7 +2627,7 @@ current buffer's, reload dir-locals."
  '(neo-window-position 'left)
  '(neo-window-width 40)
  '(package-selected-packages
-   '(ivy-xref ivy-prescient alert sonic-pi quick-peek sotclojure loccur project-explorer rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark zimports importmagic company-jedi poetry python-black elpy key-seq aggressive-indent dotenv-mode lispy indent-guide ivy-posframe flycheck-inline isend-mode centaur-tabs vterm-toggle vterm vimish-fold modus-vivendi-theme ivy-clojuredocs 2048-game 0x0 mixed-pitch org-bullets org-preview-html clojure-essential-ref-nov cljr-ivy clojure-essential-ref github-browse-file ivy-hydra zoom envrc direnv tldr cheat-sh focus navi-mode rainbow-identifiers treemacs-persp outshine perspective helpful better-jumper switch-window eyebrowse company-box popwin company-posframe treemacs-projectile treemacs all-the-icons-ivy-rich total-lines git-link major-mode-icons popup-imenu imenu-list e2wm httprepl restclient ibuffer-vc idle-highlight-in-visible-buffers-mode highlight-thing edbi company-flx company-fuzzy symbol-overlay git-identity mic-paren csv-mode doom-modeline company-terraform terraform-doc terraform-mode yaml-mode diminish which-key diff-hl git-timemachine delight company-quickhelp-terminal auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill string-inflection undo-tree typo toggle-quotes smex smartparens smart-mode-line-powerline-theme shrink-whitespace rubocop ripgrep rainbow-delimiters paren-face page-break-lines neotree mode-icons markdown-mode magit kibit-helper jump-char ido-completing-read+ highlight-parentheses git-messenger flymd flycheck-yamllint flycheck-joker flycheck-clojure flycheck-clj-kondo flx-ido fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode discover-clj-refactor cycle-quotes cucumber-goto-step crux counsel-projectile company comment-dwim-2 clojure-mode-extra-font-locking cider-eval-sexp-fu buffer-move all-the-icons-dired ag ace-window))
+   '(alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi elpy key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv rainbow-identifiers treemacs-persp perspective helpful company-box popwin company-posframe treemacs-projectile treemacs git-link major-mode-icons imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay git-identity csv-mode doom-modeline yaml-mode diminish which-key diff-hl git-timemachine auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines mode-icons markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move all-the-icons-dired ag ace-window))
  '(page-break-lines-max-width 80)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
@@ -2649,6 +2653,14 @@ current buffer's, reload dir-locals."
  '(treemacs-follow-mode nil)
  '(treemacs-width 45)
  '(which-key-max-description-length 45))
+
+;; '(ivy-initial-inputs-alist nil)
+;; '(ivy-posframe-border-width 3)
+;; '(ivy-posframe-min-width 120)
+;; '(ivy-posframe-width 160)
+;; '(ido-default-file-method 'selected-window)
+
+
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
