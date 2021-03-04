@@ -28,6 +28,24 @@
 
 ;;; PACKAGING
 
+
+;;; USE-PACKAGE
+
+;; ;; This is only needed once, near the top of the file
+;; (eval-when-compile
+;;   ;; Following line is not needed if use-package.el is in ~/.emacs.d
+;;   (add-to-list 'load-path "<path where use-package is installed>")
+;;   (require 'use-package))
+
+;; ;; Keep packages up-to-date
+;; (use-package auto-package-update
+;;   :config
+;;   (setq auto-package-update-delete-old-versions t)
+;;   (setq auto-package-update-hide-results t)
+;;   (auto-package-update-maybe))
+
+
+
 ;; https://emacs.stackexchange.com/a/16832/11025
 ;; package.el config from https://github.com/flyingmachine/emacs.d
 (require 'package)
@@ -42,8 +60,6 @@
 (defvar my-packages
   '(
     ace-window
-    all-the-icons
-    all-the-icons-dired
     ag
     aggressive-indent
     ample-theme
@@ -51,13 +67,8 @@
     avy
     beacon
     buffer-move
-    centaur-tabs
     cider
-    clj-refactor
-    clojure-essential-ref
-    clojure-essential-ref-nov
     clojure-mode
-    clojure-mode-extra-font-locking
     comment-dwim-2
     company
     company-box
@@ -65,6 +76,7 @@
     company-fuzzy
     company-jedi
     company-quickhelp
+    company-prescient
     company-posframe
     consult
     consult-flycheck
@@ -72,46 +84,37 @@
     crux
     csv
     ctrlf
-    cucumber-goto-step
     dash
     diff-hl
-    diminish
-    doom-modeline
     dotenv-mode
     dot-mode
     dumb-jump
     edbi
     easy-kill
     edit-indirect
-    elpy
     embark
     envrc
-    eyebrowse
     exec-path-from-shell
     expand-region
-    feature-mode
     fic-mode
     flycheck-clj-kondo
     flycheck-clojure
     flycheck-inline
-    flycheck-joker
     flycheck-pos-tip
-    flycheck-yamllint
     flymd
     focus
     flx
     flx-ido
-    git-identity
     git-link
     git-messenger
     git-timemachine
     github-browse-file
     helpful
+    highlight-numbers
     highlight-parentheses
-    httprepl
+    highlight-indentation
     ibuffer-vc
     imenu-list
-    importmagic
     jump-char
     key-chord
     key-seq
@@ -119,58 +122,50 @@
     magit
     marginalia
     markdown-mode
-    mixed-pitch
-    mode-icons
+    mood-line
     move-text
-    nlinum-relative
+    linum-relative
     nov
+    orderless
     org-bullets
     org-preview-html
     osc
-    outshine
     page-break-lines
     paren-face
+    perspective
     popup
     projectile
     prescient
     python
-    pyimport
-    python-black
     quick-peek
     rainbow-delimiters
-    rainbow-identifiers
-    restclient
     rg
     ripgrep
     rubocop
     selectrum
     selectrum-prescient
+    shackle
     shrink-whitespace
-    smex
     smartparens
     sotclojure
-    string-inflection
+    super-save
     symbol-overlay
-    treemacs
-    treemacs-projectile
-    treemacs-all-the-icons
-    treemacs-icons-dired
-    treemacs-magit
     typo
     undo-tree
     unfill
+    use-package
     visible-mark
     vterm
     vterm-toggle
     which-key
     yaml-mode
-    zimports
     ))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 
 ;; DISABLED
+;; rainbow-identifiers
 ;; all-the-icons-ivy-rich
 ;; cljr-ivy
 ;; ivy
@@ -208,12 +203,14 @@
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
  '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
+ '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "gray0"))))
  '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "white" :slant italic :weight bold))))
+ '(font-lock-constant-face ((t (:foreground "#dF9522"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "SlateGray3" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
@@ -228,6 +225,9 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
+ '(mood-line-status-info ((t (:foreground "purple4"))))
+ '(mood-line-status-neutral ((t (:foreground "white"))))
+ '(mood-line-unimportant ((t (:foreground "white"))))
  '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fira Code"))))
  '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
  '(org-document-title ((t (:inherit (variable-pitch font-lock-constant-face) :weight bold :height 2.0))))
@@ -373,16 +373,23 @@
   (key-seq-define-global "'b" my-buffer-keymap))
 
 ;; C — Character goto (fast)
-(key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
+;; (key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
+(key-seq-define-global "'c" 'avy-goto-char-2-below)
+;; (key-seq-define-global "'c" 'avy-goto-word-1-below)
+(key-seq-define-global "'f" 'avy-goto-char-2-above)
+;; (key-seq-define-global "'f" 'avy-goto-word-1-above)
+;; (key-seq-define-global "'c" 'avy-goto-word-0)
+;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
+(key-seq-define-global "xc" 'avy-goto-word-0)
 (key-seq-define-global "qc" 'avy-goto-char-timer)
 (key-seq-define-global "\"C" 'beacon-blink) ; cursor
 
-;; D — Treemacs (Directory viewer)
-(key-seq-define-global "'d" 'treemacs-select-window)
-;; (key-seq-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
-(key-seq-define-global "\"D" 'treemacs-find-file)
-;; (key-seq-define-global "'d" 'treemacs)
-;; (key-seq-define-global "qd" 'treemacs)
+;; ;; D — Treemacs (Directory viewer)
+;; (key-seq-define-global "'d" 'treemacs-select-window)
+;; ;; (key-seq-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
+;; (key-seq-define-global "\"D" 'treemacs-find-file)
+;; ;; (key-seq-define-global "'d" 'treemacs)
+;; ;; (key-seq-define-global "qd" 'treemacs)
 
 ;; E — Errors
 (let ((my-flycheck-keymap (make-sparse-keymap)))
@@ -400,7 +407,8 @@
 (let ((my-find-keymap (make-sparse-keymap)))
   ;; (define-key my-find-keymap "f" 'swiper-isearch)
   ;; (define-key my-find-keymap "o" 'ivy-occur)
-  (key-seq-define-global "'f" my-find-keymap))
+  ;; (key-seq-define-global "'f" my-find-keymap)
+  )
 
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
@@ -427,12 +435,12 @@
 
 ;; I — Imenu
 (let ((my-imenu-keymap (make-sparse-keymap)))
-  ;; (define-key my-imenu-keymap "i" 'counsel-semantic-or-imenu) ; default
+  (define-key my-imenu-keymap "i" 'consult-imenu) ; default
   ;; (define-key my-imenu-keymap "I" 'ivy-imenu-anywhere) ; across all project buffers
   (define-key my-imenu-keymap "s" 'imenu-list-smart-toggle) ; sidebar
   ;; (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
-  (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
-  (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
+  ;; (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
+  ;; (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
   (key-seq-define-global "qi" my-imenu-keymap))
 
 ;; J
@@ -455,10 +463,10 @@
   (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
   (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
-  (define-key my-lines-keymap "c" 'crosshairs)
+  ;; (define-key my-lines-keymap "c" 'crosshairs)
   (define-key my-lines-keymap "h" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
-  (define-key my-lines-keymap "C" 'crosshairs-mode)
+  ;; (define-key my-lines-keymap "C" 'crosshairs-mode)
   ;; (key-seq-define-global "ql" my-lines-keymap)
   (key-seq-define-global "'l" my-lines-keymap))
 
@@ -474,7 +482,7 @@
 
 ;; O — Open,Other
 (key-seq-define-global "qo" 'crux-smart-open-line)
-;; (key-seq-define-global "QO" 'my-clj-open-above-let)
+(key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
 ;; P — Projectile
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
@@ -489,7 +497,9 @@
   (define-key my-projectile-keymap "i" 'projectile-invalidate-cache)
   (define-key my-projectile-keymap "o" 'projectile-multi-occur)
   (define-key my-projectile-keymap "p" 'projectile-switch-project)
-  (define-key my-projectile-keymap "s" 'projectile-ag)
+  ;; (define-key my-projectile-keymap "s" 'projectile-ag)
+  (define-key my-projectile-keymap "s" 'consult-ripgrep)
+  ;; (define-key my-projectile-keymap "s" 'consult-ripgrep)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
   ;; ag in custom specified dir
   ;; (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
@@ -534,6 +544,7 @@
 
 ;; W — Windowing
 (key-seq-define-global "'w" 'ace-window)
+(key-chord-define-global "qw" 'ace-window)
 
 ;; X
 
@@ -588,11 +599,10 @@
 ;; MASHINGS
 (key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
-(key-chord-define-global "ST" (lambda () (interactive) (windmove-right)))
-(key-chord-define-global "ST" (lambda () (interactive) (windmove-right)))
-(key-chord-define-global "AR" (lambda () (interactive) (windmove-left)))
-(key-chord-define-global "RS" (lambda () (interactive) (windmove-down)))
-(key-chord-define-global "WF" (lambda () (interactive) (windmove-up)))
+(key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
+(key-chord-define-global "AR" (lambda () (interactive)  (windmove-left)))
+(key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
+(key-chord-define-global "WF" (lambda () (interactive)  (windmove-up)))
 (key-chord-define-global "RS" 'windmove-down)
 (key-chord-define-global "WF" 'windmove-up)
 ;; (key-chord-define-global "XC" 'counsel-M-x)
@@ -601,6 +611,7 @@
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "KH" 'kill-this-buffer)
+(key-chord-define-global "QW" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
 ;; (key-chord-define-global "KH" 'kill-window-balancedly)
 (key-chord-define-global "ZX" 'delete-window-balancedly)
 ;; (key-chord-define-global "ZR" 'kill-window-balancedly)
@@ -629,6 +640,7 @@
   (switch-to-buffer (elt (buffer-list) 2)))
 
 (defun my-cider-eval-to-comment ()
+  "Append result of evaluating expression."
   (interactive)
   (cider-eval-defun-to-comment)
   (forward-line)
@@ -667,11 +679,7 @@ If ARG is omitted or nil, move point forward one word."
   (forward-word arg)
   (forward-word 1)
   (backward-word 1))
-(defun my/backward-word-begin (arg)
-  (interactive "p")
-  (backward-word arg)
-  (backward-word 1)
-  (forward-word 1))
+
 (defun modi/forward-word-begin (arg)
   "Move forward ARG (defaults to 1) number of words.
 Here 'words' are defined as characters separated by whitespace."
@@ -693,7 +701,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "M-f") 'forward-to-word)
 ;; (global-set-key (kbd "M-b") 'backward-to-word)
 (global-set-key (kbd "M-f") 'my/forward-word-begin)
-;; (global-set-key (kbd "M-b") 'my/backward-word-begin)
 
 (global-set-key (kbd "M-y") 'consult-yank-pop)
 
@@ -819,10 +826,10 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-S-<left>")   'buf-move-left)
 (global-set-key (kbd "C-S-<down>")   'buf-move-down)
 (global-set-key (kbd "C-S-<right>")  'buf-move-right)
-(global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
-(global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
-(global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
-(global-set-key (kbd "C-c K") 'string-inflection-kebab-case) ;; Cycle through Java styles
+;; (global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
+;; (global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
+;; (global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
+;; (global-set-key (kbd "C-c K") 'string-inflection-kebab-case) ;; Cycle through Java styles
 
 ;; smartparens overrides M-r, so changing default
 (global-set-key "\M-R" 'move-to-window-line-top-bottom)
@@ -855,6 +862,7 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 (global-set-key (kbd "M-`") 'jump-to-mark)
+
 
 
 ;;; UI / LOOK-N-FEEL
@@ -904,9 +912,8 @@ Here 'words' are defined as characters separated by whitespace."
 (enable-theme 'ample)
 
 ;; https://seagle0128.github.io/doom-modeline/
-(require 'doom-modeline)
-(doom-modeline-mode 1)
-(setq doom-modeline-height 10)
+;; (require 'doom-modeline)
+;; (doom-modeline-mode 1)
 
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
 ;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
@@ -944,12 +951,23 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'beacon)
 ;; (beacon-mode +1)
 
-(require 'crosshairs)
+;; (require 'crosshairs)
 ;; (crosshairs-toggle-when-idle)
 
 ;; flash windows when you change to them
 ;; https://github.com/N-Mi/e-other-window
 ;; (require 'e-other-window)
+
+;;; Shackle window focus management
+;; https://depp.brause.cc/shackle/
+(shackle-mode)
+;; This particularly helps with compile windows (grep results, etc) that
+;; pop up but don't get focus.
+(setq shackle-default-rule '(:select t))
+;; OR
+;; https://emacs.stackexchange.com/questions/13212/how-to-make-occur-mode-select-the-window-of-buffer-occur
+(add-hook 'occur-hook '(lambda () (switch-to-buffer-other-window "*Occur*")))
+;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
 
 ;; Highlight word matching point without doing anything
@@ -1055,7 +1073,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://gitlab.com/jabranham/mixed-pitch
 ;; (require 'mixed-pitch)
 ;; FIXME: seems to need to be run manually
-(add-hook 'text-mode 'mixed-pitch-mode)
+;; (add-hook 'text-mode 'mixed-pitch-mode)
 
 
 
@@ -1185,7 +1203,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
 (require 'nlinum-relative) ; SLOW (for high LOC)
-(global-nlinum-relative-mode 1)
+;; (global-nlinum-relative-mode 1) ; trying without to see if faster
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
@@ -1217,7 +1235,17 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Auto-save
 ;; (add-hook 'focus-out-hook 'save-buffer)
-(add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
+;; (add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
+;; (add-hook 'after-focus-change-function 'save-buffer)
+;; Use super-save instead
+;; https://github.com/bbatsov/super-save
+(require 'super-save)
+(super-save-mode +1)
+(setq auto-save-default nil)
+(add-to-list 'super-save-triggers 'ace-window)
+;; FIXME should instead go to vterm window without toggle so leaving doesn't trigger a savee
+;; (add-to-list 'super-save-triggers 'vterm-toggle)
+(add-to-list 'super-save-hook-triggers 'find-file-hook)
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
 
@@ -1282,9 +1310,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; FIXME: prbly not working since flyspell rebinds
 
 ;; Make number colorful.
-;; ENABLE??
 ;; (require 'highlight-numbers)
-;; (add-hook 'prog-mode-hook 'highlight-numbers-mode)
+(add-hook 'prog-mode-hook 'highlight-numbers-mode)
 
 ;; TODO: hydra for visible things
 ;; - toggle-truncate-lines
@@ -1297,12 +1324,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Line wrap is called "truncate" in emacs
 (setq-default truncate-lines t)
 
-;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
-;; Navigate: C-x ] and C-x [
-;; https://stackoverflow.com/a/7577628/326516
-(require 'page-break-lines)
-(global-page-break-lines-mode)
-
 ;; Highlight across multiple buffers
 ;; https://stackoverflow.com/questions/15415504/highlighting-multiple-buffers-in-emacs
 ;; https://www.emacswiki.org/emacs/HighlightLibrary
@@ -1311,14 +1332,13 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;; https://github.com/ryuslash/mode-icons
-;(require 'mode-icons)
-;(mode-icons-mode)
+;;(require 'mode-icons)
+;;(mode-icons-mode)
 
 ;; https://github.com/domtronn/all-the-icons.el
-(require 'all-the-icons)
-
-(require 'all-the-icons-dired)
-(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+;; (require 'all-the-icons)
+;; (require 'all-the-icons-dired)
+;; (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
 ;; http://emacs.stackexchange.com/questions/13662/a-confirmation-after-c-x-c-c
 ;; (setq confirm-kill-emacs 'yes-or-no-p)
@@ -1327,24 +1347,17 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Treemacs
 ;; It treemacs icons are big, try this manually
-(treemacs-resize-icons 12)
+;; (treemacs-resize-icons 12)
 ;; https://github.com/Alexander-Miller/treemacs#faq
-
-;; Ignore XML files
-(with-eval-after-load 'treemacs
-  (defun treemacs-ignore-example (filename absolute-path)
-    (or (string-suffix-p filename ".xml")
-	(string-suffix-p filename ".sql")))
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-ignore-example))
 
 ;; When some-var presents in SQL, treat it as a whole word (not 2 words).
 ;; https://emacs.stackexchange.com/a/59010/11025
 (add-hook 'sql-mode-hook #'(lambda () (modify-syntax-entry ?- "w"))) ; not working
 
-;; Ignore git ignored
-;; (treemacs-git-mode 'extended)
-(with-eval-after-load 'treemacs
-  (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
+;; ;; Ignore git ignored
+;; ;; (treemacs-git-mode 'extended)
+;; (with-eval-after-load 'treemacs
+;;   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
 
 
 ;;; HELP SYSTEM
@@ -1363,6 +1376,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq counsel-describe-function-function #'helpful-callable)
 ;; (setq counsel-describe-variable-function #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
 ;; (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
 ;; Winner mode: C-<left> C-<right>
@@ -1373,6 +1389,19 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/abo-abo/ace-window
 (require 'ace-window)
 (ace-window-display-mode t)
+
+(require 'winum)
+(winum-mode)
+(global-set-key (kbd "M-1") 'winum-select-window-1)
+(global-set-key (kbd "M-2") 'winum-select-window-2)
+(global-set-key (kbd "M-3") 'winum-select-window-3)
+(global-set-key (kbd "M-4") 'winum-select-window-4)
+(global-set-key (kbd "M-5") 'winum-select-window-5)
+(global-set-key (kbd "M-6") 'winum-select-window-6)
+(global-set-key (kbd "M-7") 'winum-select-window-7)
+(global-set-key (kbd "M-8") 'winum-select-window-8)
+(global-set-key (kbd "M-9") 'winum-select-window-9)
+
 
 (defvar aw-dispatch-alist
   '((?x aw-delete-window "Delete Window")
@@ -1393,10 +1422,14 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Nice size for the default window to match screen height
 ;; https://stackoverflow.com/questions/17362999/setting-both-fullheight-and-width-in-emacs-on-os-x
 (defun get-default-height ()
-       (/ (- (display-pixel-height) 120)
-          (frame-char-height)))
-(add-to-list 'default-frame-alist '(width . 440))
-(add-to-list 'default-frame-alist (cons 'height (get-default-height)))
+  (/ (- (display-pixel-height) 120)
+     (frame-char-height)))
+;; (add-to-list 'default-frame-alist '(width . 440))
+;; (add-to-list 'default-frame-alist (cons 'height (get-default-height)))
+;; Set to known Dell dimensions
+(add-to-list 'default-frame-alist '(width . 636)) ; big dell
+;; (add-to-list 'default-frame-alist '(width . 338)) ; laptop
+(add-to-list 'default-frame-alist '(height . 175))
 
 
 (defun joe-scroll-other-window()
@@ -1440,7 +1473,7 @@ Here 'words' are defined as characters separated by whitespace."
 (persp-mode)
 ;; Maybe this causes problems??
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
-(setq persp-state-default-file "~/.emacs.d/persp-mde")
+;; (setq persp-state-default-file "~/.emacs.d/persp-mde")
 
 
 ;; Colemak
@@ -1531,15 +1564,78 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'diff-hl)
 (global-diff-hl-mode)
 
-(setq git-identity-default-username "Micah Elliott")
-(require 'git-identity)
-;; (git-identity-magit-mode 1)
-(define-key magit-status-mode-map (kbd "I") 'git-identity-info)
+;; (setq git-identity-default-username "Micah Elliott")
+;; (require 'git-identity)
+;; ;; (git-identity-magit-mode 1)
+;; (define-key magit-status-mode-map (kbd "I") 'git-identity-info)
 
 (defun my-magit-status ()
   (interactive)
   (magit-status)
   (balance-windows))
+
+
+;; Pretty Magit Emoji
+;; http://www.modernemacs.com/post/pretty-magit/
+(require 'dash)
+
+(defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
+  "Replace sanitized WORD with ICON, PROPS and by default add to prompts."
+  `(prog1
+       (add-to-list 'pretty-magit-alist
+                    (list (rx bow (group ,WORD (eval (if ,NO-PROMPT? "" ":"))))
+                          ,ICON ',PROPS))
+     (unless ,NO-PROMPT?
+       (add-to-list 'pretty-magit-prompt (concat ,WORD ": ")))))
+
+(setq pretty-magit-alist nil)
+(setq pretty-magit-prompt nil)
+(pretty-magit "Feature" ?✨ (:foreground "slate gray"))
+(pretty-magit "feat" ?✨ (:foreground "slate gray"))
+(pretty-magit ":sparkles" ?✨ (:foreground "slate gray"))
+(pretty-magit "Add"     ?✨ (:foreground "#375E97"))
+(pretty-magit "Fix"     ?🐛 (:foreground "#FB6542"))
+(pretty-magit "fix"     ?🐛 (:foreground "#FB6542"))
+(pretty-magit ":bug"    ?🐛 (:foreground "#FB6542"))
+(pretty-magit "Clean"   ?👮 (:foreground "#FFBB00"))
+(pretty-magit "refactor" ?👮  (:foreground "#FFBB00"))
+(pretty-magit ":cop"  ?👮  (:foreground "#00BB00")) ; refactor
+(pretty-magit "style"  ?👮  (:foreground "#00BB00"))
+(pretty-magit ":wrench"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+(pretty-magit "build"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+(pretty-magit "test" ?✅  (:foreground "#FFBB00"))
+(pretty-magit ":check"  ?✅  (:foreground "#FFBB00"))
+(pretty-magit "Docs"    ?📚 (:foreground "#3F681C"))
+(pretty-magit "docs"    ?📚 (:foreground "#3F681C"))
+(pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
+(pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
+(pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
+(pretty-magit "master"  ? (:box t :height 1.2) t)
+(pretty-magit "origin"  ?⌱ (:box t :height 1.2) t)
+
+(defun add-magit-faces ()
+  "Add face properties and compose symbols for buffer from pretty-magit."
+  (interactive)
+  (with-silent-modifications
+    (--each pretty-magit-alist
+      (-let (((rgx icon props) it))
+        (save-excursion
+          (goto-char (point-min))
+          (while (search-forward-regexp rgx nil t)
+            (compose-region
+             (match-beginning 1) (match-end 1) icon)
+            (when props
+              (add-face-text-property
+               (match-beginning 1) (match-end 1) props))))))))
+
+(advice-add 'magit-status :after 'add-magit-faces)
+(advice-add 'magit-refresh-buffer :after 'add-magit-faces)
+
+
+(require 'unicode-fonts)
+(unicode-fonts-setup)
+
+
 
 
 ;;; REST CLIENTS
@@ -1555,6 +1651,37 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;;; Hide-Show (V: visible), like folding
+
+;; NOTE: set-selective-display is unsufficient since can only operate
+;; at file level, so you can't fold just a single fn.
+
+
+;; Adds the docstring detection to hs-minor-mode for clojure (not really)
+;; (add-to-list 'hs-special-modes-alist
+;;              '(clojure-mode "(defn [-a-z]+ \"[^\"]+\"" ")" ";; " nil nil))
+
+;; Clojure folding
+;; http://bytopia.org/2016/12/17/autocollapse-namespace-definitions-in/
+(defun hs-clojure-hide-namespace-and-folds ()
+  "Hide the first (ns ...) expression in the file, and also all the (^:fold ...) expressions."
+  (interactive)
+  (hs-life-goes-on
+   (save-excursion
+     (goto-char (point-min))
+     (when (ignore-errors (re-search-forward "^(ns "))
+       (hs-hide-block))
+
+     (while (ignore-errors (re-search-forward "\\^:fold"))
+       (hs-hide-block)
+       (next-line)))))
+
+(defun hs-clojure-mode-hook ()
+  (interactive)
+  (hs-minor-mode 1)
+  (hs-clojure-hide-namespace-and-folds))
+(add-hook 'clojure-mode-hook 'hs-clojure-hide-namespace-and-folds)
+
+
 (defun my-hs-hide-block ()
   (interactive)
   (my-beginning-of-defun)
@@ -1603,12 +1730,19 @@ Here 'words' are defined as characters separated by whitespace."
 ;; confine avy's characters for ease of typing/finding
 ;; (setq avy-keys (number-sequence ?a ?f))
 ;; Use only easiest left and right keys
-(setq avy-keys (string-to-list "asdfwerkluioghqtypvcxz,.'j"))
-;; (setq avy-keys (string-to-list "asdfwerjklasdfwerjklasdfwerjkl"))
+;; (setq avy-keys (string-to-list "asdfwerkluioghqtypvcxzj"))
+;; (setq avy-keys (string-to-list "arstneioqwfpluyzxcdh"))
+(setq avy-keys (string-to-list "qwfpluyzxcdhgmbgvjmkneioarst"))
+;; (setq avy-keys (number-sequence ?a ?z))
+;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
+;; (setq avy-keys (string-to-list "arstneio"))
 ;; only search in current window
 (setq avy-all-windows nil)
 ;; make case-sensitive
-(setq avy-case-fold-search nil)
+(setq avy-case-fold-search t)
+
+;; (setq avy-orders-alist '((avy-goto-char-2-above . avy-order-closest)
+;; 			 (avy-goto-char-2-below . avy-order-closest)))
 
 
 
@@ -1624,8 +1758,8 @@ Here 'words' are defined as characters separated by whitespace."
 (rainbow-delimiters-mode +1)
 
 ;; https://github.com/Fanael/rainbow-identifiers
-(require 'rainbow-identifiers)
-(add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+;; (require 'rainbow-identifiers)
+;; (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
 
 ;; https://www.emacswiki.org/emacs/ShowParenMode
 ;; (setq show-paren-delay 0)
@@ -1636,8 +1770,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (show-smartparens-mode t)
 ;; More matching parens: colors block you're in red (SLOW?)
 ;; https://github.com/tsdh/highlight-parentheses.el
-(require 'highlight-parentheses)
-(highlight-parentheses-mode t)
+;; TODO testing if slow
+;; (require 'highlight-parentheses)
+;; (highlight-parentheses-mode t)
 
 ;; Smartparens (some of these are from prelude)
 
@@ -1812,11 +1947,16 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
-(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Banana")
+(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Special Comment")
+(defface sfdc-field'((t (:foreground "#dF9522"))) "My SFDC Field")
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
+;; (face-spec-set 'sfdc-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
+(font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
 
+;; (re-search-forward "[A-z_]+__c")
+ ;; Aaa_Vvv__c
 
 
 ;;; Sonic PI
@@ -1870,7 +2010,7 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'cider)
 ;; (setq cider-repl-history-file "~/.clojure_history")
 ;; (require 'cider-eval-sexp-fu) ; breaks elpy
-(require 'clj-refactor)
+;; (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
 (require 'flycheck-clojure)
 ;; (require 'company-flx)
@@ -1929,6 +2069,8 @@ Here 'words' are defined as characters separated by whitespace."
   (projectile-ag (thing-at-point 'word 'no-properties)))
 (key-chord-define-global "RF" 'my-projectile-ctrlf-ag)
 
+;; (require 'winnow)
+
 
 ;; For kondo: https://github.com/borkdude/flycheck-clj-kondo#multiple-linters
 (require 'flycheck-clj-kondo)
@@ -1947,6 +2089,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Trying to get rid of the prompt to save before load.
 (defun my-cider-load-buffer ()
+  "Call normal load-buffer, but save first."
   (save-buffer)
   (cider-load-buffer))
 
@@ -1961,7 +2104,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/clojure-emacs/clj-refactor.el
 (defun my-clojure-mode-hook () "Foo bar."
        (message "in my-clojure-mode-hook")
-       (clj-refactor-mode 1)
+       ;; (clj-refactor-mode 1)
        ;; (yas-minor-mode 1) ; for adding require/use/import statements
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
        (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
@@ -1974,11 +2117,11 @@ Here 'words' are defined as characters separated by whitespace."
        (setq cider-repl-history-file "~/.cider-repl-history")
        (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
-       (cljr-add-keybindings-with-prefix "C-S-r")
+       ;; (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
        ;; (key-chord-define-global "qr" 'cljr-add-keybindings-with-prefix)
        ;; (key-chord-define clojure-mode-map "qr" 'cljr-ivy)
-       (cljr-add-keybindings-with-prefix "C-c m")
+       ;; (cljr-add-keybindings-with-prefix "C-c m")
        ;; (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
        ;; (global-set-key (kbd "C-c R") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
@@ -1986,7 +2129,8 @@ Here 'words' are defined as characters separated by whitespace."
        ;; (global-set-key (kbd "C-S-T") 'cider-test-commands-map)
        ;; Disable flycheck next error in favor of Cider
        (define-key clojure-mode-map (kbd "C-c C-n") 'cider-ns-map)
-       (define-key clojure-mode-map (kbd "C-c C-d C-r") 'clojure-essential-ref)
+       ;; (define-key clojure-mode-map (kbd "C-c C-d C-r") 'clojure-essential-ref)
+       (define-key clojure-mode-map (kbd "C-c C-") 'cider-read-and-eval-defun-at-point)
        (global-unset-key (kbd "C-c C-p"))
        (define-key clojure-mode-map (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
@@ -2020,11 +2164,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/maio/discover-clj-refactor.el
 ;; (require 'discover-clj-refactor) ; C-c j
 
-(defun my-cider-find-var (arg)
-  (interactive "p")
-  (cider-find-var arg)
-  (recenter-top-bottom))
-
 ;; Minor mode for personal overrides
 ;; http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
 (defvar my-keys-minor-mode-map
@@ -2057,8 +2196,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;;; PYTHON
 
 (require 'python)
-(require 'elpy)
-(elpy-enable)
+;; (require 'elpy)
+;; (elpy-enable)
 
 
 ;; importmagic
@@ -2442,8 +2581,9 @@ current buffer's, reload dir-locals."
 (defun my-cider-find-var ()
   (interactive)
   (make-frame-command)
-  (cider-find-var))
-(global-set-key (kbd "C-M->") 'my-cider-find-var)
+  (cider-find-var)
+  (recenter-top-bottom))
+(global-set-key (kbd "C->") 'my-cider-find-var)
 
 
 
@@ -2459,6 +2599,10 @@ current buffer's, reload dir-locals."
 				  ?\C-\M-u ?\C-\M-  tab ?\C-b return
 				  ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?s return
 				  ?\C-\M-n ?\C-\M-e ?\C-x ?\C-e] 0 "%d"))
+
+(fset 'clj-sort-ns-2
+      (kmacro-lambda-form [?\M-\} ?\C-\M-f ?\C-b ?\C-b return ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?d backspace ?s return ?\C-\M-n] 0 "%d"))
+
 
 
 ;;; END
@@ -2491,13 +2635,17 @@ current buffer's, reload dir-locals."
 
 
 
-;;; SELECTRUM, CTRLF, PRESCIENT, CONSULT, MARGINALIA
+;;; SELECTRUM, CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA
 
 ;; TODO
 
-(ctrlf-mode +1) ; search, like normal emacs but improved
 (selectrum-mode +1) ; useful even when ivy for any completing-read
 (setq completion-styles '(substring partial-completion))
+
+;; Completion styles
+(require 'orderless)
+(setq completion-styles '(orderless))
+
 (selectrum-prescient-mode +1)
 ;; ;; save command history on disk, so the sorting gets more intelligent over time
 (prescient-persist-mode +1)
@@ -2508,9 +2656,137 @@ current buffer's, reload dir-locals."
             (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
 (define-key minibuffer-local-map (kbd "C-M-a") 'marginalia-cycle)
 
+;; (ctrlf-mode +1) ; search, like normal emacs but improved, add C-s binding
+
+;; Consult (like isearch but improved)
+;; https://github.com/minad/consult
+
+;; (global-set-key (kbd "M-s s") 'consult-isearch)
+(global-set-key (kbd "C-s") 'consult-line)
+
+;; Optionally configure a function which returns the project root directory
+(autoload 'projectile-project-root "projectile")
+(setq consult-project-root-function #'projectile-project-root)
 
 
 
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings (mode-specific-map)
+	 ("C-c h" . consult-history)
+	 ("C-c m" . consult-mode-command)
+	 ("C-c b" . consult-bookmark)
+	 ("C-c k" . consult-kmacro)
+	 ;; C-x bindings (ctl-x-map)
+	 ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complet-command
+	 ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+	 ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+	 ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+	 ;; Custom M-# bindings for fast register access
+	 ("M-#" . consult-register-load)
+	 ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (UNRELATED!)
+	 ("C-M-#" . consult-register)
+	 ;; Other custom bindings
+	 ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+	 ("<help> a" . consult-apropos)            ;; orig. apropos-command
+	 ;; M-g bindings (goto-map)
+	 ("M-g g" . consult-goto-line)             ;; orig. goto-line
+	 ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+	 ("M-g o" . consult-outline)
+	 ("M-g m" . consult-mark)
+	 ("M-g k" . consult-global-mark)
+	 ("M-g i" . consult-project-imenu) ;; Alternative: consult-imenu
+	 ("M-g e" . consult-error)
+	 ;; M-s bindings (search-map)
+	 ("M-s g" . consult-git-grep)              ;; alt. consult-grep, consult-ripgrep
+	 ("M-s f" . consult-find)                  ;; alt. consult-locate, find-fd
+	 ("M-s l" . consult-line)
+	 ("M-s m" . consult-multi-occur)
+	 ("M-s k" . consult-keep-lines)
+	 ("M-s u" . consult-focus-lines)
+	 ;; Replacement for isearch-edit-string
+	 ("M-s e" . consult-isearch)
+	 :map isearch-mode-map
+	 ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
+	 ("M-s e" . consult-isearch))              ;; orig. isearch-edit-string
+
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+
+  ;; Custom command wrappers. It is generally encouraged to write your own
+  ;; commands based on the Consult commands. Some commands have arguments which
+  ;; allow tweaking. Furthermore global configuration variables can be set
+  ;; locally in a let-binding.
+  (defun find-fd (&optional dir initial)
+    (interactive "P")
+    (let ((consult-find-command "fd --color=never --full-path ARG OPTS"))
+      (consult-find dir initial)))
+
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0
+	register-preview-function #'consult-register-format)
+  ;; Optionally tweak the register preview window.
+  ;; This adds stripes, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
+
+  ;; Configure preview. Note that the preview-key can also be configured on a
+  ;; per-command basis via `consult-config'.
+  ;; The default value is 'any, such that any key triggers the preview.
+  ;; (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key (kbd "M-p"))
+  ;; (setq consult-preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
+
+  ;; Optionally configure narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; (kbd "C-+")
+  ;; Optionally make narrowing help available in the minibuffer.
+  ;; Probably not needed if you are using which-key.
+  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+  ;; Optional configure a view library to be used by `consult-buffer'.
+  ;; The view library must provide two functions, one to open the view by name,
+  ;; and one function which must return a list of views as strings.
+  ;; Example: https://github.com/minad/bookmark-view/
+  ;; (setq consult-view-open-function #'bookmark-jump
+  ;;       consult-view-list-function #'bookmark-view-names)
+
+  ;; Optionally configure a function which returns the project root directory
+  (autoload 'projectile-project-root "projectile")
+  (setq consult-project-root-function #'projectile-project-root)
+
+  ;; Recall last search
+  ;; https://github.com/minad/consult/issues/214
+  (setf (alist-get #'consult-line consult-config)
+	(list :keymap (let ((map (make-sparse-keymap)))
+			(define-key map "\C-s" #'previous-history-element)
+			map)))
+
+  )
+
+;; Optionally add the `consult-flycheck' command.
+(use-package consult-flycheck
+  :bind (:map flycheck-command-map
+	      ("!" . consult-flycheck)))
+
+
+
+;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
+;; Maybe needs to be at end of file
+;; Navigate: C-x ] and C-x [
+;; https://stackoverflow.com/a/7577628/326516
+(require 'page-break-lines)
+(global-page-break-lines-mode)
+
+
+(require 'mood-line)
+(mood-line-mode)
 
 
 (provide 'init)
@@ -2529,9 +2805,14 @@ current buffer's, reload dir-locals."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ace-window-display-mode t)
  '(auto-dim-other-buffers-mode t)
- '(avy-timeout-seconds 0.3)
+ '(avy-orders-alist nil)
+ '(avy-styles-alist '((avy-goto-char-2 . pre)))
+ '(avy-timeout-seconds 0.2)
  '(aw-char-position 'center)
+ '(aw-display-mode-overlay nil)
+ '(aw-ignore-current nil)
  '(beacon-blink-duration 0.4)
  '(beacon-blink-when-focused t)
  '(beacon-blink-when-point-moves-vertically 5)
@@ -2539,69 +2820,23 @@ current buffer's, reload dir-locals."
  '(beacon-push-mark nil)
  '(browse-url-browser-function 'browse-url-firefox)
  '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+ '(case-fold-search nil)
  '(cider-comment-prefix " ;=> ")
+ '(cider-repl-history-file "~/.cider-repl-history")
+ '(cider-repl-history-size 1000)
+ '(cider-repl-use-clojure-font-lock nil)
+ '(cider-repl-use-pretty-printing nil)
  '(cider-special-mode-truncate-lines nil)
- '(cljr-favor-private-functions nil)
- '(cljr-hotload-dependencies t)
- '(cljr-magic-require-namespaces
-   '(("str" . "clojure.string")
-     ("set" . "clojure.set")
-     ("pp" . "clojure.pprint")
-     ("zip" . "clojure.zip")
-     ("edn" . "clojure.edn")
-     ("t" . "clojure.test")
-     ("as" . "clojure.core.async")
-     ("logic" . "clojure.core.logic")
-     ("walk" . "clojure.walk")
-     ("xml" . "clojure.data.xml")
-     ("csv" . "clojure.data.csv")
-     ("spec" . "clojure.spec.alpha")
-     ("io" . "clojure.java.io")
-     ("mat" . "clojure.core.matrix")
-     ("json" . "cheshire.core")
-     ("time" . "java-time")
-     ("spr" . "com.rpl.specter")
-     ("http" . "clj-http.client")
-     ("log" . "clojure.tools.logging")
-     ("e" . "taoensso.encore")
-     ("s3" . "amazonica.aws.s3")
-     ("sql" . "hugsql.core")
-     ("yaml" . "clj-yaml.core")
-     ("sh" . "clojure.java.shell")
-     ("w" . "clojure.walk")
-     ("fs" . "me.raynes.fs")
-     ("r" . "reagent.core")
-     ("rf" . "re-frame.core")))
  '(col-highlight-show-only 'forward-paragraph)
  '(custom-safe-themes
    '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
- '(doom-modeline-buffer-file-name-style 'truncate-with-project)
- '(doom-modeline-continuous-word-count-modes nil)
- '(doom-modeline-display-default-persp-name t)
- '(doom-modeline-github t)
- '(doom-modeline-height 16)
- '(doom-modeline-icon t)
- '(doom-modeline-indent-info nil)
- '(doom-modeline-unicode-fallback t)
- '(doom-modeline-vcs-max-length 40)
  '(ediff-split-window-function 'split-window-horizontally)
- '(elpy-rpc-python-command "poetry run python")
- '(elpy-rpc-virtualenv-path "")
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(git-identity-list
-   '(("mde@micahelliott.com" :name "Personal Projects" :domains
-      ("github.com")
-      :dirs
-      ("~/.emacs.d" "~/proj" "~/dunnit"))
-     ("micah.elliott@fundingcircle.com" :name "Work" :domains
-      ("github.com")
-      :dirs
-      ("~/work"))))
- '(global-highlight-parentheses-mode t)
  '(global-hl-line-mode nil)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
+ '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
  '(highlight-parentheses-highlight-adjacent t)
@@ -2614,21 +2849,14 @@ current buffer's, reload dir-locals."
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
- '(mixed-pitch-fixed-pitch-faces
-   '(diff-added diff-context diff-file-header diff-function diff-header diff-hunk-header diff-removed font-latex-math-face font-latex-sedate-face font-latex-warning-face font-latex-sectioning-5-face font-lock-builtin-face font-lock-comment-delimiter-face font-lock-constant-face font-lock-doc-face font-lock-function-name-face font-lock-keyword-face font-lock-negation-char-face font-lock-preprocessor-face font-lock-regexp-grouping-backslash font-lock-regexp-grouping-construct font-lock-string-face font-lock-type-face font-lock-variable-name-face line-number line-number-current-line line-number-major-tick line-number-minor-tick markdown-code-face markdown-gfm-checkbox-face markdown-inline-code-face markdown-language-info-face markdown-language-keyword-face markdown-math-face message-header-name message-header-to message-header-cc message-header-newsgroups message-header-xheader message-header-subject message-header-other mu4e-header-key-face mu4e-header-value-face mu4e-link-face mu4e-contact-face mu4e-compose-separator-face mu4e-compose-header-face org-block org-block-begin-line org-block-end-line org-document-info-keyword org-code org-indent org-latex-and-related org-checkbox org-formula org-meta-line org-table org-verbatim))
- '(mixed-pitch-set-height t)
- '(neo-autorefresh t)
- '(neo-hidden-regexp-list
-   '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "\\.xml$"))
- '(neo-show-hidden-files t)
- '(neo-show-slash-for-folder nil)
- '(neo-smart-open t)
- '(neo-theme 'icons)
- '(neo-window-position 'left)
- '(neo-window-width 40)
+ '(mood-line-show-cursor-point nil)
+ '(mood-line-show-encoding-information nil)
  '(package-selected-packages
-   '(alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi elpy key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv rainbow-identifiers treemacs-persp perspective helpful company-box popwin company-posframe treemacs-projectile treemacs git-link major-mode-icons imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay git-identity csv-mode doom-modeline yaml-mode diminish which-key diff-hl git-timemachine auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines mode-icons markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move all-the-icons-dired ag ace-window))
+   '(super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
+ '(page-break-lines-modes
+   '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
+ '(persp-sort 'access)
  '(popwin:popup-window-height 30)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
@@ -2637,9 +2865,21 @@ current buffer's, reload dir-locals."
  '(projectile-indexing-method 'hybrid)
  '(projectile-mode t nil (projectile))
  '(projectile-sort-order 'recently-active)
- '(rainbow-identifiers-face-count 15)
+ '(quick-peek-add-spacer nil)
+ '(quick-peek-position 'above)
+ '(recentf-auto-cleanup 300)
+ '(recentf-max-menu-items 100)
+ '(recentf-max-saved-items 500)
+ '(safe-local-variable-values
+   '((eval with-eval-after-load 'cider
+	   (setq cider-default-cljs-repl 'figwheel))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(selectrum-count-style 'current/matches)
+ '(selectrum-display-style '(vertical))
+ '(selectrum-num-candidates-displayed 10)
+ '(selectrum-show-indices nil)
+ '(shackle-mode t)
  '(show-trailing-whitespace t)
  '(split-height-threshold 100)
  '(split-width-threshold 30)
@@ -2649,16 +2889,91 @@ current buffer's, reload dir-locals."
  '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
- '(treemacs-collapse-dirs 6)
- '(treemacs-follow-mode nil)
- '(treemacs-width 45)
  '(which-key-max-description-length 45))
+
+;; '(mixed-pitch-fixed-pitch-faces
+;;   '(diff-added diff-context diff-file-header diff-function diff-header diff-hunk-header diff-removed font-latex-math-face font-latex-sedate-face font-latex-warning-face font-latex-sectioning-5-face font-lock-builtin-face font-lock-comment-delimiter-face font-lock-constant-face font-lock-doc-face font-lock-function-name-face font-lock-keyword-face font-lock-negation-char-face font-lock-preprocessor-face font-lock-regexp-grouping-backslash font-lock-regexp-grouping-construct font-lock-string-face font-lock-type-face font-lock-variable-name-face line-number line-number-current-line line-number-major-tick line-number-minor-tick markdown-code-face markdown-gfm-checkbox-face markdown-inline-code-face markdown-language-info-face markdown-language-keyword-face markdown-math-face message-header-name message-header-to message-header-cc message-header-newsgroups message-header-xheader message-header-subject message-header-other mu4e-header-key-face mu4e-header-value-face mu4e-link-face mu4e-contact-face mu4e-compose-separator-face mu4e-compose-header-face org-block org-block-begin-line org-block-end-line org-document-info-keyword org-code org-indent org-latex-and-related org-checkbox org-formula org-meta-line org-table org-verbatim))
+;; '(mixed-pitch-set-height t)
+
+;; '(persp-auto-resume-time 0.0)
+;; '(persp-auto-save-fname "my-autosave")
+;; '(persp-auto-save-num-of-backups 0)
+;; '(persp-auto-save-opt 0)
+;; '(persp-auto-save-persps-to-their-file nil)
+;; '(persp-autokill-persp-when-removed-last-buffer 'kill)
+;; '(persp-nil-name "main")
+
+;; '(elpy-rpc-python-command "poetry run python")
+;; '(elpy-rpc-virtualenv-path "")
+
+;; '(doom-modeline-buffer-file-name-style 'truncate-with-project)
+;; '(doom-modeline-buffer-modification-icon nil)
+;; '(doom-modeline-buffer-state-icon nil)
+;; '(doom-modeline-continuous-word-count-modes nil)
+;; '(doom-modeline-display-default-persp-name t)
+;; '(doom-modeline-github t)
+;; '(doom-modeline-height 16)
+;; '(doom-modeline-icon nil)
+;; '(doom-modeline-indent-info nil)
+;; '(doom-modeline-major-mode-icon nil)
+;; '(doom-modeline-modal-icon nil)
+;; '(doom-modeline-persp-icon nil)
+;; '(doom-modeline-unicode-fallback t)
+;; '(doom-modeline-vcs-max-length 40)
+
+;; '(cljr-favor-private-functions nil)
+;; '(cljr-hotload-dependencies t)
+;; '(cljr-magic-require-namespaces
+;;   '(("str" . "clojure.string")
+;;     ("set" . "clojure.set")
+;;     ("pp" . "clojure.pprint")
+;;     ("zip" . "clojure.zip")
+;;     ("edn" . "clojure.edn")
+;;     ("t" . "clojure.test")
+;;     ("as" . "clojure.core.async")
+;;     ("logic" . "clojure.core.logic")
+;;     ("walk" . "clojure.walk")
+;;     ("xml" . "clojure.data.xml")
+;;     ("csv" . "clojure.data.csv")
+;;     ("spec" . "clojure.spec.alpha")
+;;     ("io" . "clojure.java.io")
+;;     ("mat" . "clojure.core.matrix")
+;;     ("json" . "cheshire.core")
+;;     ("time" . "java-time")
+;;     ("spr" . "com.rpl.specter")
+;;     ("http" . "clj-http.client")
+;;     ("log" . "clojure.tools.logging")
+;;     ("e" . "taoensso.encore")
+;;     ("s3" . "amazonica.aws.s3")
+;;     ("sql" . "hugsql.core")
+;;     ("yaml" . "clj-yaml.core")
+;;     ("sh" . "clojure.java.shell")
+;;     ("w" . "clojure.walk")
+;;     ("fs" . "me.raynes.fs")
+;;     ("r" . "reagent.core")
+;;     ("rf" . "re-frame.core")))
+
+;; '(treemacs-collapse-dirs 6)
+;; '(treemacs-follow-mode nil)
+;; '(treemacs-no-png-images t)
+;; '(treemacs-width 45)
+
+;; '(rainbow-identifiers-face-count 15)
 
 ;; '(ivy-initial-inputs-alist nil)
 ;; '(ivy-posframe-border-width 3)
 ;; '(ivy-posframe-min-width 120)
 ;; '(ivy-posframe-width 160)
 ;; '(ido-default-file-method 'selected-window)
+;; '(neo-autorefresh t)
+;; '(neo-hidden-regexp-list
+;;   '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "\\.xml$"))
+;; '(neo-show-hidden-files t)
+;; '(neo-show-slash-for-folder nil)
+;; '(neo-smart-open t)
+;; '(neo-theme 'icons)
+;; '(neo-window-position 'left)
+;; '(neo-window-width 40)
 
 
 ;; Local Variables:
