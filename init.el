@@ -62,6 +62,7 @@
     ace-window
     ag
     aggressive-indent
+    alert
     ample-theme
     avy
     beacon
@@ -85,6 +86,7 @@
     ctrlf
     dash
     diff-hl
+    direnv
     dotenv-mode
     dot-mode
     dumb-jump
@@ -124,9 +126,11 @@
     mood-line
     move-text
     linum-relative
+    nlinum-relative
     nov
     orderless
     org-bullets
+    org-download
     org-preview-html
     osc
     page-break-lines
@@ -152,6 +156,7 @@
     typo
     undo-tree
     unfill
+    unicode-fonts
     use-package
     visible-mark
     vterm
@@ -2794,6 +2799,9 @@ current buffer's, reload dir-locals."
 (mood-line-mode)
 
 
+
+;;; END (effectively)
+
 (provide 'init)
 
 ;; '(safe-local-variable-values
@@ -2858,7 +2866,7 @@ current buffer's, reload dir-locals."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(org-download epresent demo-it super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
