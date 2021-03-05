@@ -63,7 +63,6 @@
     ag
     aggressive-indent
     ample-theme
-    auto-dim-other-buffers
     avy
     beacon
     buffer-move
@@ -201,7 +200,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
- '(auto-dim-other-buffers-face ((t (:background "gray29"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "gray0"))))
@@ -251,6 +249,8 @@
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
+
+;; '(auto-dim-other-buffers-face ((t (:background "gray29"))))
 
 ;; Test rainbow parens by uncommenting:
 ;; ((((((((()))))))))
@@ -1191,12 +1191,12 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
 
 
-;; auto-dim
-;; https://github.com/mina86/auto-dim-other-buffers.el
-(add-hook 'after-init-hook
-          (lambda ()
-            (when (fboundp 'auto-dim-other-buffers-mode)
-              (auto-dim-other-buffers-mode t))))
+;; ;; auto-dim
+;; ;; https://github.com/mina86/auto-dim-other-buffers.el
+;; (add-hook 'after-init-hook
+;;           (lambda ()
+;;             (when (fboundp 'auto-dim-other-buffers-mode)
+;;               (auto-dim-other-buffers-mode t))))
 
 ;; BUGGY
 ;; Line numbers
@@ -1390,17 +1390,17 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'ace-window)
 (ace-window-display-mode t)
 
-(require 'winum)
-(winum-mode)
-(global-set-key (kbd "M-1") 'winum-select-window-1)
-(global-set-key (kbd "M-2") 'winum-select-window-2)
-(global-set-key (kbd "M-3") 'winum-select-window-3)
-(global-set-key (kbd "M-4") 'winum-select-window-4)
-(global-set-key (kbd "M-5") 'winum-select-window-5)
-(global-set-key (kbd "M-6") 'winum-select-window-6)
-(global-set-key (kbd "M-7") 'winum-select-window-7)
-(global-set-key (kbd "M-8") 'winum-select-window-8)
-(global-set-key (kbd "M-9") 'winum-select-window-9)
+;; (require 'winum)
+;; (winum-mode)
+;; (global-set-key (kbd "M-1") 'winum-select-window-1)
+;; (global-set-key (kbd "M-2") 'winum-select-window-2)
+;; (global-set-key (kbd "M-3") 'winum-select-window-3)
+;; (global-set-key (kbd "M-4") 'winum-select-window-4)
+;; (global-set-key (kbd "M-5") 'winum-select-window-5)
+;; (global-set-key (kbd "M-6") 'winum-select-window-6)
+;; (global-set-key (kbd "M-7") 'winum-select-window-7)
+;; (global-set-key (kbd "M-8") 'winum-select-window-8)
+;; (global-set-key (kbd "M-9") 'winum-select-window-9)
 
 
 (defvar aw-dispatch-alist
@@ -2227,6 +2227,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; https://emacs.stackexchange.com/questions/9709/keep-the-headlines-expanded-in-org-mode
 (setq org-startup-folded nil)
+(setq org-startup-with-inline-images t)
+(setq org-confirm-babel-evaluate nil)
+
+;; (require 'org-download)
+
 
 ;; https://stackoverflow.com/questions/4333467/override-ctrl-tab-in-emacs-org-mode
 (add-hook 'org-mode-hook
@@ -2806,7 +2811,7 @@ current buffer's, reload dir-locals."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ace-window-display-mode t)
- '(auto-dim-other-buffers-mode t)
+ '(auto-dim-other-buffers-mode nil)
  '(avy-orders-alist nil)
  '(avy-styles-alist '((avy-goto-char-2 . pre)))
  '(avy-timeout-seconds 0.2)
@@ -2851,8 +2856,9 @@ current buffer's, reload dir-locals."
  '(markdown-wiki-link-search-subdirectories t)
  '(mood-line-show-cursor-point nil)
  '(mood-line-show-encoding-information nil)
+ '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine auto-dim-other-buffers key-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(org-download epresent demo-it super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
