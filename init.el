@@ -94,6 +94,7 @@
     easy-kill
     edit-indirect
     embark
+    emojify
     envrc
     exec-path-from-shell
     expand-region
@@ -204,7 +205,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "nil" :family "Fira Code"))))
+ '(default ((t (:inherit nil :stipple nil :background (if IS-LINUX "gray5" "gray16") :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height (if IS-LINUX 62 100) :width normal :foundry "nil" :family "Fira Code"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "gray0"))))
@@ -1432,9 +1433,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-to-list 'default-frame-alist '(width . 440))
 ;; (add-to-list 'default-frame-alist (cons 'height (get-default-height)))
 ;; Set to known Dell dimensions
-(add-to-list 'default-frame-alist '(width . 636)) ; big dell
+;; (add-to-list 'default-frame-alist '(width . 636)) ; big dell
 ;; (add-to-list 'default-frame-alist '(width . 338)) ; laptop
-(add-to-list 'default-frame-alist '(height . 175))
+;; (add-to-list 'default-frame-alist '(height . 175))
 
 
 (defun joe-scroll-other-window()
@@ -2846,7 +2847,7 @@ current buffer's, reload dir-locals."
  '(ediff-split-window-function 'split-window-horizontally)
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode nil)
+ '(global-hl-line-mode t)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
  '(highlight-nonselected-windows t)
