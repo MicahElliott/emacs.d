@@ -195,14 +195,9 @@
 ;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
 ;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
-;; Trying to dynamically set default font
-(setq default '((t (:inherit nil :stipple nil
-			     :background (if (eq system-type 'darwin) "gray16" "gray5")
-			     :foreground "#F8F8F2"
-			     :inverse-video nil :box nil :strike-through nil
-			     :overline nil :underline nil :slant normal :weight normal
-			     :height (if (eq system-type 'darwin) 100 62)
-			     :width normal :foundry "nil" :family "Fira Code"))))
+(set-face-attribute 'default nil :font "Fira Code"
+                    :height (if (eq system-type 'darwin) 100 62)
+		    :background (if (eq system-type 'darwin) "gray16" "gray5"))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
