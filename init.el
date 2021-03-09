@@ -20,11 +20,6 @@
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
 
-(defconst IS-MAC     (eq system-type 'darwin))
-(defconst IS-LINUX   (eq system-type 'gnu/linux))
-(defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
-(defconst IS-BSD     (or IS-MAC (eq system-type 'berkeley-unix)))
-
 
 ;;; PACKAGING
 
@@ -200,12 +195,20 @@
 ;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
 ;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
+;; Trying to dynamically set default font
+(setq default '((t (:inherit nil :stipple nil
+			     :background (if (eq system-type 'darwin) "gray16" "gray5")
+			     :foreground "#F8F8F2"
+			     :inverse-video nil :box nil :strike-through nil
+			     :overline nil :underline nil :slant normal :weight normal
+			     :height (if (eq system-type 'darwin) 100 62)
+			     :width normal :foundry "nil" :family "Fira Code"))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background (if IS-LINUX "gray5" "gray16") :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height (if IS-LINUX 62 100) :width normal :foundry "nil" :family "Fira Code"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "gray0"))))
@@ -256,6 +259,7 @@
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
 
+;; '(default ((t (:inherit nil :stipple nil :background (if (eq system-type 'darwin) "gray16" "gray5") :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height (if (eq system-type 'darwin) 100 62) :width normal :foundry "nil" :family "Fira Code"))))
 ;; '(auto-dim-other-buffers-face ((t (:background "gray29"))))
 
 ;; Test rainbow parens by uncommenting:
