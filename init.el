@@ -53,8 +53,7 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 (defvar my-packages
-  '(
-    ace-window
+  '(ace-window
     ag
     aggressive-indent
     alert
@@ -111,6 +110,7 @@
     highlight-parentheses
     highlight-indentation
     ibuffer-vc
+    icomplete-vertical
     imenu-list
     jump-char
     key-chord
@@ -208,6 +208,8 @@
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "gray0"))))
  '(company-box-background ((t (:background "black" :inverse-video nil))) t)
+ '(company-tooltip ((t (:background "black" :inverse-video nil))))
+ '(company-tooltip-annotation-selection ((t (:background "black" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
@@ -999,16 +1001,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Make it easier to switch to swiper search from overlay
 ;; (with-eval-after-load 'symbol-overlay (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
 ;; (define-key symbol-overlay-map (kbd "s") 'symbol-overlay-isearch-literally)
-(define-key symbol-overlay-map (kbd "s") 'symbol-overlay-ctrlf-literally)
-
-
-(defun symbol-overlay-ctrlf-literally ()
-  "CTRLF symbol at point literally."
-  (interactive)
-  (unless (minibufferp)
-    (let ((symbol (symbol-overlay-get-symbol)))
-      (beginning-of-thing 'symbol)
-      (ctrlf-forward-symbol-at-point))))
 
 
 
@@ -1579,6 +1571,7 @@ Here 'words' are defined as characters separated by whitespace."
   (magit-status)
   (balance-windows))
 
+(add-hook 'magit-mode-hook #'emojify-mode)
 
 ;; Pretty Magit Emoji
 ;; http://www.modernemacs.com/post/pretty-magit/
@@ -1615,8 +1608,8 @@ Here 'words' are defined as characters separated by whitespace."
 (pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
 (pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
 (pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
-(pretty-magit "master"  ? (:box t :height 1.2) t)
-(pretty-magit "origin"  ?⌱ (:box t :height 1.2) t)
+(pretty-magit "master"  ?👑 (:box t :height 1.2) t)
+(pretty-magit "origin"  ?💦  (:box t :height 1.2) t)
 
 (defun add-magit-faces ()
   "Add face properties and compose symbols for buffer from pretty-magit."
@@ -1675,7 +1668,6 @@ Here 'words' are defined as characters separated by whitespace."
      (goto-char (point-min))
      (when (ignore-errors (re-search-forward "^(ns "))
        (hs-hide-block))
-
      (while (ignore-errors (re-search-forward "\\^:fold"))
        (hs-hide-block)
        (next-line)))))
@@ -1684,7 +1676,7 @@ Here 'words' are defined as characters separated by whitespace."
   (interactive)
   (hs-minor-mode 1)
   (hs-clojure-hide-namespace-and-folds))
-(add-hook 'clojure-mode-hook 'hs-clojure-hide-namespace-and-folds)
+;; (add-hook 'clojure-mode-hook 'hs-clojure-hide-namespace-and-folds)
 
 
 (defun my-hs-hide-block ()
@@ -1929,9 +1921,12 @@ Here 'words' are defined as characters separated by whitespace."
 (with-eval-after-load 'company
   (company-flx-mode +1))
 
-;; (require 'pos-tip) ; just a dependency package of quickhelp
-;; (require 'company-quickhelp)
-;; (company-quickhelp-mode 1)
+(require 'pos-tip) ; just a dependency package of quickhelp
+(require 'company-quickhelp)
+(company-quickhelp-mode 1)
+(setq pos-tip-border-width 8)
+
+(setq company-quickhelp-use-propertized-text t)
 
 ;; TODO Decide if really wanted
 ;; Popup window manager for short/wide bottom C-g killable popup
@@ -1943,8 +1938,13 @@ Here 'words' are defined as characters separated by whitespace."
 ;; TODO Themeable
 ;; YAY!!!
 ;; https://github.com/sebastiencs/company-box
-(require 'company-box)
-(add-hook 'company-mode-hook 'company-box-mode)
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+
+(defvar company-box-backends-colors
+  '((company-clojure . (:all "lime green" :selected (:background "lime green" :foreground "black")))))
 
 
 
@@ -2148,7 +2148,8 @@ Here 'words' are defined as characters separated by whitespace."
        )
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+;; (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'smartparens-mode)
 
 (eval-after-load "clojure-mode"
   '(progn
@@ -2642,37 +2643,80 @@ current buffer's, reload dir-locals."
 
 
 
+(defface company-tooltip
+  '((default :foreground "blue")
+    (((class color) (min-colors 88) (background light))
+     (:background "black"))
+    (((class color) (min-colors 88) (background dark))
+     (:background "yellow")))
+  "Face used for the tooltip.")
 
 
 
 ;;; SELECTRUM, CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA
 
-;; TODO
+;; (selectrum-mode +1) ; useful even when ivy for any completing-read
+;; (setq completion-styles '(substring partial-completion))
 
-(selectrum-mode +1) ; useful even when ivy for any completing-read
-(setq completion-styles '(substring partial-completion))
+(setq resize-mini-windows t)
 
-;; Completion styles
-(require 'orderless)
-(setq completion-styles '(orderless))
+(use-package icomplete-vertical
+  :ensure t
+  :demand t
+  :custom
+  (completion-styles '(partial-completion substring))
+  (completion-category-overrides '((file (styles basic substring))))
+  (read-file-name-completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (completion-ignore-case t)
+  :config
+  (icomplete-mode)
+  (icomplete-vertical-mode)
+  :bind (:map icomplete-minibuffer-map
+              ("<down>" . icomplete-forward-completions)
+              ("C-n" . icomplete-forward-completions)
+              ("<up>" . icomplete-backward-completions)
+              ("C-p" . icomplete-backward-completions)
+              ("C-v" . icomplete-vertical-toggle)))
 
-(selectrum-prescient-mode +1)
-;; ;; save command history on disk, so the sorting gets more intelligent over time
-(prescient-persist-mode +1)
+(setq icomplete-vertical-prospects-height 30)
+(setq icomplete-prospects-height 30)
 
-(marginalia-mode)
-;; ;; When using Selectrum, ensure that Selectrum is refreshed when cycling annotations.
-(advice-add #'marginalia-cycle :after
-            (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
-(define-key minibuffer-local-map (kbd "C-M-a") 'marginalia-cycle)
+;; ;; Completion styles
+(use-package orderless
+  :ensure t
+  :custom (completion-styles '(orderless)))
 
-;; (ctrlf-mode +1) ; search, like normal emacs but improved, add C-s binding
+
+;; Improve isearch: https://github.com/raxod502/ctrlf#why-not-isearch
+(use-package ctrlf)
+(ctrlf-mode +1)
+
+;; Enable richer annotations using the Marginalia package
+(use-package marginalia
+  ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode)
+
+  ;; Prefer richer, more heavy, annotations over the lighter default variant.
+  ;; E.g. M-x will show the documentation string additional to the keybinding.
+  ;; By default only the keybinding is shown as annotation.
+  ;; Note that there is the command `marginalia-cycle' to
+  ;; switch between the annotators.
+  (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+
 
 ;; Consult (like isearch but improved)
 ;; https://github.com/minad/consult
 
-;; (global-set-key (kbd "M-s s") 'consult-isearch)
-(global-set-key (kbd "C-s") 'consult-line)
+;; (global-set-key (kbd "C-s") 'consult-isearch)
+(global-set-key (kbd "C-S-s") 'consult-line)
 
 ;; Optionally configure a function which returns the project root directory
 (autoload 'projectile-project-root "projectile")
@@ -2866,12 +2910,15 @@ current buffer's, reload dir-locals."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient ctrlf selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
  '(persp-sort 'access)
  '(popwin:popup-window-height 30)
+ '(pos-tip-background-color "red")
+ '(pos-tip-foreground-color "blue")
+ '(pos-tip-internal-border-width 20)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -2884,6 +2931,7 @@ current buffer's, reload dir-locals."
  '(recentf-auto-cleanup 300)
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
+ '(ripgrep-arguments '("--smart-case"))
  '(safe-local-variable-values
    '((eval with-eval-after-load 'cider
 	   (setq cider-default-cljs-repl 'figwheel))))
