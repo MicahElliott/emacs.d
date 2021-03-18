@@ -109,6 +109,7 @@
     highlight-numbers
     highlight-parentheses
     highlight-indentation
+    hl-todo
     ibuffer-vc
     icomplete-vertical
     imenu-list
@@ -363,9 +364,10 @@
 (let ((my-buffer-keymap (make-sparse-keymap)))
   ;; Popups and immediate changes lower case
   ;; (define-key my-buffer-keymap "a" 'counsel-switch-buffer) ; all
-  (define-key my-buffer-keymap "a" 'switch-to-buffer) ; all
+  ;; (define-key my-buffer-keymap "a" 'switch-to-buffer) ; all
+  (define-key my-buffer-keymap "a" 'consult-buffer) ; all
   (define-key my-buffer-keymap "A" 'my-ibuffer) ; all
-  (define-key my-buffer-keymap "A" 'ibuffer) ; all
+  ;; (define-key my-buffer-keymap "A" 'ibuffer) ; all
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
   ;; (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
@@ -1180,9 +1182,19 @@ Here 'words' are defined as characters separated by whitespace."
 (add-hook 'text-mode-hook 'typo-mode)
 
 
-;; special treatment of FIXME, etc
-(require 'fic-mode)
-(add-hook 'prog-mode-hook 'fic-mode)
+;; special treatment of FIXME, TODO, etc
+
+;; (require 'fic-mode)
+;; (add-hook 'prog-mode-hook 'fic-mode)
+
+(require 'hl-todo)
+(add-hook 'prog-mode-hook 'hl-todo-mode)
+;; (global-hl-todo-mode)
+(define-key hl-todo-mode-map (kbd "C-c p") 'hl-todo-previous)
+(define-key hl-todo-mode-map (kbd "C-c n") 'hl-todo-next)
+(define-key hl-todo-mode-map (kbd "C-c o") 'hl-todo-occur)
+(define-key hl-todo-mode-map (kbd "C-c i") 'hl-todo-insert)
+
 
 ;; Wow, hide comments!! Just blanks them out.
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
@@ -1764,7 +1776,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Highlight matching parens
 ;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
 ;; Can be SLOW with long lines!
-;; (show-smartparens-mode t)
+(show-smartparens-mode t)
 ;; More matching parens: colors block you're in red (SLOW?)
 ;; https://github.com/tsdh/highlight-parentheses.el
 ;; TODO testing if slow
@@ -2054,8 +2066,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; Nofitications
 ;; https://github.com/jwiegley/alert
-(setq alert-default-style 'notifier)
-(alert "Tis but an alert" :severity 'high :title "some title")
+;; (setq alert-default-style 'notifier)
+(if (eq system-type 'darwin)
+    (setq alert-default-style 'mode-line)
+  (setq alert-default-style 'libnotify))
+(alert "Tis but an alert" :severity 'low :title "some title")
 
 ;; (setq hs-special-modes-alist)
 
@@ -2677,7 +2692,8 @@ current buffer's, reload dir-locals."
               ("C-n" . icomplete-forward-completions)
               ("<up>" . icomplete-backward-completions)
               ("C-p" . icomplete-backward-completions)
-              ("C-v" . icomplete-vertical-toggle)))
+              ;; ("C-v" . icomplete-vertical-toggle)
+	      ))
 
 (setq icomplete-vertical-prospects-height 30)
 (setq icomplete-prospects-height 30)
@@ -2885,6 +2901,7 @@ current buffer's, reload dir-locals."
  '(cider-repl-use-pretty-printing nil)
  '(cider-special-mode-truncate-lines nil)
  '(col-highlight-show-only 'forward-paragraph)
+ '(ctrlf-auto-recenter t)
  '(custom-safe-themes
    '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(ediff-split-window-function 'split-window-horizontally)
@@ -2910,7 +2927,7 @@ current buffer's, reload dir-locals."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
