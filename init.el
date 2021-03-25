@@ -106,9 +106,10 @@
     git-timemachine
     github-browse-file
     helpful
+    highlight-escape-sequences
+    highlight-indentation
     highlight-numbers
     highlight-parentheses
-    highlight-indentation
     hl-todo
     ibuffer-vc
     icomplete-vertical
@@ -1757,6 +1758,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-c C-u") 'browse-url)
 
+(when (eq system-type 'darwin)
+  (setq browse-url-firefox-program (if "/Applications/Firefox.app/Contents/MacOS/firefox")))
+
+
+
 
 ;;; PARENS
 
@@ -1962,18 +1968,54 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; COLORS / THEMES
 
+;;https://www.masteringemacs.org/article/re-builder-interactive-regexp-builder
+(require 're-builder)
+(setq reb-re-syntax 'string)
+
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
-(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Special Comment")
-(defface sfdc-field'((t (:foreground "#dF9522"))) "My SFDC Field")
+(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Special Comment" :group 'clojure-mode)
+(defface sfdc-field      '((t (:foreground "#dF9522" :weight ultra-bold))) "My SFDC Field" :group 'clojure-mode)
+(defface sql-field       '((t (:foreground "#528fd1" :weight ultra-bold))) "My SQL Field" :group 'clojure-mode)
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
 ;; (face-spec-set 'sfdc-field '((t :foreground "#ff00ff" :underline t :slant normal)))
+;; (face-spec-set 'sql-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
+(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
+
+;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
+(defface my-backslash-escape-backslash-face
+  '((t :inherit font-lock-regexp-grouping-backslash))
+  "Face for the back-slash component of a back-slash escape."
+  :group 'font-lock-faces)
+(defface my-backslash-escape-char-face
+  '((t :inherit font-lock-regexp-grouping-construct))
+  "Face for the charcter component of a back-slash escape."
+  :group 'font-lock-faces)
+(defface my-format-code-format-face
+  '((t :inherit font-lock-regexp-grouping-backslash))
+  "Face for the % component of a printf format code."
+  :group 'font-lock-faces)
+(defface my-format-code-directive-face
+  '((t :inherit font-lock-regexp-grouping-construct))
+  "Face for the directive component of a printf format code."
+  :group 'font-lock-faces)
+(font-lock-add-keywords 'clojure-mode
+			'(("\\(\\\\\\)." 1 'my-backslash-escape-backslash-face prepend)
+			  ("\\\\\\(.\\)" 1 'my-backslash-escape-char-face      prepend)
+			  ("\\(%\\)."    1 'my-format-code-format-face         prepend)
+			  ("%\\(.\\)"    1 'my-format-code-directive-face      prepend)))
+
+(require 'highlight-escape-sequences) ; already has clojure support: customize `hes-mode'
+
+;; (defface my-identifier-x '((t :foreground "red" :weight bold)) "face for user defined variables." :group 'my-mode )
+;; (face-spec-set 'my-identifier-x '((t :foreground "blue" :weight bold)) 'face-defface-spec)
+;; (face-spec-set 'sql-field `((t :foreground "blue")) 'face-defface-spec)
 
 ;; (re-search-forward "[A-z_]+__c")
- ;; Aaa_Vvv__c
+;; Aaa_Vvv__c
 
 
 ;;; Sonic PI
@@ -2082,12 +2124,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;;     (counsel-projectile-ag)))
 ;; ;; (key-chord-define-global "RF" 'my-projectile-ivy-ag)
 
-
-(defun my-projectile-ctrlf-ag ()
-  "Populate ag with a search term of thing at point."
-  (interactive)
-  (projectile-ag (thing-at-point 'word 'no-properties)))
-(key-chord-define-global "RF" 'my-projectile-ctrlf-ag)
 
 ;; (require 'winnow)
 
@@ -2901,7 +2937,8 @@ current buffer's, reload dir-locals."
  '(cider-repl-use-pretty-printing nil)
  '(cider-special-mode-truncate-lines nil)
  '(col-highlight-show-only 'forward-paragraph)
- '(ctrlf-auto-recenter t)
+ '(ctrlf-auto-recenter nil)
+ '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
    '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(ediff-split-window-function 'split-window-horizontally)
@@ -2927,7 +2964,7 @@ current buffer's, reload dir-locals."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
