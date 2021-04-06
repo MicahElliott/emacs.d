@@ -151,6 +151,7 @@
     sotclojure
     super-save
     symbol-overlay
+    toggle-quotes
     typo
     undo-tree
     unfill
