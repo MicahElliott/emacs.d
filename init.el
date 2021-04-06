@@ -628,6 +628,8 @@
 (key-chord-define-global "GT" 'magit-status)
 (key-chord-define-global "XS" 'save-buffer)
 
+(key-chord-define-global "QA" 'toggle-parens)
+
 ;; TODO key seqs for opposited toggle
 (key-seq-define-global "PB" 'make-frame-command)
 (key-seq-define-global "BP" 'delete-frame)
@@ -773,9 +775,35 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-c /") "”")
 (global-set-key (kbd "C-c -") "—")
 
-;; (global-set-key (kbd "C-'") 'toggle-quotes)
+(global-set-key (kbd "C-'") 'toggle-quotes)
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
+
+(global-set-key (kbd "C-'") 'toggle-quotes)
+
+;; TODO
+;; https://emacs.stackexchange.com/questions/64242/is-there-toggle-syntax-package-for-parens-brackets-brokets-braces
+(defun toggle-parens ()
+  "Toggle parens, braces, brackets."
+  (interactive)
+  (save-excursion
+    (when (not (string-match-p (regexp-quote (char-to-string (char-after))) "([{<"))
+      (sp-backward-up-sexp)
+      (when (eq ?\" (char-after)) ; up again if inside string
+	(sp-backward-up-sexp)))
+    (progn
+      (sp-wrap-with-pair
+       (case (char-after)
+	 (?\( "[")
+	 (?\[ "{")
+         (?\{ "(")
+	 ;; smartparens can't wrap with <
+	 ;; (?\< "(")
+	 ))
+      (forward-char)
+      (sp-splice-sexp))))
+(global-set-key (kbd "C-c S") 'toggle-parens)
+
 
 ;; Planck-friendly
 (global-set-key (kbd "M-{") 'backward-paragraph)
@@ -1183,6 +1211,8 @@ Here 'words' are defined as characters separated by whitespace."
 (add-hook 'text-mode-hook 'typo-mode)
 
 
+(require 'toggle-quotes)
+
 ;; special treatment of FIXME, TODO, etc
 
 ;; (require 'fic-mode)
@@ -1213,7 +1243,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
 (require 'nlinum-relative) ; SLOW (for high LOC)
-;; (global-nlinum-relative-mode 1) ; trying without to see if faster
+(global-nlinum-relative-mode 1) ; trying without to see if faster
 ;; (global-display-line-numbers-mode)
 (setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
@@ -1256,6 +1286,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; FIXME should instead go to vterm window without toggle so leaving doesn't trigger a savee
 ;; (add-to-list 'super-save-triggers 'vterm-toggle)
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
+
+;; Seems the only way to have multiple vterms
+(require 'multi-vterm)
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
 
@@ -1758,8 +1791,9 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-c C-u") 'browse-url)
 
-(when (eq system-type 'darwin)
-  (setq browse-url-firefox-program (if "/Applications/Firefox.app/Contents/MacOS/firefox")))
+(setq browse-url-firefox-program (if (eq system-type 'darwin)
+				     "/Applications/Firefox.app/Contents/MacOS/firefox"
+				   "/usr/bin/firefox"))
 
 
 
@@ -1782,7 +1816,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Highlight matching parens
 ;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
 ;; Can be SLOW with long lines!
-(show-smartparens-mode t)
+(show-smartparens-global-mode t)
 ;; More matching parens: colors block you're in red (SLOW?)
 ;; https://github.com/tsdh/highlight-parentheses.el
 ;; TODO testing if slow
@@ -1983,7 +2017,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (face-spec-set 'sql-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
-(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
+(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
 (defface my-backslash-escape-backslash-face
@@ -2378,6 +2412,21 @@ chord."
                           (aref rkeys (- (length rkeys) 1))))))
     (error "")))
 
+;; (autoload 'bash-completion-dynamic-complete "bash-completion" "BASH completion hook")
+;; (add-hook 'shell-dynamic-complete-functions 'bash-completion-dynamic-complete)
+
+
+
+;;; SLIME MISC
+
+(defun sh-send-line-or-region ()
+  (interactive ())
+  (process-send-string (get-process "vterm") "ls -l\n"))
+;; (define-key shell-script-mode (kbd "C-c C-c") 'sh-send-line-or-region)
+(global-set-key (kbd "C-c Q") 'sh-send-line-or-region)
+(add-hook 'shell-script-mode (lambda () (local-set-key (kbd "C-c C-c") 'sh-send-line-or-region)))
+
+
 ;; Slime-like for shell/zsh (C-u C-x M-m)
 ;; http://stackoverflow.com/questions/6286579/
 (defun sh-send-line-or-region (&optional step)
@@ -2385,11 +2434,11 @@ chord."
   ;; (let ((proc (get-process "shell"))
   (let ((proc (get-process "vterm"))
         pbuf min max command)
-    (unless proc
-      (let ((currbuff (current-buffer)))
-        (vterm)
-        (switch-to-buffer currbuff)
-        (setq proc (get-process "vterm"))))
+    ;; (unless proc
+    ;;   (let ((currbuff (current-buffer)))
+    ;;     (vterm)
+    ;;     (switch-to-buffer currbuff)
+    ;;     (setq proc (get-process "vterm"))))
     (setq pbuff (process-buffer proc))
     (if (use-region-p)
         (setq min (region-beginning)
@@ -2397,16 +2446,17 @@ chord."
       (setq min (point-at-bol)
             max (point-at-eol)))
     (setq command (concat (buffer-substring min max) "\n"))
-    (with-current-buffer pbuff
-      (goto-char (process-mark proc))
-      (insert command)
-      (move-marker (process-mark proc) (point))
-      ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
+    ;; (with-current-buffer pbuff
+    ;;   (goto-char (process-mark proc))
+    ;;   (insert command)
+    ;;   (move-marker (process-mark proc) (point))
+    ;;   ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
     (process-send-string proc command)
-    (display-buffer (process-buffer proc) t)
-    (when step
-      (goto-char max)
-      (forward-line))))
+    ;; (display-buffer (process-buffer proc) t)
+    ;; (when step
+    ;;   (goto-char max)
+    ;;   (forward-line))
+    ))
 (defun sh-send-line-or-region-and-step ()
   (interactive)
   (sh-send-line-or-region t))
@@ -2438,10 +2488,10 @@ chord."
 
 (defun tws-region-to-process (arg beg end)
   "Send the current region to a process buffer.
-The first time it's called, will prompt for the buffer to
-send to. Subsequent calls send to the same buffer, unless a
-prefix argument is used (C-u), or the buffer no longer has an
-active process."
+  The first time it's called, will prompt for the buffer to
+  send to. Subsequent calls send to the same buffer, unless a
+  prefix argument is used (C-u), or the buffer no longer has an
+  active process."
   (interactive "P\nr")
   (if (or arg ;; user asks for selection
           (not (boundp 'tws-process-target)) ;; target not set
@@ -2459,11 +2509,17 @@ active process."
 ;; (add-hook 'sh-mode (lambda () (local-set-key (kbd "C-c C-c") 'tws-region-to-process)))
 ;; (define-key sh-mode-map "\C-c\C-c" nil)
 ;; (add-hook 'shell-script-mode)
-(add-hook 'shell-script-mode (lambda ()
-			       (local-set-key (kbd "C-c C-c") 'tws-region-to-process)))
+;; (add-hook 'shell-script-mode (lambda () (local-set-key (kbd "C-c C-c") 'tws-region-to-process)))
+
 (eval-after-load "shell-script"
   #'(define-key (kbd "C-c C-c") 'tws-region-to-process))
 ;; (define-key shell-mode-map (kbd "C-c C-c") 'tws-region-to-process)
+
+
+
+
+
+
 
 ;; Show Marks (contrib)
 ;; https://www.emacswiki.org/emacs/download/show-marks.el
@@ -2474,14 +2530,14 @@ active process."
 ;; https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
   "Pushes `point' to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)
   (message "Pushed mark to ring"))
 
 (defun jump-to-mark ()
   "Jumps to the local mark, respecting the `mark-ring' order.
-This is the same as using \\[set-mark-command] with the prefix argument."
+  This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
 
@@ -2593,7 +2649,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 
 (defun my-reload-dir-locals-for-all-buffer-in-this-directory ()
   "For every buffer with the same `default-directory` as the
-current buffer's, reload dir-locals."
+  current buffer's, reload dir-locals."
   (interactive)
   (let ((dir default-directory))
     (dolist (buffer (buffer-list))
@@ -2876,10 +2932,10 @@ current buffer's, reload dir-locals."
 
   )
 
-;; Optionally add the `consult-flycheck' command.
-(use-package consult-flycheck
-  :bind (:map flycheck-command-map
-	      ("!" . consult-flycheck)))
+;; ;; Optionally add the `consult-flycheck' command.
+;; (use-package consult-flycheck
+;;   :bind (:map flycheck-command-map
+;; 	      ("!" . consult-flycheck)))
 
 
 
@@ -2916,6 +2972,7 @@ current buffer's, reload dir-locals."
  ;; If there is more than one, they won't work right.
  '(ace-window-display-mode t)
  '(auto-dim-other-buffers-mode nil)
+ '(auto-revert-interval 2)
  '(avy-orders-alist nil)
  '(avy-styles-alist '((avy-goto-char-2 . pre)))
  '(avy-timeout-seconds 0.2)
@@ -2928,7 +2985,6 @@ current buffer's, reload dir-locals."
  '(beacon-color "red")
  '(beacon-push-mark nil)
  '(browse-url-browser-function 'browse-url-firefox)
- '(browse-url-firefox-program "/Applications/Firefox.app/Contents/MacOS/firefox")
  '(case-fold-search nil)
  '(cider-comment-prefix " ;=> ")
  '(cider-repl-history-file "~/.cider-repl-history")
@@ -2964,7 +3020,7 @@ current buffer's, reload dir-locals."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
