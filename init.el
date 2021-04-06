@@ -123,6 +123,7 @@
     markdown-mode
     mood-line
     move-text
+    multi-vterm
     linum-relative
     nlinum-relative
     nov
