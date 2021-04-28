@@ -144,8 +144,6 @@
     rg
     ripgrep
     rubocop
-    selectrum
-    selectrum-prescient
     shackle
     shrink-whitespace
     smartparens
@@ -214,6 +212,9 @@
  '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(company-tooltip ((t (:background "black" :inverse-video nil))))
  '(company-tooltip-annotation-selection ((t (:background "black" :foreground "black"))))
+ '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
+ '(ctrlf-highlight-line ((t (:background "chocolate4"))))
+ '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "#75715E"))))
@@ -222,17 +223,18 @@
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
- '(hl-line ((t (:background "#000000"))))
+ '(hl-line ((t (:extend t :background "black"))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:inherit variable-pitch))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :foreground "pale turquoise" :weight bold :height 1.5))))
- '(markdown-header-face-2 ((t (:inherit markdown-header-face :slant normal :weight bold :height 1.3))))
- '(markdown-header-face-3 ((t (:inherit markdown-header-face :slant italic :height 1.05))))
+ '(markdown-header-face-2 ((t (:foreground "#ab75c3" :slant normal :weight bold :height 1.3))))
+ '(markdown-header-face-3 ((t (:foreground "#dF9522" :slant italic :weight bold :height 1.05))))
  '(markdown-header-face-4 ((t (:inherit markdown-header-face :slant italic :height 1.0))))
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
+ '(mode-line-inactive ((t (:background "gray2" :foreground "cornsilk4"))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
@@ -254,6 +256,7 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :background "slate blue"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
+ '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
@@ -2244,7 +2247,7 @@ Here 'words' are defined as characters separated by whitespace."
      (message "MDE: in clojure eval-after-load")))
 
 ;; https://github.com/clojure-emacs/squiggly-clojure
-                                        ; (eval-after-load 'flycheck '(flycheck-clojure-setup))
+;; (eval-after-load 'flycheck '(flycheck-clojure-setup))
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
 ;; (require 'flycheck-pos-tip)
@@ -2703,8 +2706,11 @@ chord."
   (make-frame-command)
   (cider-find-var)
   (recenter-top-bottom))
-(global-set-key (kbd "C->") 'my-cider-find-var)
+;; (global-set-key (kbd "C->") 'my-cider-find-var)
 
+;; Enable resizing term
+;; https://emacs.stackexchange.com/questions/39312/output-reflow-in-ansi-term?noredirect=1&lq=1
+(setq term-suppress-hard-newline t)
 
 
 ;;; MACROS
@@ -2762,7 +2768,7 @@ chord."
 
 
 
-;;; SELECTRUM, CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA
+;;; CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA
 
 ;; (selectrum-mode +1) ; useful even when ivy for any completing-read
 ;; (setq completion-styles '(substring partial-completion))
@@ -3022,7 +3028,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia selectrum-prescient prescient selectrum embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -3049,10 +3055,6 @@ chord."
 	   (setq cider-default-cljs-repl 'figwheel))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
- '(selectrum-count-style 'current/matches)
- '(selectrum-display-style '(vertical))
- '(selectrum-num-candidates-displayed 10)
- '(selectrum-show-indices nil)
  '(shackle-mode t)
  '(show-trailing-whitespace t)
  '(split-height-threshold 100)
@@ -3064,6 +3066,11 @@ chord."
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
  '(which-key-max-description-length 45))
+
+;; '(selectrum-count-style 'current/matches)
+;; '(selectrum-display-style '(vertical))
+;; '(selectrum-num-candidates-displayed 10)
+;; '(selectrum-show-indices nil)
 
 ;; '(mixed-pitch-fixed-pitch-faces
 ;;   '(diff-added diff-context diff-file-header diff-function diff-header diff-hunk-header diff-removed font-latex-math-face font-latex-sedate-face font-latex-warning-face font-latex-sectioning-5-face font-lock-builtin-face font-lock-comment-delimiter-face font-lock-constant-face font-lock-doc-face font-lock-function-name-face font-lock-keyword-face font-lock-negation-char-face font-lock-preprocessor-face font-lock-regexp-grouping-backslash font-lock-regexp-grouping-construct font-lock-string-face font-lock-type-face font-lock-variable-name-face line-number line-number-current-line line-number-major-tick line-number-minor-tick markdown-code-face markdown-gfm-checkbox-face markdown-inline-code-face markdown-language-info-face markdown-language-keyword-face markdown-math-face message-header-name message-header-to message-header-cc message-header-newsgroups message-header-xheader message-header-subject message-header-other mu4e-header-key-face mu4e-header-value-face mu4e-link-face mu4e-contact-face mu4e-compose-separator-face mu4e-compose-header-face org-block org-block-begin-line org-block-end-line org-document-info-keyword org-code org-indent org-latex-and-related org-checkbox org-formula org-meta-line org-table org-verbatim))
