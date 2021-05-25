@@ -80,6 +80,7 @@
     ctrlf
     dash
     diff-hl
+    dired-sidebar
     direnv
     dotenv-mode
     dot-mode
@@ -643,9 +644,11 @@
 (key-seq-define-global "LJ" 'hl-line-flash)
 ;; (key-chord-define-global "H<" 'lispy-describe-inline)
 (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
-(key-chord-define-global "XX" 'my-cider-eval-to-comment)
+;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
 (key-chord-define-global "AA" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
+
+(key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 
 (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
 (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
@@ -877,6 +880,15 @@ Here 'words' are defined as characters separated by whitespace."
 ;; smartparens overrides M-r, so changing default
 (global-set-key "\M-R" 'move-to-window-line-top-bottom)
 (global-set-key "\M-\C-R" 'jump-to-bottom)
+(global-set-key (kbd "C-S-t") (lambda () (interactive)
+				(push-mark (point)) ; save place
+                                (let ((current-prefix-arg 0))
+				  (call-interactively 'move-to-window-line-top-bottom))))
+(global-set-key (kbd "C-S-b") (lambda () (interactive)
+				(push-mark (point)) ; save place
+				(let ((current-prefix-arg '(-1)))
+				  (call-interactively 'move-to-window-line-top-bottom))))
+(global-set-key (kbd "M-S-v") 'jump-to-top)
 ;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
 (global-set-key (kbd "M-L") 'recenter-top-bottom)
 (global-set-key (kbd "M-;") 'comment-dwim-2)
@@ -905,6 +917,9 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 (global-set-key (kbd "M-`") 'jump-to-mark)
+
+(global-set-key (kbd "C-n") 'my-next-line)
+(global-set-key (kbd "C-p") 'my-previous-line)
 
 
 
@@ -1223,9 +1238,24 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'fic-mode)
 ;; (add-hook 'prog-mode-hook 'fic-mode)
 
+;; ("HOLD" . "#d0bf8f")
+;; ("TODO" . "#cc9393")
+;; ("NEXT" . "#dca3a3")
+;; ("THEM" . "#dc8cc3")
+;; ("PROG" . "#7cb8bb")
+;; ("OKAY" . "#7cb8bb")
+;; ("DONT" . "#5f7f5f")
+;; ("FAIL" . "#8c5353")
+;; ("DONE" . "#afd8af")
+;; ("NOTE"   . "#d0bf8f")
+;; ("KLUDGE" . "#d0bf8f")
+;; ("HACK"   . "#d0bf8f")
+;; ("TEMP"   . "#d0bf8f")
+;; ("FIXME"  . "#cc9393")
+;; ("XXX+"   . "#cc9393")
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
-;; (global-hl-todo-mode)
+(global-hl-todo-mode)
 (define-key hl-todo-mode-map (kbd "C-c p") 'hl-todo-previous)
 (define-key hl-todo-mode-map (kbd "C-c n") 'hl-todo-next)
 (define-key hl-todo-mode-map (kbd "C-c o") 'hl-todo-occur)
@@ -1406,6 +1436,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; ;; (treemacs-git-mode 'extended)
 ;; (with-eval-after-load 'treemacs
 ;;   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
+
+(require 'dired-sidebar)
+
 
 
 ;;; HELP SYSTEM
@@ -1595,6 +1628,17 @@ Here 'words' are defined as characters separated by whitespace."
   (move-to-window-line-top-bottom)
   (move-to-window-line-top-bottom))
 
+(defun my-next-line (arg)
+  "Wrap `next-line' to save point mark."
+  (interactive "P")
+  (when (and arg (< 4 arg)) (push-mark (point)))
+  (next-line arg))
+
+(defun my-previous-line (arg)
+  "Wrap `previous-line' to save point mark."
+  (interactive "P")
+  (when (and arg (< 4 arg)) (push-mark (point)))
+  (previous-line arg))
 
 ;;; Commenter
 (require 'comment-dwim-2)
@@ -2385,9 +2429,10 @@ Here 'words' are defined as characters separated by whitespace."
     (dumb-jump-go))
   (recenter-top-bottom))
 
-(add-hook 'clojure-mode-hook
-          (lambda ()
-            (local-set-key (kbd "M-.") 'cider-or-dumb-jump)))
+(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "M-.") 'cider-or-dumb-jump)))
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+(global-set-key  (kbd "C-M->") 'dumb-jump-go)
 
 (defun my-forward-jump-to-line-break ()
   (interactive)
@@ -3028,7 +3073,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
