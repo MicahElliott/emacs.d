@@ -79,6 +79,7 @@
     csv
     ctrlf
     dash
+    default-text-scale
     diff-hl
     dired-sidebar
     direnv
@@ -227,7 +228,7 @@
  '(hl-line ((t (:extend t :background "black"))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
- '(markdown-header-face ((t (:inherit variable-pitch))))
+ '(markdown-header-face ((t (:family "Fira Sans"))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :foreground "pale turquoise" :weight bold :height 1.5))))
  '(markdown-header-face-2 ((t (:foreground "#ab75c3" :slant normal :weight bold :height 1.3))))
  '(markdown-header-face-3 ((t (:foreground "#dF9522" :slant italic :weight bold :height 1.05))))
@@ -235,7 +236,8 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
- '(mode-line-inactive ((t (:background "gray2" :foreground "cornsilk4"))))
+ '(mode-line ((t (:background "orange red" :foreground "#252525" :height 1.5 :family "Deja Vu"))))
+ '(mode-line-inactive ((t (:background "midnight blue" :foreground "cornsilk4" :height 1.5 :family "Deja Vu"))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
@@ -246,6 +248,7 @@
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
  '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
+ '(persp-selected-face ((t (:foreground "chartreuse" :weight bold))))
  '(quick-peek-background-face ((t (:inherit default :extend t :background "gray22"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
@@ -900,7 +903,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
 ;; (global-set-key [remap mark-sexp] 'easy-mark) ; TRIAL
-(global-set-key [remap kill-ring-save] 'easy-kill)
+;; (global-set-key [remap kill-ring-save] 'easy-kill)
 ;; (global-set-key [remap kill-ring-save] 'easy-mark)
 ;; (global-set-key (kbd "M-%") 'anzu-query-replace)
 ;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
@@ -974,8 +977,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (doom-modeline-mode 1)
 
 ;; (set-face-attribute 'mode-line nil :family "Alegreya Sans" :height 75)
-;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 75)
-
+;; (set-face-attribute 'mode-line-inactive nil :family "Alegreya Sans" :height 100)
+;; (set-face-attribute 'mode-line-inactive nil :background "white")
+;; (set-face-attribute 'mode-line  nil :background "orange")
+;;
 ;; (setq flycheck-set-indication-mode 'left-margin)
 ;; (flycheck-set-indication-mode 'left-fringe)
 
@@ -1008,6 +1013,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
 ;; (beacon-mode +1)
+
+;; Enable hl-line-flash
+(require 'hl-line+) ; local vendor package
 
 ;; (require 'crosshairs)
 ;; (crosshairs-toggle-when-idle)
@@ -1123,6 +1131,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; FIXME: seems to need to be run manually
 ;; (add-hook 'text-mode 'mixed-pitch-mode)
 
+
+(require 'default-text-scale)
+(default-text-scale-mode)
 
 
 ;;; IVY, COUNSEL, SWIPER
@@ -1661,6 +1672,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; ;; (git-identity-magit-mode 1)
 ;; (define-key magit-status-mode-map (kbd "I") 'git-identity-info)
 
+;; Auto-show magit-process-buffer on fetch
+;; https://github.com/magit/magit/issues/4401
+(add-hook 'magit-credential-hook 'magit-process-buffer)
+
 (defun my-magit-status ()
   (interactive)
   (magit-status)
@@ -1739,8 +1754,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Select/highlight with easy-kill
 ;; https://github.com/leoliu/easy-kill
 ;; http://stackoverflow.com/a/36631886/326516
-(require 'easy-kill)
-(global-set-key (kbd "C-M-SPC") 'easy-mark-sexp)
+;; (require 'easy-kill)
+;; (global-set-key (kbd "C-M-SPC") 'easy-mark-sexp)
 
 
 ;;; Hide-Show (V: visible), like folding
@@ -3000,6 +3015,7 @@ chord."
 (global-page-break-lines-mode)
 
 
+;; Modeline
 (require 'mood-line)
 (mood-line-mode)
 
@@ -3073,7 +3089,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -3095,9 +3111,6 @@ chord."
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
  '(ripgrep-arguments '("--smart-case"))
- '(safe-local-variable-values
-   '((eval with-eval-after-load 'cider
-	   (setq cider-default-cljs-repl 'figwheel))))
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(shackle-mode t)
