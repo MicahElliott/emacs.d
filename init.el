@@ -75,6 +75,7 @@
     consult
     consult-flycheck
     embark-consult
+    corfu
     crux
     csv
     ctrlf
@@ -114,7 +115,6 @@
     highlight-parentheses
     hl-todo
     ibuffer-vc
-    icomplete-vertical
     imenu-list
     jump-char
     key-chord
@@ -158,6 +158,7 @@
     unfill
     unicode-fonts
     use-package
+    vertico
     visible-mark
     vterm
     vterm-toggle
@@ -236,8 +237,8 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
- '(mode-line ((t (:background "orange red" :foreground "#252525" :height 1.5 :family "Deja Vu"))))
- '(mode-line-inactive ((t (:background "midnight blue" :foreground "cornsilk4" :height 1.5 :family "Deja Vu"))))
+ '(mode-line ((t (:background "orange red" :foreground "#252525" :height 1.2 :family "Fira Sans"))))
+ '(mode-line-inactive ((t (:background "midnight blue" :foreground "cornsilk4" :height 1.2 :family "Fira Sans"))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
@@ -1026,13 +1027,13 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; Shackle window focus management
 ;; https://depp.brause.cc/shackle/
-(shackle-mode)
+;; (shackle-mode)
 ;; This particularly helps with compile windows (grep results, etc) that
 ;; pop up but don't get focus.
-(setq shackle-default-rule '(:select t))
+;; (setq shackle-default-rule '(:select t))
 ;; OR
 ;; https://emacs.stackexchange.com/questions/13212/how-to-make-occur-mode-select-the-window-of-buffer-occur
-(add-hook 'occur-hook '(lambda () (switch-to-buffer-other-window "*Occur*")))
+;; (add-hook 'occur-hook '(lambda () (switch-to-buffer-other-window "*Occur*")))
 ;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
 
@@ -1384,6 +1385,23 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Zsh, hopefully
 (setq indent-tabs-mode t)
 (setq tab-width 2)
+
+
+;;; EShell
+
+(add-hook
+ 'eshell-mode-hook
+ (lambda ()
+   (setq pcomplete-cycle-completions nil)))
+(setq eshell-cmpl-cycle-completions nil)
+
+;; https://github.com/Alexander-Miller/company-shell
+(add-to-list 'company-backends 'company-shell)
+
+
+
+
+
 
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
@@ -1954,28 +1972,17 @@ Here 'words' are defined as characters separated by whitespace."
 (save-place-mode 1)
 
 
-;; savehist keeps track of some history
-(require 'savehist)
-(setq savehist-additional-variables
-      ;; search entries
-      '(search-ring regexp-search-ring)
-      ;; save every minute
-      savehist-autosave-interval 60
-      ;; keep the home clean
-      savehist-file (expand-file-name "savehist" savefile-dir))
-(savehist-mode +1)
-
 ;; save recent files
 (require 'recentf)
 (recentf-mode t)
 (setq
-      ;; recentf-save-file (expand-file-name "recentf" savefile-dir)
-      recentf-max-saved-items 500
-      recentf-max-menu-items 30
-      ;; disable recentf-cleanup on Emacs start, because it can cause
-      ;; problems with remote files
-      ;; recentf-auto-cleanup 'never
-      )
+ ;; recentf-save-file (expand-file-name "recentf" savefile-dir)
+ recentf-max-saved-items 500
+ recentf-max-menu-items 30
+ ;; disable recentf-cleanup on Emacs start, because it can cause
+ ;; problems with remote files
+ ;; recentf-auto-cleanup 'never
+ )
 
 ;; Save recent files every 5m
 ;; https://emacs.stackexchange.com/a/16691/11025
@@ -2041,8 +2048,9 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'company-quickhelp)
 (company-quickhelp-mode 1)
 (setq pos-tip-border-width 8)
-
 (setq company-quickhelp-use-propertized-text t)
+
+(require 'live-completions)
 
 ;; TODO Decide if really wanted
 ;; Popup window manager for short/wide bottom C-g killable popup
@@ -2828,40 +2836,129 @@ chord."
 
 
 
-;;; CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA
+;;; CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA, VERTICO, CORFU, EMBARK
 
 ;; (selectrum-mode +1) ; useful even when ivy for any completing-read
 ;; (setq completion-styles '(substring partial-completion))
 
+;; (setq icomplete-prospects-height 30)
+
+;; Vertico
+;; https://github.com/minad/vertico
+(use-package vertico
+  :init
+  (vertico-mode)
+  ;; Optionally enable cycling for `vertico-next', `vertico-previous', `vertico-next-group' and `vertico-previous-group'.
+  ;; (setq vertico-cycle t)
+  )
+
+(define-key vertico-map "?" #'minibuffer-completion-help)
+(define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
+(define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
+(define-key vertico-map (kbd "C-n") #'next-line)
+(define-key vertico-map (kbd "C-p") #'previous-line)
+
+;; Use the `orderless' completion style.
+;; Enable `partial-completion' for files to allow path expansion.
+;; You may prefer to use `initials' instead of `partial-completion'.
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :demand t ; only necessary if you have the hook below
+  ;; if you want to have consult previews as you move around an
+  ;; auto-updating embark collect buffer
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+;; Configure corfu
+(use-package corfu
+  ;; Optionally use TAB for cycling, default is `corfu-complete'.
+  ;; :bind (:map corfu-map
+  ;;        ("TAB" . corfu-next)
+  ;;        ("S-TAB" . corfu-previous))
+
+  ;; You may want to enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since dabbrev can be used globally (M-/).
+  :init
+  (corfu-global-mode)
+
+  :config
+
+  ;; Optionally enable cycling for `corfu-next' and `corfu-previous'.
+  ;; (setq corfu-cycle t)
+  )
+
+;; Dabbrev works with Corfu
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand)))
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+;; savehist keeps track of some history
+(use-package savehist
+  :init
+  (savehist-mode)
+  (setq savehist-additional-variables
+	;; search entries
+	'(search-ring regexp-search-ring)
+	;; save every minute
+	savehist-autosave-interval 60
+	;; keep the home clean
+	savehist-file (expand-file-name "savehist" savefile-dir)))
+
+(defun crm-indicator (args)
+  (cons (concat "[CRM] " (car args)) (cdr args)))
+(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+;; Grow and shrink minibuffer
 (setq resize-mini-windows t)
 
-(use-package icomplete-vertical
-  :ensure t
-  :demand t
-  :custom
-  (completion-styles '(partial-completion substring))
-  (completion-category-overrides '((file (styles basic substring))))
-  (read-file-name-completion-ignore-case t)
-  (read-buffer-completion-ignore-case t)
-  (completion-ignore-case t)
-  :config
-  (icomplete-mode)
-  (icomplete-vertical-mode)
-  :bind (:map icomplete-minibuffer-map
-              ("<down>" . icomplete-forward-completions)
-              ("C-n" . icomplete-forward-completions)
-              ("<up>" . icomplete-backward-completions)
-              ("C-p" . icomplete-backward-completions)
-              ;; ("C-v" . icomplete-vertical-toggle)
-	      ))
+;; Do not allow the cursor in the minibuffer prompt
+(setq minibuffer-prompt-properties
+      '(read-only t cursor-intangible t face minibuffer-prompt))
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-(setq icomplete-vertical-prospects-height 30)
-(setq icomplete-prospects-height 30)
+;; Enable recursive minibuffers
+(setq enable-recursive-minibuffers t)
 
-;; ;; Completion styles
-(use-package orderless
-  :ensure t
-  :custom (completion-styles '(orderless)))
+;; TAB cycle if there are only few candidates
+(setq completion-cycle-threshold 3)
+
+;; Enable indentation+completion using the TAB key.
+;; `completion-at-point' is often bound to M-TAB.
+(setq tab-always-indent 'complete)
 
 
 ;; Improve isearch: https://github.com/raxod502/ctrlf#why-not-isearch
@@ -3078,18 +3175,20 @@ chord."
  '(highlight-parentheses-highlight-adjacent t)
  '(hl-line-flash-show-period 2.0)
  '(hs-hide-comments-when-hiding-all nil)
+ '(icomplete-prospects-height 30)
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
+ '(marginalia-margin-threshold 120)
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
  '(mood-line-show-cursor-point nil)
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(corfu company-shell vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -3123,6 +3222,8 @@ chord."
  '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
+ '(vertico-count 50)
+ '(vertico-cycle nil)
  '(which-key-max-description-length 45))
 
 ;; '(selectrum-count-style 'current/matches)
