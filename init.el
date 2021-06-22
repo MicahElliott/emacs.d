@@ -39,8 +39,6 @@
 ;;   (setq auto-package-update-hide-results t)
 ;;   (auto-package-update-maybe))
 
-
-
 ;; https://emacs.stackexchange.com/a/16832/11025
 ;; package.el config from https://github.com/flyingmachine/emacs.d
 (require 'package)
@@ -64,14 +62,6 @@
     cider
     clojure-mode
     comment-dwim-2
-    company
-    company-box
-    company-flx
-    company-fuzzy
-    company-jedi
-    company-quickhelp
-    company-prescient
-    company-posframe
     consult
     consult-flycheck
     embark-consult
@@ -185,6 +175,14 @@
 ;; ido-flx
 ;; ido
 ;; ido-completing-read+
+;; company
+;; company-box
+;; company-flx
+;; company-fuzzy
+;; company-jedi
+;; company-quickhelp
+;; company-prescient
+;; company-posframe
 
 ;; Include manually installed packages
 (add-to-list 'load-path "~/.emacs.d/vendor")
@@ -1389,14 +1387,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; EShell
 
-(add-hook
- 'eshell-mode-hook
- (lambda ()
-   (setq pcomplete-cycle-completions nil)))
-(setq eshell-cmpl-cycle-completions nil)
-
 ;; https://github.com/Alexander-Miller/company-shell
-(add-to-list 'company-backends 'company-shell)
+;; (add-to-list 'company-backends 'company-shell)
 
 
 
@@ -2017,22 +2009,27 @@ Here 'words' are defined as characters separated by whitespace."
 ;; TAB -- company-complete manually
 ;; M-/ -- dabbrev
 
-(require 'company)
+;; (require 'company)
 
-(setq company-dabbrev-downcase 0)
+;; (setq company-dabbrev-downcase 0)
 
 ;; Disable company auto-completion; manually availalbe now with TAB
 ;; https://emacs.stackexchange.com/questions/32467/
-(setq company-idle-delay nil)
+;; (setq company-idle-delay nil)
 
-(define-key company-mode-map [remap indent-for-tab-command]
-  #'company-indent-or-complete-common)
+;; (define-key company-mode-map [remap indent-for-tab-command]
+;;   #'company-indent-or-complete-common)
 
 ;; Complete with double-TAB
 ;; https://emacsredux.com/blog/2016/01/31/use-tab-to-indent-or-complete/
+;; Enable indentation+completion using the TAB key.
+;; `completion-at-point' is often bound to M-TAB.
 (setq tab-always-indent 'complete)
 
-(add-hook 'prog-mode-hook 'company-mode)
+;; TAB cycle if there are only few candidates
+(setq completion-cycle-threshold 3)
+
+;; (add-hook 'prog-mode-hook 'company-mode)
 
 ;; (with-eval-after-load 'company-quickhelp (company-quickhelp-terminal-mode 1))
 
@@ -2040,16 +2037,17 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'company-fuzzy)
 ;; (global-company-fuzzy-mode 1)
 
-;; Enable fuzzy matching completion, even "index" -> "map-indexed"
-(with-eval-after-load 'company
-  (company-flx-mode +1))
+;; ;; Enable fuzzy matching completion, even "index" -> "map-indexed"
+;; (with-eval-after-load 'company
+;;   (company-flx-mode +1))
 
-(require 'pos-tip) ; just a dependency package of quickhelp
-(require 'company-quickhelp)
-(company-quickhelp-mode 1)
-(setq pos-tip-border-width 8)
-(setq company-quickhelp-use-propertized-text t)
+;; (require 'pos-tip) ; just a dependency package of quickhelp
+;; (require 'company-quickhelp)
+;; (company-quickhelp-mode 1)
+;; (setq pos-tip-border-width 8)
+;; (setq company-quickhelp-use-propertized-text t)
 
+;; XXX
 (require 'live-completions)
 
 ;; TODO Decide if really wanted
@@ -2063,12 +2061,11 @@ Here 'words' are defined as characters separated by whitespace."
 ;; YAY!!!
 ;; https://github.com/sebastiencs/company-box
 
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
 
-
-(defvar company-box-backends-colors
-  '((company-clojure . (:all "lime green" :selected (:background "lime green" :foreground "black")))))
+;; (defvar company-box-backends-colors
+;;   '((company-clojure . (:all "lime green" :selected (:background "lime green" :foreground "black")))))
 
 
 
@@ -2351,7 +2348,7 @@ Here 'words' are defined as characters separated by whitespace."
   (sp-down-sexp)
   (sp-down-sexp)
   (newline)
-  (company-indent-or-complete-common t)
+  ;; (company-indent-or-complete-common t)
   (forward-line -1)
   (end-of-line))
 
@@ -2368,7 +2365,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; pyimport: auto-import
 
 (defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
+  ;; (add-to-list 'company-backends 'company-jedi)
+  )
 
 (add-hook 'python-mode-hook 'my/python-mode-hook)
 
@@ -2637,16 +2635,16 @@ chord."
 ;;     (re-search-forward "[0-9]+" (match-end 1))))
 ;; (font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
 
-(defun my/company-show-doc-buffer ()
-  "Temporarily show the documentation buffer for the selection."
-  (interactive)
-  (let* ((selected (nth company-selection company-candidates))
-         (doc-buffer (or (company-call-backend 'doc-buffer selected)
-                         (error "No documentation available"))))
-    (with-current-buffer doc-buffer
-      (goto-char (point-min)))
-    (display-buffer doc-buffer t)))
-(define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
+;; (defun my/company-show-doc-buffer ()
+;;   "Temporarily show the documentation buffer for the selection."
+;;   (interactive)
+;;   (let* ((selected (nth company-selection company-candidates))
+;;          (doc-buffer (or (company-call-backend 'doc-buffer selected)
+;;                          (error "No documentation available"))))
+;;     (with-current-buffer doc-buffer
+;;       (goto-char (point-min)))
+;;     (display-buffer doc-buffer t)))
+;; (define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
 
 (defun my-find-file-below (fname)
   (interactive)
@@ -2826,13 +2824,13 @@ chord."
 
 
 
-(defface company-tooltip
-  '((default :foreground "blue")
-    (((class color) (min-colors 88) (background light))
-     (:background "black"))
-    (((class color) (min-colors 88) (background dark))
-     (:background "yellow")))
-  "Face used for the tooltip.")
+;; (defface company-tooltip
+;;   '((default :foreground "blue")
+;;     (((class color) (min-colors 88) (background light))
+;;      (:background "black"))
+;;     (((class color) (min-colors 88) (background dark))
+;;      (:background "yellow")))
+;;   "Face used for the tooltip.")
 
 
 
@@ -2897,27 +2895,22 @@ chord."
 
 ;; Configure corfu
 (use-package corfu
-  ;; Optionally use TAB for cycling, default is `corfu-complete'.
-  ;; :bind (:map corfu-map
-  ;;        ("TAB" . corfu-next)
-  ;;        ("S-TAB" . corfu-previous))
-
-  ;; You may want to enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since dabbrev can be used globally (M-/).
   :init
-  (corfu-global-mode)
+  (corfu-global-mode))
+;; (corfu-mode -1)
 
-  :config
-
-  ;; Optionally enable cycling for `corfu-next' and `corfu-previous'.
-  ;; (setq corfu-cycle t)
-  )
+;; XXX
+(defun my-cider-try-completion (string table pred point &optional metadata)
+  ;; call cider-complete and MASSAGE it into a pair???
+  (message "\n")
+  (message string)
+  ;; (message table)
+  (print (type-of pred))
+  (message "%d" point)
+  ;; '("map" . 2))
+  (cons string point))
 
 ;; Dabbrev works with Corfu
 (use-package dabbrev
@@ -2952,13 +2945,6 @@ chord."
 
 ;; Enable recursive minibuffers
 (setq enable-recursive-minibuffers t)
-
-;; TAB cycle if there are only few candidates
-(setq completion-cycle-threshold 3)
-
-;; Enable indentation+completion using the TAB key.
-;; `completion-at-point' is often bound to M-TAB.
-(setq tab-always-indent 'complete)
 
 
 ;; Improve isearch: https://github.com/raxod502/ctrlf#why-not-isearch
@@ -3188,7 +3174,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(corfu company-shell vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts company-prescient orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark company-jedi key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful company-box popwin company-posframe git-link imenu-list ibuffer-vc company-flx company-fuzzy symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip company-quickhelp move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux company comment-dwim-2 buffer-move ag ace-window))
+   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
