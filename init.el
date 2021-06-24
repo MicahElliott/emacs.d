@@ -64,11 +64,9 @@
     comment-dwim-2
     consult
     consult-flycheck
-    embark-consult
     corfu
     crux
     csv
-    ctrlf
     dash
     default-text-scale
     diff-hl
@@ -81,6 +79,7 @@
     easy-kill
     edit-indirect
     embark
+    embark-consult
     emojify
     envrc
     exec-path-from-shell
@@ -95,7 +94,6 @@
     flx
     flx-ido
     git-link
-    git-messenger
     git-timemachine
     github-browse-file
     helpful
@@ -127,7 +125,6 @@
     page-break-lines
     paren-face
     perspective
-    popup
     projectile
     prescient
     python
@@ -224,7 +221,9 @@
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
+ '(highlight ((t (:background "dark blue"))))
  '(hl-line ((t (:extend t :background "black"))))
+ '(live-completions-forceable-candidate ((t (:background "orange red" :weight bold))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -257,7 +256,7 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "yellow" :weight bold))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
- '(region ((t (:inherit highlight :background "slate blue"))))
+ '(region ((t (:inherit highlight :extend t :background "purple4"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
@@ -435,7 +434,7 @@
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
   (define-key my-git-keymap "h" 'github-browse-file)
-  (define-key my-git-keymap "i" 'git-messenger:popup-message)
+  ;; (define-key my-git-keymap "i" 'git-messenger:popup-message)
   (define-key my-git-keymap "l" 'magit-log-buffer-file)
   (define-key my-git-keymap "m" 'diff-hl-mark-hunk)
   (define-key my-git-keymap "n" 'diff-hl-next-hunk)
@@ -517,7 +516,6 @@
   (define-key my-projectile-keymap "p" 'projectile-switch-project)
   ;; (define-key my-projectile-keymap "s" 'projectile-ag)
   (define-key my-projectile-keymap "s" 'consult-ripgrep)
-  ;; (define-key my-projectile-keymap "s" 'consult-ripgrep)
   (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
   ;; ag in custom specified dir
   ;; (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
@@ -1356,7 +1354,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Whitespace removal DWIM key for emacs.
 ;; maybe use in future, not bound to anything
 ;; https://github.com/jcpetkovich/shrink-whitespace.el
-(require 'shrink-whitespace)
+;; (require 'shrink-whitespace)
 
 ;; whitespace-mode config
 (require 'whitespace)
@@ -1670,8 +1668,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;;; GIT
 
 ;; https://github.com/emacsorphanage/git-messenger
-(require 'popup)
-(require 'git-messenger)
+;; (require 'popup)
+;; (require 'git-messenger)
 (require 'magit)
 (require 'git-timemachine)
 (require 'diff-hl)
@@ -1970,7 +1968,7 @@ Here 'words' are defined as characters separated by whitespace."
 (setq
  ;; recentf-save-file (expand-file-name "recentf" savefile-dir)
  recentf-max-saved-items 500
- recentf-max-menu-items 30
+ recentf-max-menu-items 70
  ;; disable recentf-cleanup on Emacs start, because it can cause
  ;; problems with remote files
  ;; recentf-auto-cleanup 'never
@@ -2020,15 +2018,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (define-key company-mode-map [remap indent-for-tab-command]
 ;;   #'company-indent-or-complete-common)
 
-;; Complete with double-TAB
-;; https://emacsredux.com/blog/2016/01/31/use-tab-to-indent-or-complete/
-;; Enable indentation+completion using the TAB key.
-;; `completion-at-point' is often bound to M-TAB.
-(setq tab-always-indent 'complete)
-
-;; TAB cycle if there are only few candidates
-(setq completion-cycle-threshold 3)
-
 ;; (add-hook 'prog-mode-hook 'company-mode)
 
 ;; (with-eval-after-load 'company-quickhelp (company-quickhelp-terminal-mode 1))
@@ -2046,9 +2035,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (company-quickhelp-mode 1)
 ;; (setq pos-tip-border-width 8)
 ;; (setq company-quickhelp-use-propertized-text t)
-
-;; XXX
-(require 'live-completions)
 
 ;; TODO Decide if really wanted
 ;; Popup window manager for short/wide bottom C-g killable popup
@@ -2179,6 +2165,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'flycheck-joker)
 (require 'kibit-helper)
 (require 'sotclojure)
+(speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
 
 ;; Quick-Peek for Cider
@@ -2841,7 +2828,38 @@ chord."
 
 ;; (setq icomplete-prospects-height 30)
 
+;; Complete with double-TAB
+;; https://emacsredux.com/blog/2016/01/31/use-tab-to-indent-or-complete/
+;; Enable indentation+completion using the TAB key.
+;; `completion-at-point' is often bound to M-TAB.
+(setq tab-always-indent 'complete)
+
+;; TAB cycle if there are only few candidates
+(setq completion-cycle-threshold 1)
+
+;; https://github.com/oantolin/live-completions
+;; (require 'live-completions)
+(setq temp-buffer-max-height 70)
+(temp-buffer-resize-mode)
+
+;; minibuffer-force-complete-and-exit. You might want to bind the
+;; latter to RET in minibuffer-local-completion-map (and maybe bind
+;; minibuffer-force-complete to something too, like C-M-i or
+;; <backtab>).
+
+;; https://github.com/oantolin/live-completions/issues/7
+;; (define-key minibuffer-local-completion-map "RET" #'minibuffer-force-complete-and-exit)
+;; (define-key minibuffer-local-completion-map "C-l" #'minibuffer-force-complete)
+
+;; Can't have both vcomplete and vertico, I think
+;; (require 'vcomplete)
+;; (vcomplete-mode)
+;; (vcomplete-mode -1)
+
+;; NOTE: Vertico doesn't seem to work with variable completions, so
+;; falls back to default Completions buffer, which is pretty annoying.
 ;; Vertico
+;; Really nicely uses marginalia
 ;; https://github.com/minad/vertico
 (use-package vertico
   :init
@@ -2849,7 +2867,6 @@ chord."
   ;; Optionally enable cycling for `vertico-next', `vertico-previous', `vertico-next-group' and `vertico-previous-group'.
   ;; (setq vertico-cycle t)
   )
-
 (define-key vertico-map "?" #'minibuffer-completion-help)
 (define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
 (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
@@ -2863,19 +2880,22 @@ chord."
   :init
   (setq completion-styles '(orderless)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion))))))
+        completion-category-overrides '((file (styles . (partial-completion))))
+	orderless-component-separator "-+"
+	))
+;; (setq completion-styles '(orderless flex basic))
+(setq completion-styles '(orderless))
+;; (setq completion-styles '(initials basic))
 
 (use-package embark
   :ensure t
   :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
+  (("C-," . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
   :init
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
-
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
@@ -2893,7 +2913,8 @@ chord."
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; Configure corfu
+
+;; Configure corfu (Has a prob with cider under some package combo)
 (use-package corfu
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since dabbrev can be used globally (M-/).
@@ -2901,16 +2922,17 @@ chord."
   (corfu-global-mode))
 ;; (corfu-mode -1)
 
-;; XXX
-(defun my-cider-try-completion (string table pred point &optional metadata)
-  ;; call cider-complete and MASSAGE it into a pair???
-  (message "\n")
-  (message string)
-  ;; (message table)
-  (print (type-of pred))
-  (message "%d" point)
-  ;; '("map" . 2))
-  (cons string point))
+
+;; ;; XXX
+;; (defun my-cider-try-completion (string table pred point &optional metadata)
+;;   ;; call cider-complete and MASSAGE it into a pair???
+;;   (message "\n")
+;;   (message string)
+;;   ;; (message table)
+;;   (print (type-of pred))
+;;   (message "%d" point)
+;;   ;; '("map" . 2))
+;;   (cons string point))
 
 ;; Dabbrev works with Corfu
 (use-package dabbrev
@@ -2971,15 +2993,17 @@ chord."
   (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
 
 
-;; Consult (like isearch but improved)
+;; Consult: Consulting completing-read
+;; quickly select an item from a list of candidates with completion; live preview and narrowing support
 ;; https://github.com/minad/consult
 
 ;; (global-set-key (kbd "C-s") 'consult-isearch)
 (global-set-key (kbd "C-S-s") 'consult-line)
 
 ;; Optionally configure a function which returns the project root directory
-(autoload 'projectile-project-root "projectile")
-(setq consult-project-root-function #'projectile-project-root)
+;; (autoload 'projectile-project-root "projectile")
+;; (setq consult-project-root-function #'projectile-project-root)
+;; (setq consult-project-root-function #'project-root)
 
 
 
@@ -3004,25 +3028,26 @@ chord."
 	 ("M-y" . consult-yank-pop)                ;; orig. yank-pop
 	 ("<help> a" . consult-apropos)            ;; orig. apropos-command
 	 ;; M-g bindings (goto-map)
-	 ("M-g g" . consult-goto-line)             ;; orig. goto-line
-	 ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+	 ;; ("M-g g" . consult-goto-line)             ;; orig. goto-line
+	 ;; ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
 	 ("M-g o" . consult-outline)
 	 ("M-g m" . consult-mark)
 	 ("M-g k" . consult-global-mark)
 	 ("M-g i" . consult-project-imenu) ;; Alternative: consult-imenu
 	 ("M-g e" . consult-error)
 	 ;; M-s bindings (search-map)
-	 ("M-s g" . consult-git-grep)              ;; alt. consult-grep, consult-ripgrep
-	 ("M-s f" . consult-find)                  ;; alt. consult-locate, find-fd
-	 ("M-s l" . consult-line)
-	 ("M-s m" . consult-multi-occur)
-	 ("M-s k" . consult-keep-lines)
-	 ("M-s u" . consult-focus-lines)
+	 ;; ("M-s g" . consult-git-grep)              ;; alt. consult-grep, consult-ripgrep
+	 ;; ("M-s f" . consult-find)                  ;; alt. consult-locate, find-fd
+	 ;; ("M-s l" . consult-line)
+	 ;; ("M-s m" . consult-multi-occur)
+	 ;; ("M-s k" . consult-keep-lines)
+	 ;; ("M-s u" . consult-focus-lines)
 	 ;; Replacement for isearch-edit-string
-	 ("M-s e" . consult-isearch)
+	 ;; ("M-s e" . consult-isearch)
 	 :map isearch-mode-map
-	 ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
-	 ("M-s e" . consult-isearch))              ;; orig. isearch-edit-string
+	 ;; ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
+	 ;; ("M-s e" . consult-isearch)               ;; orig. isearch-edit-string
+	 )
 
   ;; The :init configuration is always executed (Not lazy!)
   :init
@@ -3071,22 +3096,27 @@ chord."
   ;;       consult-view-list-function #'bookmark-view-names)
 
   ;; Optionally configure a function which returns the project root directory
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-root-function #'projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-root-function #'projectile-project-root)
+
+  ;; Enable consult/vertico to do completion-at-point
+  ;; https://github.com/minad/consult#miscellaneous
+  ;; https://github.com/minad/consult/issues/338
+  (setq completion-in-region-function 'consult-completion-in-region)
 
   ;; Recall last search
   ;; https://github.com/minad/consult/issues/214
   (setf (alist-get #'consult-line consult-config)
 	(list :keymap (let ((map (make-sparse-keymap)))
 			(define-key map "\C-s" #'previous-history-element)
-			map)))
+			map))))
 
-  )
+;; (require 'consult)
 
-;; ;; Optionally add the `consult-flycheck' command.
-;; (use-package consult-flycheck
-;;   :bind (:map flycheck-command-map
-;; 	      ("!" . consult-flycheck)))
+;; Optionally add the `consult-flycheck' command.
+(use-package consult-flycheck
+  :bind (:map flycheck-command-map
+	      ("!" . consult-flycheck)))
 
 
 
@@ -3161,11 +3191,14 @@ chord."
  '(highlight-parentheses-highlight-adjacent t)
  '(hl-line-flash-show-period 2.0)
  '(hs-hide-comments-when-hiding-all nil)
- '(icomplete-prospects-height 30)
+ '(icomplete-prospects-height 70)
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
+ '(live-completions-columns 'single)
+ '(live-completions-mode t)
+ '(live-completions-sort-order 'cycle)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(marginalia-margin-threshold 120)
  '(markdown-header-scaling t)
@@ -3174,12 +3207,11 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses git-messenger flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
  '(persp-sort 'access)
- '(popwin:popup-window-height 30)
  '(pos-tip-background-color "red")
  '(pos-tip-foreground-color "blue")
  '(pos-tip-internal-border-width 20)
@@ -3196,6 +3228,7 @@ chord."
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
  '(ripgrep-arguments '("--smart-case"))
+ '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(shackle-mode t)
@@ -3211,6 +3244,8 @@ chord."
  '(vertico-count 50)
  '(vertico-cycle nil)
  '(which-key-max-description-length 45))
+
+;; '(popwin:popup-window-height 30)
 
 ;; '(selectrum-count-style 'current/matches)
 ;; '(selectrum-display-style '(vertical))
