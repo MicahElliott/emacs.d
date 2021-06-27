@@ -206,7 +206,7 @@
  ;; If there is more than one, they won't work right.
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
- '(col-highlight ((t (:background "gray0"))))
+ '(col-highlight ((t (:background "RoyalBlue4"))))
  '(company-box-background ((t (:background "black" :inverse-video nil))) t)
  '(company-tooltip ((t (:background "black" :inverse-video nil))))
  '(company-tooltip-annotation-selection ((t (:background "black" :foreground "black"))))
@@ -257,6 +257,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
+ '(symbol-overlay-default-face ((t (:inherit nil :background "MediumBlue"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
@@ -986,6 +987,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://emacs.stackexchange.com/questions/
 (require 'which-key)
 (which-key-mode +1)
+;; (which-key-setup-side-window-right-bottom)
+(setq which-key-popup-type 'side-window)
+(setq which-key-side-window-location 'left)
 
 ;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (scroll-bar-mode -1)
@@ -1014,7 +1018,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Enable hl-line-flash
 (require 'hl-line+) ; local vendor package
 
-;; (require 'crosshairs)
+(require 'crosshairs)
 ;; (crosshairs-toggle-when-idle)
 
 ;; flash windows when you change to them
@@ -1033,13 +1037,16 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
 
+;; Highlight symbols with keymap-enabled overlays (search, find)
+;; https://github.com/wolray/symbol-overlay/
+(require 'symbol-overlay)
+
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
 ;; Disabling since might play badly with org-mode
 ;; Also screws with visible-mark.
-;; ENABLE
-;; (prelude-require-package 'idle-highlight-mode)
-;; (add-hook 'prog-mode-hook 'idle-highlight-mode)
+;; Now part of symbol-overlay
+(symbol-overlay-mode)
 
 ;; ;; Highlight at point
 ;; (require 'highlight-thing)
@@ -1047,16 +1054,28 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq highlight-thing-delay-seconds 0.9)
 ;; (setq highlight-thing-exclude-thing-under-point t)
 
-;; Highlight symbols with keymap-enabled overlays (search, find)
-;; https://github.com/wolray/symbol-overlay/
-(require 'symbol-overlay)
-
 ;; Override to not insert boundaries
 ;; (defun ivy--insert-symbol-boundaries () (undo-boundary))
 
 ;; Make it easier to switch to swiper search from overlay
 ;; (with-eval-after-load 'symbol-overlay (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
 ;; (define-key symbol-overlay-map (kbd "s") 'symbol-overlay-isearch-literally)
+(define-key symbol-overlay-map (kbd "s") 'ctrlf-forward-symbol-at-point)
+
+;; Nice transient example
+;; https://github.com/wolray/symbol-overlay/issues/59
+;; (define-transient-command symbol-overlay-transient ()
+;;   "Symbol Overlay transient"
+;;   ["Symbol Overlay"
+;;    ["Overlays"
+;;     ("." "Add/Remove at point" symbol-overlay-put)
+;;     ("k" "Remove All" symbol-overlay-remove-all)]
+;;    ["Move to Symbol"
+;;     ("n" "Next" symbol-overlay-switch-forward)
+;;     ("p" "Previous" symbol-overlay-switch-backward)]
+;;    ["Other"
+;;     ("m" "Hightlight symbol-at-point" symbol-overlay-mode)]])
+;; (global-set-key (kbd "C->") 'symbol-overlay-transient)
 
 
 
@@ -2254,13 +2273,13 @@ Here 'words' are defined as characters separated by whitespace."
        ;; (yas-minor-mode 1) ; for adding require/use/import statements
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
        (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
-       (setq cider-repl-pop-to-buffer-on-connect 'display-only)
-       (setq cider-repl-result-prefix ";; => ")
-       (setq cider-save-file-on-load t)
-       (setq cider-prompt-for-symbol nil)
-       (setq cider-repl-wrap-history t)
-       (setq cider-repl-history-size 1000)
-       (setq cider-repl-history-file "~/.cider-repl-history")
+       (setq-local cider-repl-pop-to-buffer-on-connect 'display-only)
+       (setq-local cider-repl-result-prefix ";; => ")
+       (setq-local cider-save-file-on-load t)
+       (setq-local cider-prompt-for-symbol nil)
+       (setq-local cider-repl-wrap-history t)
+       (setq-local cider-repl-history-size 1000)
+       (setq-local cider-repl-history-file "~/.cider-repl-history")
        (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        ;; (cljr-add-keybindings-with-prefix "C-S-r")
@@ -2269,24 +2288,23 @@ Here 'words' are defined as characters separated by whitespace."
        ;; (key-chord-define clojure-mode-map "qr" 'cljr-ivy)
        ;; (cljr-add-keybindings-with-prefix "C-c m")
        ;; (define-key clojure-mode-map (kbd "C-c C-r") 'cljr-ivy)
-       ;; (global-set-key (kbd "C-c R") 'cljr-helm)
-       ;; (global-set-key (kbd "C-S-r") 'cljr-helm)
-       ;; (global-set-key (kbd "C-c r") 'cljr-helm)
        ;; (global-set-key (kbd "C-S-T") 'cider-test-commands-map)
        ;; Disable flycheck next error in favor of Cider
        (define-key clojure-mode-map (kbd "C-c C-n") 'cider-ns-map)
        ;; (define-key clojure-mode-map (kbd "C-c C-d C-r") 'clojure-essential-ref)
-       (define-key clojure-mode-map (kbd "C-c C-") 'cider-read-and-eval-defun-at-point)
+       ;; (define-key clojure-mode-map (kbd "C-c C-") 'cider-read-and-eval-defun-at-point)
        (global-unset-key (kbd "C-c C-p"))
        (define-key clojure-mode-map (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
+       ;; XXX
        ;; (company-flx-mode +1)
        (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
        ;; Make similar to wrapping with M-(
        (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
        ;; Overrides tmm-menubar
        (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
-       )
+       (setq-local completion-styles '(orderless cider)))
+
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
 ;; (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
@@ -2881,7 +2899,7 @@ chord."
   (setq completion-styles '(orderless)
         completion-category-defaults nil
         completion-category-overrides '((file (styles . (partial-completion))))
-	orderless-component-separator "-+"
+	orderless-component-separator " +"
 	))
 ;; (setq completion-styles '(orderless flex basic))
 (setq completion-styles '(orderless))
@@ -2923,16 +2941,42 @@ chord."
 ;; (corfu-mode -1)
 
 
-;; ;; XXX
-;; (defun my-cider-try-completion (string table pred point &optional metadata)
-;;   ;; call cider-complete and MASSAGE it into a pair???
-;;   (message "\n")
-;;   (message string)
-;;   ;; (message table)
-;;   (print (type-of pred))
-;;   (message "%d" point)
-;;   ;; '("map" . 2))
-;;   (cons string point))
+(defun my-cider-try-completion (string table pred point &optional metadata)
+  ;; call cider-complete and MASSAGE it into a pair???
+  ;; (message "\n")
+  ;; (message string)
+  ;; (print table)
+  ;; (print (type-of pred))
+  ;; (message "%d" point)
+  (cons string point))
+
+;; Replace cider's bad try-completion fn
+;; https://github.com/minad/corfu/issues/30
+(add-to-list 'completion-styles-alist
+	     '(cider my-cider-try-completion cider-company-unfiltered-candidates "CIDER backend-driven completion style."))
+
+;; Example of calling nrepl command directly, like cljr does!
+;; (cider-nrepl-send-sync-request '("op" "clean-ns" "prefix-rewriting" "false" "debug" "false" "path" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "relative-path" "src/clj/crawlingchaos/process/changeorder/changes.clj" "prune-ns-form" "true"))
+;; => prints new ns string that you can substute in
+
+;; (cider-nrepl-send-sync-request '("op" "artifact-versions" "artifact" "org.clojure/clojure"))
+;; => (dict "status" ("done") "id" "213" "session" "171b8d0e-64ee-40e6-95f7-c48fd0e2e318"
+;;     "versions" ("1.11.0-alpha1" "1.10.3" "1.10.3-rc1" "1.10.2" "1.10.2-rc3" ...  "1.10.2-alpha1" "1.10.1" ...))
+
+;; (cider-nrepl-send-sync-request '("op" "resolve-missing" "symbol" "postwalk"))
+;; => (dict "status" ("done") "candidates" "(
+;; {:name refactor-nrepl.inlined-deps.rewrite-clj.v0v6v1.rewrite-clj.zip.walk, :type :ns}
+;; {:name clojure.walk, :type :ns}
+;; {:name refactor-nrepl.inlined-deps.rewrite-clj.v0v6v1.rewrite-clj.zip, :type :ns}
+;; {:name rewrite-clj.zip.walk, :type :ns}
+;; {:name from.potemkin.walk, :type :ns}
+;; {:name schema-tools.walk, :type :ns}
+;; {:name potemkin.walk, :type :ns}
+;; {:name rewrite-clj.zip, :type :ns}
+;; {:name clojure.tools.analyzer.ast, :type :ns})"
+;;   "id" "210" "session" "171b8d0e-64ee-40e6-95f7-c48fd0e2e318")
+
+;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
 ;; Dabbrev works with Corfu
 (use-package dabbrev
@@ -2999,12 +3043,6 @@ chord."
 
 ;; (global-set-key (kbd "C-s") 'consult-isearch)
 (global-set-key (kbd "C-S-s") 'consult-line)
-
-;; Optionally configure a function which returns the project root directory
-;; (autoload 'projectile-project-root "projectile")
-;; (setq consult-project-root-function #'projectile-project-root)
-;; (setq consult-project-root-function #'project-root)
-
 
 
 ;; Example configuration for Consult
@@ -3095,9 +3133,10 @@ chord."
   ;; (setq consult-view-open-function #'bookmark-jump
   ;;       consult-view-list-function #'bookmark-view-names)
 
-  ;; Optionally configure a function which returns the project root directory
-  ;; (autoload 'projectile-project-root "projectile")
-  ;; (setq consult-project-root-function #'projectile-project-root)
+  ;; Configure a function which returns the project.el root directory
+  (setq consult-project-root-function
+        (lambda () (when-let (project (project-current))
+		     (car (project-roots project)))))
 
   ;; Enable consult/vertico to do completion-at-point
   ;; https://github.com/minad/consult#miscellaneous
@@ -3175,10 +3214,12 @@ chord."
  '(cider-repl-use-pretty-printing nil)
  '(cider-special-mode-truncate-lines nil)
  '(col-highlight-show-only 'forward-paragraph)
+ '(completion-show-help nil)
  '(ctrlf-auto-recenter nil)
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
    '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+ '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
@@ -3243,6 +3284,8 @@ chord."
  '(tramp-default-method "ssh")
  '(vertico-count 50)
  '(vertico-cycle nil)
+ '(which-key-idle-delay 0.4)
+ '(which-key-idle-secondary-delay 0.0)
  '(which-key-max-description-length 45))
 
 ;; '(popwin:popup-window-height 30)
