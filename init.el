@@ -67,6 +67,7 @@
     corfu
     crux
     csv
+    ctrlf
     dash
     default-text-scale
     diff-hl
@@ -1350,7 +1351,8 @@ Here 'words' are defined as characters separated by whitespace."
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
 
 ;; Seems the only way to have multiple vterms
-(require 'multi-vterm)
+(when (eq system-type 'gnu/linux) (require 'multi-vterm))
+
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
 
@@ -2978,6 +2980,9 @@ chord."
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
+;; https://github.com/oliyh/re-jump.el
+(require 're-jump)
+
 ;; Dabbrev works with Corfu
 (use-package dabbrev
   ;; Swap M-/ and C-M-/
@@ -3172,6 +3177,13 @@ chord."
 (mood-line-mode)
 
 
+;; https://endlessparentheses.com/using-prettify-symbols-in-clojure-and-elisp-without-breaking-indentation.html
+(global-prettify-symbols-mode)
+(setq prettify-symbols-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) 955)) ; lambda
+			       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
+					     (Bc . Br) #x21a6 (Bc . Bl) #x21a6))))
+;; ("fn" . 955)
+
 
 ;;; END (effectively)
 
@@ -3284,6 +3296,7 @@ chord."
  '(tramp-default-method "ssh")
  '(vertico-count 50)
  '(vertico-cycle nil)
+ '(which-key-frame-max-width 100)
  '(which-key-idle-delay 0.4)
  '(which-key-idle-secondary-delay 0.0)
  '(which-key-max-description-length 45))
