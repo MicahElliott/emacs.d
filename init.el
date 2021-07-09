@@ -67,7 +67,6 @@
     corfu
     crux
     csv
-    ctrlf
     dash
     default-text-scale
     diff-hl
@@ -77,23 +76,17 @@
     dot-mode
     dumb-jump
     edbi
-    easy-kill
     edit-indirect
     embark
     embark-consult
     emojify
     envrc
     exec-path-from-shell
-    expand-region
-    fic-mode
     flycheck-clj-kondo
     flycheck-clojure
     flycheck-inline
-    flycheck-pos-tip
     flymd
     focus
-    flx
-    flx-ido
     git-link
     git-timemachine
     github-browse-file
@@ -115,32 +108,25 @@
     mood-line
     move-text
     multi-vterm
-    linum-relative
     nlinum-relative
-    nov
     orderless
     org-bullets
     org-download
     org-preview-html
-    osc
     page-break-lines
     paren-face
     perspective
     projectile
-    prescient
     python
     quick-peek
     rainbow-delimiters
     rg
     ripgrep
-    rubocop
-    shackle
     shrink-whitespace
     smartparens
     sotclojure
     super-save
     symbol-overlay
-    toggle-quotes
     typo
     undo-tree
     unfill
@@ -150,9 +136,7 @@
     visible-mark
     vterm
     vterm-toggle
-    which-key
-    yaml-mode
-    ))
+    which-key))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -181,6 +165,7 @@
 ;; company-quickhelp
 ;; company-prescient
 ;; company-posframe
+;; rubocop
 
 ;; Include manually installed packages
 (add-to-list 'load-path "~/.emacs.d/vendor")
@@ -208,15 +193,12 @@
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
- '(company-box-background ((t (:background "black" :inverse-video nil))) t)
- '(company-tooltip ((t (:background "black" :inverse-video nil))))
- '(company-tooltip-annotation-selection ((t (:background "black" :foreground "black"))))
  '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
  '(ctrlf-highlight-line ((t (:background "chocolate4"))))
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
- '(font-lock-comment-face ((t (:foreground "#75715E"))))
+ '(font-lock-comment-face ((t (:foreground "#75715E" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
  '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "SlateGray3" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
@@ -260,6 +242,7 @@
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "MediumBlue"))))
  '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
+ '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
@@ -388,7 +371,7 @@
   (define-key my-buffer-keymap "i" 'ibuffer) ; ibuffer
   ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   ;; (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
-  (define-key my-buffer-keymap "P" 'projectile-ibuffer)
+  ;; (define-key my-buffer-keymap "P" 'projectile-ibuffer)
   (key-seq-define-global "'b" my-buffer-keymap))
 
 ;; C — Character goto (fast)
@@ -474,7 +457,7 @@
   (define-key my-kill-keymap "K" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "x" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "X" 'kill-current-buffer)
-  (define-key my-kill-keymap "p" 'projectile-kill-buffers)
+  ;; (define-key my-kill-keymap "p" 'projectile-kill-buffers)
   (key-seq-define-global "qk" my-kill-keymap))
 
 ;; L — Line-numbering/viewing
@@ -897,7 +880,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key [(meta m)] 'jump-char-forward)
 ;; (global-set-key [(shift meta m)] 'jump-char-backward)
-;; (global-set-key (kbd "C-=") 'er/expand-region)
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
@@ -1047,7 +1029,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Disabling since might play badly with org-mode
 ;; Also screws with visible-mark.
 ;; Now part of symbol-overlay
-(symbol-overlay-mode)
+;; FIXME not taking effect
+(symbol-overlay-mode +1)
 
 ;; ;; Highlight at point
 ;; (require 'highlight-thing)
@@ -1080,10 +1063,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 
-
-;; ENABLE??
-;; https://github.com/magnars/expand-region.el
-;; (require 'expand-region)
 
 ;;; Perpectives/Sessions
 ;; https://github.com/Bad-ptr/persp-mode.el
@@ -1184,9 +1163,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Use C-u to alter grepping behavior.
 (require 'projectile)
 (projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-S-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 ;; https://github.com/nlamirault/ripgrep.el
 (require 'ripgrep)
 
@@ -1259,12 +1235,10 @@ Here 'words' are defined as characters separated by whitespace."
 (add-hook 'text-mode-hook 'typo-mode)
 
 
+;; In vendor now since tiny?
 (require 'toggle-quotes)
 
 ;; special treatment of FIXME, TODO, etc
-
-;; (require 'fic-mode)
-;; (add-hook 'prog-mode-hook 'fic-mode)
 
 ;; ("HOLD" . "#d0bf8f")
 ;; ("TODO" . "#cc9393")
@@ -1405,9 +1379,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;;; EShell
-
-;; https://github.com/Alexander-Miller/company-shell
-;; (add-to-list 'company-backends 'company-shell)
 
 
 
@@ -2028,52 +1999,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; TAB -- company-complete manually
 ;; M-/ -- dabbrev
 
-;; (require 'company)
-
-;; (setq company-dabbrev-downcase 0)
-
-;; Disable company auto-completion; manually availalbe now with TAB
-;; https://emacs.stackexchange.com/questions/32467/
-;; (setq company-idle-delay nil)
-
-;; (define-key company-mode-map [remap indent-for-tab-command]
-;;   #'company-indent-or-complete-common)
-
-;; (add-hook 'prog-mode-hook 'company-mode)
-
-;; (with-eval-after-load 'company-quickhelp (company-quickhelp-terminal-mode 1))
-
-;; Less powerful matching though maybe faster/simpler
-;; (require 'company-fuzzy)
-;; (global-company-fuzzy-mode 1)
-
-;; ;; Enable fuzzy matching completion, even "index" -> "map-indexed"
-;; (with-eval-after-load 'company
-;;   (company-flx-mode +1))
-
-;; (require 'pos-tip) ; just a dependency package of quickhelp
-;; (require 'company-quickhelp)
-;; (company-quickhelp-mode 1)
-;; (setq pos-tip-border-width 8)
-;; (setq company-quickhelp-use-propertized-text t)
-
-;; TODO Decide if really wanted
-;; Popup window manager for short/wide bottom C-g killable popup
-;; https://github.com/emacsorphanage/popwin
-;; (require 'popwin)
-;; (popwin-mode 1)
-
-;; Icons for company popup?
-;; TODO Themeable
-;; YAY!!!
-;; https://github.com/sebastiencs/company-box
-
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
-
-;; (defvar company-box-backends-colors
-;;   '((company-clojure . (:all "lime green" :selected (:background "lime green" :foreground "black")))))
-
 
 
 ;;; COLORS / THEMES
@@ -2138,7 +2063,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; (prelude-require-package 'chruby)
 ;; (require 'rubocop)
-(add-hook 'ruby-mode-hook 'rubocop-mode)
+;; (add-hook 'ruby-mode-hook 'rubocop-mode)
 
 
 ;;; Markdown
@@ -2182,8 +2107,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
 (require 'flycheck-clojure)
-;; (require 'company-flx)
-;; (require 'flycheck-joker)
 (require 'kibit-helper)
 (require 'sotclojure)
 (speed-of-thought-mode)
@@ -2226,14 +2149,6 @@ Here 'words' are defined as characters separated by whitespace."
 (alert "Tis but an alert" :severity 'low :title "some title")
 
 ;; (setq hs-special-modes-alist)
-
-;; (defun my-projectile-ivy-ag ()
-;;   "Populate ag with a search term of thing at point."
-;;   (interactive)
-;;   (let ((counsel-projectile-ag-initial-input
-;; 	 (thing-at-point 'word 'no-properties)))
-;;     (counsel-projectile-ag)))
-;; ;; (key-chord-define-global "RF" 'my-projectile-ivy-ag)
 
 
 ;; (require 'winnow)
@@ -2298,8 +2213,6 @@ Here 'words' are defined as characters separated by whitespace."
        (global-unset-key (kbd "C-c C-p"))
        (define-key clojure-mode-map (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
-       ;; XXX
-       ;; (company-flx-mode +1)
        (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
        ;; Make similar to wrapping with M-(
        (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
@@ -2321,7 +2234,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (eval-after-load 'flycheck '(flycheck-clojure-setup))
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
-;; (require 'flycheck-pos-tip)
 
 ;; http://stackoverflow.com/questions/23766483/emacs-cider-clojure-auto-complete-how-to-get-the-docstring
 ;; (setq ac-delay 0.1)
@@ -2642,17 +2554,6 @@ chord."
 ;;     (re-search-forward "[0-9]+" (match-end 1))))
 ;; (font-lock-add-keywords nil '((my-matcher 0 font-lock-string-face)))
 
-;; (defun my/company-show-doc-buffer ()
-;;   "Temporarily show the documentation buffer for the selection."
-;;   (interactive)
-;;   (let* ((selected (nth company-selection company-candidates))
-;;          (doc-buffer (or (company-call-backend 'doc-buffer selected)
-;;                          (error "No documentation available"))))
-;;     (with-current-buffer doc-buffer
-;;       (goto-char (point-min)))
-;;     (display-buffer doc-buffer t)))
-;; (define-key company-active-map (kbd "C-<f1>") #'my/company-show-doc-buffer)
-
 (defun my-find-file-below (fname)
   (interactive)
   (split-window-vertically-balancedly)
@@ -2831,14 +2732,6 @@ chord."
 
 
 
-;; (defface company-tooltip
-;;   '((default :foreground "blue")
-;;     (((class color) (min-colors 88) (background light))
-;;      (:background "black"))
-;;     (((class color) (min-colors 88) (background dark))
-;;      (:background "yellow")))
-;;   "Face used for the tooltip.")
-
 
 
 ;;; CTRLF, PRESCIENT/ORDERLESS, CONSULT, MARGINALIA, VERTICO, CORFU, EMBARK
@@ -2980,8 +2873,10 @@ chord."
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
+;; Re-frame jumping through keywords
 ;; https://github.com/oliyh/re-jump.el
-(require 're-jump)
+;; Has really annoying remapping of M-> to user.clj
+;; (require 're-jump)
 
 ;; Dabbrev works with Corfu
 (use-package dabbrev
@@ -3019,6 +2914,7 @@ chord."
 
 
 ;; Improve isearch: https://github.com/raxod502/ctrlf#why-not-isearch
+;; In vendor now since C-L hack: https://github.com/raxod502/ctrlf/pull/92/files
 (use-package ctrlf)
 (ctrlf-mode +1)
 
@@ -3178,11 +3074,26 @@ chord."
 
 
 ;; https://endlessparentheses.com/using-prettify-symbols-in-clojure-and-elisp-without-breaking-indentation.html
-(global-prettify-symbols-mode)
-(setq prettify-symbols-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) 955)) ; lambda
-			       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
-					     (Bc . Br) #x21a6 (Bc . Bl) #x21a6))))
-;; ("fn" . 955)
+;; FIXME Maybe has to be set before global mode turned on?
+;; https://stackoverflow.com/questions/18172728/the-difference-between-setq-and-setq-default-in-emacs-lisp
+(setq-default prettify-symbols-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
+				       ;; (";;" . ?∥)
+				       (";;" . ?|)
+				       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
+						     (Bc . Br) #x21a6 (Bc . Bl) #x21a6))))
+
+(setq prettify-symbols-compose-predicate
+      (defun my-prettify-symbols-default-compose-p (start end _match)
+        "Same as `prettify-symbols-default-compose-p', except compose symbols in comments as well."
+        (let* ((syntaxes-beg (if (memq (char-syntax (char-after start)) '(?w ?_))
+                                 '(?w ?_) '(?. ?\\)))
+               (syntaxes-end (if (memq (char-syntax (char-before end)) '(?w ?_))
+                                 '(?w ?_) '(?. ?\\))))
+          (not (or (memq (char-syntax (or (char-before start) ?\s)) syntaxes-beg)
+                   (memq (char-syntax (or (char-after end) ?\s)) syntaxes-end)
+                   (nth 3 (syntax-ppss)))))))
+
+(prettify-symbols-mode +1)
 
 
 ;;; END (effectively)
@@ -3236,6 +3147,7 @@ chord."
  '(fci-rule-color "#383838")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(global-hl-line-mode t)
+ '(global-prettify-symbols-mode t)
  '(global-superword-mode t)
  '(global-yascroll-bar-mode t)
  '(highlight-nonselected-windows t)
@@ -3260,14 +3172,11 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer shackle highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia prescient embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode yaml-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark flycheck-pos-tip move-text easy-kill ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo fic-mode feature-mode expand-region exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
  '(persp-sort 'access)
- '(pos-tip-background-color "red")
- '(pos-tip-foreground-color "blue")
- '(pos-tip-internal-border-width 20)
  '(projectile-enable-caching t)
  '(projectile-file-exists-remote-cache-expire nil)
  '(projectile-globally-ignored-directories
@@ -3284,13 +3193,13 @@ chord."
  '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
- '(shackle-mode t)
  '(show-trailing-whitespace t)
  '(split-height-threshold 100)
  '(split-width-threshold 30)
  '(standard-indent 2)
+ '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
-   '(symbol-overlay-face-1 symbol-overlay-face-3 symbol-overlay-face-7 symbol-overlay-face-8))
+   '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
  '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
@@ -3300,6 +3209,7 @@ chord."
  '(which-key-idle-delay 0.4)
  '(which-key-idle-secondary-delay 0.0)
  '(which-key-max-description-length 45))
+
 
 ;; '(popwin:popup-window-height 30)
 
