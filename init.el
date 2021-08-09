@@ -90,6 +90,7 @@
     git-link
     git-timemachine
     github-browse-file
+    goggles
     helpful
     highlight-escape-sequences
     highlight-indentation
@@ -994,6 +995,12 @@ Here 'words' are defined as characters separated by whitespace."
 (setq undo-tree-history-directory-alist
       `((".*" . ,temporary-file-directory)))
 
+;; Goggles
+;; deps: pulse
+(use-package goggles
+  :hook ((prog-mode text-modee) . goggles-mode)
+  :config (setq-default goggles-pulse t))
+
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)
 ;; (beacon-mode +1)
@@ -1232,7 +1239,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Default to using typo mode for better/fancy typography
 (typo-global-mode 1)
-(add-hook 'text-mode-hook 'typo-mode)
+;; Turn off for markdown since ` is annoyingly changed
+;; (add-hook 'text-mode-hook 'typo-mode)
 
 
 ;; In vendor now since tiny?
@@ -3037,7 +3045,7 @@ chord."
   ;; Configure a function which returns the project.el root directory
   (setq consult-project-root-function
         (lambda () (when-let (project (project-current))
-		     (car (project-roots project)))))
+		(car (project-roots project)))))
 
   ;; Enable consult/vertico to do completion-at-point
   ;; https://github.com/minad/consult#miscellaneous
@@ -3071,6 +3079,12 @@ chord."
 ;; Modeline
 (require 'mood-line)
 (mood-line-mode)
+
+;; Could remove the -'s
+;; http://hideki.hclippr.com/2014/02/02/on-generating-uuid/
+(defun insert-random-uuid ()
+  (interactive)
+  (shell-command "uuidgen" t))
 
 
 ;; https://endlessparentheses.com/using-prettify-symbols-in-clojure-and-elisp-without-breaking-indentation.html
@@ -3172,7 +3186,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
