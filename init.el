@@ -182,15 +182,16 @@
 ;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
 ;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
-(set-face-attribute 'default nil :font "Fira Code"
-                    :height (if (eq system-type 'darwin) 100 62)
-		    :background (if (eq system-type 'darwin) "gray16" "gray5"))
+;; (set-face-attribute 'default nil :font "Fira Code"
+;;                     :height (if (eq system-type 'darwin) 100 62)
+;; 		    :background (if (eq system-type 'darwin) "gray16" "gray5"))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "gray5" :foreground "#bdbdb3" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 75 :width normal :foundry "CTDB" :family "Iosevka Term"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
@@ -399,7 +400,8 @@
   (define-key my-flycheck-keymap "e" 'flycheck-next-error) ; default
   (define-key my-flycheck-keymap "c" 'flycheck-buffer) ; not working?
   (define-key my-flycheck-keymap "E" 'flycheck-explain-error-at-point) ; not useful
-  (define-key my-flycheck-keymap "l" 'flycheck-list-errors)
+  (define-key my-flycheck-keymap "l" 'consult-flycheck)
+  (define-key my-flycheck-keymap "L" 'flycheck-list-errors)
   (define-key my-flycheck-keymap "n" 'flycheck-next-error)
   (define-key my-flycheck-keymap "p" 'flycheck-previous-error)
   (define-key my-flycheck-keymap "C" 'flycheck-compile)
@@ -466,10 +468,10 @@
   (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
   (define-key my-lines-keymap "l" 'nlinum-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
-  ;; (define-key my-lines-keymap "c" 'crosshairs)
+  (define-key my-lines-keymap "c" 'crosshairs)
   (define-key my-lines-keymap "h" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
-  ;; (define-key my-lines-keymap "C" 'crosshairs-mode)
+  (define-key my-lines-keymap "C" 'crosshairs-mode)
   ;; (key-seq-define-global "ql" my-lines-keymap)
   (key-seq-define-global "'l" my-lines-keymap))
 
@@ -534,7 +536,14 @@
 
 ;; T — (BAD: contractions like can't)
 
-;; U — (BAD: qu combo)
+;; U — (BAD: qu combo, but 'u is kinda ok)
+(let ((my-url-keymap (make-sparse-keymap)))
+  (define-key my-url-keymap "e" 'org-toggle-emphasis)
+  (define-key my-url-keymap "i" 'org-insert-link)
+  (define-key my-url-keymap "I" 'mardown-insert-link)
+  (define-key my-url-keymap "t" 'org-toggle-link-display)
+  (define-key my-url-keymap "u" 'browse-url)
+  (key-seq-define-global "'u" my-url-keymap))
 
 ;; V — Vterm
 (let ((my-vterm-keymap (make-sparse-keymap)))
@@ -995,7 +1004,9 @@ Here 'words' are defined as characters separated by whitespace."
 (setq undo-tree-history-directory-alist
       `((".*" . ,temporary-file-directory)))
 
-;; Goggles
+;; Goggles: https://github.com/minad/goggles
+;; Pulse modified region
+;; Goggles highlights the modified region using pulse. Currently the commands undo, yank, kill and delete are supported.
 ;; deps: pulse
 (use-package goggles
   :hook ((prog-mode text-modee) . goggles-mode)
@@ -3087,12 +3098,15 @@ chord."
   (shell-command "uuidgen" t))
 
 
+;; Pretty/fancy glyphs for code
 ;; https://endlessparentheses.com/using-prettify-symbols-in-clojure-and-elisp-without-breaking-indentation.html
 ;; FIXME Maybe has to be set before global mode turned on?
 ;; https://stackoverflow.com/questions/18172728/the-difference-between-setq-and-setq-default-in-emacs-lisp
-(setq-default prettify-symbols-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
+;; (add-to-list 'endless/clojure-prettify-alist '(">=" . (?\s (Br . Bl) ?\s (Bc . Bc) ?≥)))
+(setq-default clojure-prettify-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
 				       ;; (";;" . ?∥)
 				       (";;" . ?|)
+				       (";;;" . "||")
 				       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
 						     (Bc . Br) #x21a6 (Bc . Bl) #x21a6))))
 
@@ -3108,6 +3122,8 @@ chord."
                    (nth 3 (syntax-ppss)))))))
 
 (prettify-symbols-mode +1)
+
+(eval-after-load 'clojure-mode '(setq clojure--prettify-symbols-alist (append clojure-prettify-alist clojure--prettify-symbols-alist)))
 
 
 ;;; END (effectively)
@@ -3150,8 +3166,11 @@ chord."
  '(cider-repl-use-clojure-font-lock nil)
  '(cider-repl-use-pretty-printing nil)
  '(cider-special-mode-truncate-lines nil)
+ '(clojure-defun-indents '(fn-traced))
  '(col-highlight-show-only 'forward-paragraph)
  '(completion-show-help nil)
+ '(consult-ripgrep-args
+   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
  '(ctrlf-auto-recenter nil)
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
@@ -3203,7 +3222,7 @@ chord."
  '(recentf-auto-cleanup 300)
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
- '(ripgrep-arguments '("--smart-case"))
+ '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
  '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
