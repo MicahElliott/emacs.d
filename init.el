@@ -534,7 +534,13 @@
 
 ;; S — (BAD: possessives like Micah's)
 
-;; T — (BAD: contractions like can't)
+;; T — (BAD: contractions like can't) BUT, qt is ok
+(let ((my-todo-keymap (make-sparse-keymap)))
+  (define-key my-todo-keymap "n" 'hl-todo-next)
+  (define-key my-todo-keymap "p" 'hl-todo-previous)
+  (define-key my-todo-keymap "o" 'hl-todo-occur)
+  (define-key my-todo-keymap "i" 'hl-todo-insert)
+  (key-seq-define-global "qt" my-todo-keymap))
 
 ;; U — (BAD: qu combo, but 'u is kinda ok)
 (let ((my-url-keymap (make-sparse-keymap)))
