@@ -2396,6 +2396,13 @@ Here 'words' are defined as characters separated by whitespace."
 
 (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "M-.") 'cider-or-dumb-jump)))
 
+;; Re-frame jumping through keywords
+;; https://github.com/oliyh/re-jump.el
+;; Has really annoying remapping of M-> to user.clj
+;; (require 're-jump)
+;; But it's broken, so:
+(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "M->") 're-frame-jump-to-reg)))
+
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 (global-set-key  (kbd "C-M->") 'dumb-jump-go)
 
@@ -2897,11 +2904,6 @@ chord."
 ;;   "id" "210" "session" "171b8d0e-64ee-40e6-95f7-c48fd0e2e318")
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
-
-;; Re-frame jumping through keywords
-;; https://github.com/oliyh/re-jump.el
-;; Has really annoying remapping of M-> to user.clj
-;; (require 're-jump)
 
 ;; Dabbrev works with Corfu
 (use-package dabbrev
