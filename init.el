@@ -64,6 +64,7 @@
     comment-dwim-2
     consult
     consult-flycheck
+    consult-dir
     corfu
     crux
     csv
@@ -121,6 +122,7 @@
     python
     quick-peek
     rainbow-delimiters
+    restclient
     rg
     ripgrep
     shrink-whitespace
@@ -1473,6 +1475,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (with-eval-after-load 'treemacs
 ;;   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
 
+;; https://github.com/jojojames/dired-sidebar
 (require 'dired-sidebar)
 
 
@@ -2401,7 +2404,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Has really annoying remapping of M-> to user.clj
 ;; (require 're-jump)
 ;; But it's broken, so:
-(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "M->") 're-frame-jump-to-reg)))
+(require 'my-re-jump)
+;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "C->") 're-frame-jump-to-reg)))
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 (global-set-key  (kbd "C-M->") 'dumb-jump-go)
@@ -2832,6 +2836,14 @@ chord."
 (setq completion-styles '(orderless))
 ;; (setq completion-styles '(initials basic))
 
+;; https://github.com/karthink/consult-dir
+(use-package consult-dir
+  :ensure t
+  :bind (("C-x C-d" . consult-dir)
+         :map minibuffer-local-completion-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+
 (use-package embark
   :ensure t
   :bind
@@ -2902,6 +2914,18 @@ chord."
 ;; {:name rewrite-clj.zip, :type :ns}
 ;; {:name clojure.tools.analyzer.ast, :type :ns})"
 ;;   "id" "210" "session" "171b8d0e-64ee-40e6-95f7-c48fd0e2e318")
+
+(defun my-cider-eval-db ()
+  "Re-evaluate crawlingchaos.db.core file."
+  (interactive)
+  (save-buffer)
+  (let* ((proot (projectile-project-root)) ; "/home/mde/work/cc/"
+	 (dbpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/db/core.clj")))
+    (cider-map-repls :auto
+      (lambda (repl)
+	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
+
+(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db)))
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
@@ -3206,6 +3230,7 @@ chord."
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
+ '(magit-revision-insert-related-refs nil)
  '(marginalia-margin-threshold 120)
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
@@ -3213,7 +3238,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
