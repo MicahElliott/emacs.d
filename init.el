@@ -76,6 +76,7 @@
     dotenv-mode
     dot-mode
     dumb-jump
+    easy-kill
     edbi
     edit-indirect
     embark
@@ -130,6 +131,7 @@
     sotclojure
     super-save
     symbol-overlay
+    toggle-test
     typo
     undo-tree
     unfill
@@ -139,7 +141,8 @@
     visible-mark
     vterm
     vterm-toggle
-    which-key))
+    which-key
+    zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
@@ -210,7 +213,6 @@
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(highlight ((t (:background "dark blue"))))
  '(hl-line ((t (:extend t :background "black"))))
- '(live-completions-forceable-candidate ((t (:background "orange red" :weight bold))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -296,8 +298,6 @@
 ;; https://github.com/hlissner/doom-emacs/issues/2217#issuecomment-568037014
 ;; https://www.facebook.com/notes/daniel-colascione/buttery-smooth-emacs/10155313440066102/
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
-
-(setq savehist-autosave-interval 300)
 
 ;; each 50MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 50000000)
@@ -491,31 +491,38 @@
 (key-seq-define-global "qo" 'crux-smart-open-line)
 (key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
-;; P — Projectile
+;; P — Project
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
-(let ((my-projectile-keymap (make-sparse-keymap)))
-  (define-key my-projectile-keymap "a" 'projectile-add-known-project)
-  ;; (define-key my-projectile-keymap "b" 'counsel-projectile-switch-to-buffer)
-  (define-key my-projectile-keymap "b" 'projectile-switch-to-buffer)
-  (define-key my-projectile-keymap "d" 'projectile-find-dir)
-  (define-key my-projectile-keymap "e" 'projectile-recentf)
-  (define-key my-projectile-keymap "f" 'projectile-find-file)
-  (define-key my-projectile-keymap "g" 'projectile-ripgrep)
-  (define-key my-projectile-keymap "i" 'projectile-invalidate-cache)
-  (define-key my-projectile-keymap "o" 'projectile-multi-occur)
-  (define-key my-projectile-keymap "p" 'projectile-switch-project)
-  ;; (define-key my-projectile-keymap "s" 'projectile-ag)
-  (define-key my-projectile-keymap "s" 'consult-ripgrep)
-  (define-key my-projectile-keymap "t" 'projectile-toggle-between-implementation-and-test)
+(let ((my-project-keymap (make-sparse-keymap)))
+  (define-key my-project-keymap "a" 'projectile-add-known-project)
+  ;; (define-key my-project-keymap "b" 'counsel-projectile-switch-to-buffer)
+  ;; (define-key my-project-keymap "b" 'projectile-switch-to-buffer)
+  (define-key my-project-keymap "b" 'project-display-buffer)
+  (define-key my-project-keymap "c" 'project-compile)
+  (define-key my-project-keymap "d" 'project-find-dir)
+  ;; Can't figure out how to bypass orderless with this
+  (define-key my-project-keymap "e" 'consult-recent-file)
+  ;; (define-key my-project-keymap "e" 'consult-recent-file)
+  (define-key my-project-keymap "f" 'project-find-file)
+  (define-key my-project-keymap "g" 'project-find-regexp)
+  (define-key my-project-keymap "k" 'project-kill-buffers)
+  ;; (define-key my-project-keymap "i" 'projectile-invalidate-cache)
+  (define-key my-project-keymap "o" 'projectile-multi-occur)
+  (define-key my-project-keymap "p" 'projectile-switch-project)
+  (define-key my-project-keymap "r" 'project-query-replace-regexp)
+  ;; (define-key my-project-keymap "s" 'projectile-ag)
+  (define-key my-project-keymap "s" 'consult-ripgrep)
+  ;; (define-key my-project-keymap "t" 'projectile-toggle-between-implementation-and-test)
+  (define-key my-project-keymap "t" 'tgt-toggle)
   ;; ag in custom specified dir
-  ;; (define-key my-projectile-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
+  ;; (define-key my-project-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
   ;; ag with options prompt
-  ;; (define-key my-projectile-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
-  (define-key my-projectile-keymap "B" 'projectile-ibuffer)
-  (define-key my-projectile-keymap "D" 'projectile-dired)
-  (define-key my-projectile-keymap "E" 'projectile-edit-dir-locals)
-  ;; (define-key my-projectile-keymap "I" 'ivy-imenu-anywhere)
-  (key-seq-define-global "'p" my-projectile-keymap))
+  ;; (define-key my-project-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
+  (define-key my-project-keymap "B" 'projectile-ibuffer)
+  (define-key my-project-keymap "D" 'project-dired)
+  ;; (define-key my-project-keymap "E" 'projectile-edit-dir-locals)
+  ;; (define-key my-project-keymap "I" 'ivy-imenu-anywhere)
+  (key-seq-define-global "'p" my-project-keymap))
 
 ;; Q — taken by q'
 
@@ -901,9 +908,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c T") 'typo-mode)
 ;; ISSUE: Need to auto-enter typo-mode only while inside strings.
-;; (global-set-key [remap mark-sexp] 'easy-mark) ; TRIAL
-;; (global-set-key [remap kill-ring-save] 'easy-kill)
-;; (global-set-key [remap kill-ring-save] 'easy-mark)
 ;; (global-set-key (kbd "M-%") 'anzu-query-replace)
 ;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
@@ -1007,10 +1011,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
-
-;; autosave the undo-tree history
-(setq undo-tree-history-directory-alist
-      `((".*" . ,temporary-file-directory)))
 
 ;; Goggles: https://github.com/minad/goggles
 ;; Pulse modified region
@@ -1190,7 +1190,26 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'projectile)
 (projectile-mode +1)
 ;; https://github.com/nlamirault/ripgrep.el
+
+
+
 (require 'ripgrep)
+
+
+;;; Try out Emacs' new project mode
+(require 'project)
+
+;; Replace projectile-toggle-between-implementation-and-test
+(require 'toggle-test)
+(add-to-list 'tgt-projects
+	     '((:root-dir "~/work/cc")
+               (:src-dirs "src")
+               (:test-dirs "test")
+               ;; (:test-prefixes <optional list of prefix strings that are added on source file names to get test file names>)
+               (:test-suffixes "_test")
+	       ))
+
+
 
 ;;; imenu
 ;; (require 'imenu-anywhere)
@@ -1330,12 +1349,14 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Undo-tree: C-/ undo, M-_ redo
 ;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
 ;; FIXME: this is really needed package, but have to figure out now to clean its mess!
-(global-undo-tree-mode 1)
-;; Config from prelude:
-;; autosave the undo-tree history
-;; (setq undo-tree-history-directory-alist
-;;       `((".*" . ,temporary-file-directory)))
+(global-undo-tree-mode)
+
 (setq undo-tree-auto-save-history t)
+
+
+;; autosave the undo-tree history (from prelude)
+(setq undo-tree-history-directory-alist `((".*" . "~/.emacs.d/undo")))
+
 
 ;; Auto-save
 ;; (add-hook 'focus-out-hook 'save-buffer)
@@ -1413,7 +1434,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+;; (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 
 
 ;; Repeat last command, like vim
@@ -1779,11 +1800,23 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'httprepl)
 
 
+
+;; https://github.com/thierryvolpiatto/zop-to-char
+(require 'zop-to-char)
+(global-set-key [remap zap-to-char] 'zop-to-char)
+
+
 ;; Select/highlight with easy-kill
 ;; https://github.com/leoliu/easy-kill
 ;; http://stackoverflow.com/a/36631886/326516
 ;; (require 'easy-kill)
-;; (global-set-key (kbd "C-M-SPC") 'easy-mark-sexp)
+;; (global-set-key (kbd "M-w") 'kill-ring-save)
+;; (global-set-key (kbd "C-M-SPC") 'easy-mark)
+(global-set-key [remap mark-sexp] 'easy-mark)
+(global-set-key [remap kill-ring-save] 'easy-kill)
+;; (global-set-key [remap kill-ring-save] 'easy-mark)
+;; (global-set-key [remap kill-ring-save] 'easy-mark)
+
 
 
 ;;; Hide-Show (V: visible), like folding
@@ -2202,6 +2235,68 @@ Here 'words' are defined as characters separated by whitespace."
   "Call normal load-buffer, but save first."
   (save-buffer)
   (cider-load-buffer))
+
+
+(defun my-cider-eval-db ()
+  "Re-evaluate crawlingchaos.db.core file."
+  (interactive)
+  (save-buffer)
+  (let* ((proot (projectile-project-root)) ; "/home/mde/work/cc/"
+	 (dbpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/db/core.clj")))
+    (cider-map-repls :auto
+      (lambda (repl)
+	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
+
+(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db)))
+
+
+(defun my-cider-load-route-handler ()
+  "Reload handler NS, and send restart-limited to REPL."
+  (interactive)
+  (save-buffer)
+  (let* ((fname (file-name-base)) ; some_route
+	 (proot (projectile-project-root)) ; "/home/mde/work/cc/"
+	 (handlerpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/handler.clj")))
+    ;; Check current file name for "route"
+    (when (string-match-p "route" fname)
+      ;; Re-eval handler NS
+      (cider-map-repls :auto
+	(lambda (repl)
+	  (cider-request:load-file (cider--file-string handlerpath) handlerpath "ignored??" repl nil)))
+      ;; Send to REPL a restart-limited so new routes are loaded
+      (cider-interactive-eval "(user/restart-limited)")))
+  (cider-load-buffer))  ; C-c C-k
+(add-hook 'clojure-mode (lambda () (local-set-key (kbd "C-c K") 'my-cider-load-route-handler)))
+
+(defun my-jump-to-hugsql-defn ()
+  "Jump to HugSQL db symbol at point, through grep result buffer.
+Relies on projectile, cider."
+  (interactive)
+  ;; https://emacs.stackexchange.com/questions/28367/get-word-at-point
+  (let ((sym (thing-at-point 'symbol 'no-properties))) ; ex: "db/get-project-root-doc-pkgs-by-id-2"
+    (if (s-starts-with? "db/" sym)
+	;; Match the pattern like: ":name get-project-root\b" (use word boundary)
+	(let* ((symstr (concat ":name " (string-trim sym "db/") "\\b "))
+	       (sqldir (concat (projectile-project-root) "resources/sql/")))
+	  ;; (rgrep "get-project-root-doc-pkgs-by-id-2" "*.sql" "~/work/cc/resources/sql/")
+	  ;; FIXME Seems this has to be run once interactively to work in function
+          (rgrep symstr "*.sql" sqldir nil) ; ex: "~/work/cc/resources/sql/"
+	  ;; rgrep seems to need a little time to prep/open buffer
+	  (sit-for 0.2)
+	  ;; Go to new grep seearch result buffer and visit first (only) result
+	  (select-window (get-buffer-window "*grep*"))
+	  (compilation-next-error 1)
+	  (compile-goto-error)
+	  (recenter-top-bottom)
+	  ;; Close the grep buffer
+	  (select-window (get-buffer-window "*grep*"))
+	  ;; (kill-this-buffer)
+	  (delete-window)
+	  (balance-windows))
+      ;; Not a db/ symbol so fall back to normal
+      (cider-find-var))))
+(define-key cider-mode-map (kbd "M-.") 'my-jump-to-hugsql-defn)
+;; (define-key cider-mode-map (kbd "M-.") 'cider-find-var) ; orig
 
 (defun my-cider-eval-and-test-fn ()
   "Quickly eval and run test."
@@ -2786,11 +2881,6 @@ chord."
 ;; TAB cycle if there are only few candidates
 (setq completion-cycle-threshold 1)
 
-;; https://github.com/oantolin/live-completions
-;; (require 'live-completions)
-(setq temp-buffer-max-height 70)
-(temp-buffer-resize-mode)
-
 ;; minibuffer-force-complete-and-exit. You might want to bind the
 ;; latter to RET in minibuffer-local-completion-map (and maybe bind
 ;; minibuffer-force-complete to something too, like C-M-i or
@@ -2800,14 +2890,7 @@ chord."
 ;; (define-key minibuffer-local-completion-map "RET" #'minibuffer-force-complete-and-exit)
 ;; (define-key minibuffer-local-completion-map "C-l" #'minibuffer-force-complete)
 
-;; Can't have both vcomplete and vertico, I think
-;; (require 'vcomplete)
-;; (vcomplete-mode)
-;; (vcomplete-mode -1)
-
-;; NOTE: Vertico doesn't seem to work with variable completions, so
-;; falls back to default Completions buffer, which is pretty annoying.
-;; Vertico
+;;; Vertico
 ;; Really nicely uses marginalia
 ;; https://github.com/minad/vertico
 (use-package vertico
@@ -2891,8 +2974,7 @@ chord."
 
 ;; Replace cider's bad try-completion fn
 ;; https://github.com/minad/corfu/issues/30
-(add-to-list 'completion-styles-alist
-	     '(cider my-cider-try-completion cider-company-unfiltered-candidates "CIDER backend-driven completion style."))
+(add-to-list 'completion-styles-alist '(cider my-cider-try-completion cider-company-unfiltered-candidates "CIDER backend-driven completion style."))
 
 ;; Example of calling nrepl command directly, like cljr does!
 ;; (cider-nrepl-send-sync-request '("op" "clean-ns" "prefix-rewriting" "false" "debug" "false" "path" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "relative-path" "src/clj/crawlingchaos/process/changeorder/changes.clj" "prune-ns-form" "true"))
@@ -2915,17 +2997,6 @@ chord."
 ;; {:name clojure.tools.analyzer.ast, :type :ns})"
 ;;   "id" "210" "session" "171b8d0e-64ee-40e6-95f7-c48fd0e2e318")
 
-(defun my-cider-eval-db ()
-  "Re-evaluate crawlingchaos.db.core file."
-  (interactive)
-  (save-buffer)
-  (let* ((proot (projectile-project-root)) ; "/home/mde/work/cc/"
-	 (dbpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/db/core.clj")))
-    (cider-map-repls :auto
-      (lambda (repl)
-	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
-
-(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db)))
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
@@ -2939,18 +3010,20 @@ chord."
 ;; savehist keeps track of some history
 (use-package savehist
   :init
-  (savehist-mode)
   (setq savehist-additional-variables
 	;; search entries
-	'(search-ring regexp-search-ring)
+	'(search-ring kill-ring regexp-search-ring)
 	;; save every minute
 	savehist-autosave-interval 60
 	;; keep the home clean
-	savehist-file (expand-file-name "savehist" savefile-dir)))
+	savehist-file (expand-file-name "savehist" savefile-dir))
+  ;; Had a bug when this was before the setq
+  (savehist-mode)
+  )
 
-(defun crm-indicator (args)
-  (cons (concat "[CRM] " (car args)) (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+;; (defun crm-indicator (args)
+;;   (cons (concat "[CRM] " (car args)) (cdr args)))
+;; (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
 ;; Grow and shrink minibuffer
 (setq resize-mini-windows t)
@@ -3023,7 +3096,7 @@ chord."
 	 ("M-g o" . consult-outline)
 	 ("M-g m" . consult-mark)
 	 ("M-g k" . consult-global-mark)
-	 ("M-g i" . consult-project-imenu) ;; Alternative: consult-imenu
+	 ;; ("M-g i" . consult-project-imenu) ;; Alternative: consult-imenu
 	 ("M-g e" . consult-error)
 	 ;; M-s bindings (search-map)
 	 ;; ("M-s g" . consult-git-grep)              ;; alt. consult-grep, consult-ripgrep
@@ -3090,17 +3163,28 @@ chord."
         (lambda () (when-let (project (project-current))
 		(car (project-roots project)))))
 
-  ;; Enable consult/vertico to do completion-at-point
-  ;; https://github.com/minad/consult#miscellaneous
-  ;; https://github.com/minad/consult/issues/338
-  (setq completion-in-region-function 'consult-completion-in-region)
 
-  ;; Recall last search
-  ;; https://github.com/minad/consult/issues/214
-  (setf (alist-get #'consult-line consult-config)
-	(list :keymap (let ((map (make-sparse-keymap)))
-			(define-key map "\C-s" #'previous-history-element)
-			map))))
+
+  ;; ;; Recall last search
+  ;; ;; https://github.com/minad/consult/issues/214
+  ;; (setf (alist-get #'consult-line consult-config)
+  ;; 	(list :keymap (let ((map (make-sparse-keymap)))
+  ;; 			(define-key map "\C-s" #'previous-history-element)
+  ;; 			map)))
+
+  )
+
+
+
+
+
+;; Enable consult/vertico to do completion-at-point
+;; https://github.com/minad/consult#miscellaneous
+;; https://github.com/minad/consult/issues/338
+;; (setq completion-in-region-function 'consult-completion-in-region)
+
+
+
 
 ;; (require 'consult)
 
@@ -3201,6 +3285,7 @@ chord."
  '(clojure-defun-indents '(fn-traced))
  '(col-highlight-show-only 'forward-paragraph)
  '(completion-show-help nil)
+ '(consult-preview-max-size 1048576000)
  '(consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
  '(ctrlf-auto-recenter nil)
@@ -3238,7 +3323,7 @@ chord."
  '(mood-line-show-encoding-information nil)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
