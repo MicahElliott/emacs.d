@@ -15,16 +15,20 @@
 
 ;;; Code:
 
-
 ;; https://emacs.stackexchange.com/a/4258/11025
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
 
+;; https://stackoverflow.com/questions/5570451/how-to-start-emacs-server-only-if-it-is-not-started
+;; upsets magit
+;; (load "server")
+;; (unless (server-running-p) (server-start))
+
 
 ;;; PACKAGING
 
-
 ;;; USE-PACKAGE
+
 
 ;; ;; This is only needed once, near the top of the file
 ;; (eval-when-compile
@@ -46,6 +50,7 @@
                          ;;("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
+
 (setq package-enable-at-startup nil)
 (package-initialize)
 (when (not package-archive-contents)
@@ -86,9 +91,9 @@
     exec-path-from-shell
     flycheck-clj-kondo
     flycheck-clojure
+    flycheck-indicator
     flycheck-inline
     flymd
-    focus
     git-link
     git-timemachine
     github-browse-file
@@ -104,11 +109,12 @@
     jump-char
     key-chord
     key-seq
+    keycast
     kibit-helper
     magit
     marginalia
     markdown-mode
-    mood-line
+    mlscroll
     move-text
     multi-vterm
     nlinum-relative
@@ -119,13 +125,15 @@
     page-break-lines
     paren-face
     perspective
-    projectile
+    pickle
+    popper
     python
     quick-peek
     rainbow-delimiters
     restclient
-    rg
+    rich-minority
     ripgrep
+    rg
     shrink-whitespace
     smartparens
     sotclojure
@@ -142,10 +150,140 @@
     vterm
     vterm-toggle
     which-key
+    yascroll
     zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ace-window-display-mode t)
+ '(auto-dim-other-buffers-mode nil)
+ '(auto-revert-interval 2)
+ '(avy-orders-alist nil)
+ '(avy-styles-alist '((avy-goto-char-2 . pre)))
+ '(avy-timeout-seconds 0.2)
+ '(aw-char-position 'center)
+ '(aw-display-mode-overlay nil)
+ '(aw-ignore-current nil)
+ '(beacon-blink-duration 0.4)
+ '(beacon-blink-when-focused t)
+ '(beacon-blink-when-point-moves-vertically 5)
+ '(beacon-color "red")
+ '(beacon-push-mark nil)
+ '(browse-url-browser-function 'browse-url-firefox)
+ '(case-fold-search nil)
+ '(cider-comment-prefix " ;=> ")
+ '(cider-repl-history-file "~/.cider-repl-history")
+ '(cider-repl-history-size 1000)
+ '(cider-repl-use-clojure-font-lock nil)
+ '(cider-repl-use-pretty-printing nil)
+ '(cider-special-mode-truncate-lines nil)
+ '(cider-test-defining-forms '("deftest" "defspec" "defcsvtest"))
+ '(clojure-defun-indents '(fn-traced))
+ '(col-highlight-show-only 'forward-paragraph)
+ '(column-number-mode t)
+ '(completion-show-help nil)
+ '(consult-preview-max-size 1048576000)
+ '(consult-ripgrep-args
+   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
+ '(ctrlf-auto-recenter nil)
+ '(ctrlf-show-match-count-at-eol t)
+ '(custom-safe-themes
+   '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+ '(dired-sidebar-width 50)
+ '(dynamic-completion-mode nil)
+ '(ediff-split-window-function 'split-window-horizontally)
+ '(fci-rule-color "#383838")
+ '(flycheck-indicator-icon-error 9632)
+ '(flycheck-indicator-icon-info 9679)
+ '(flycheck-indicator-icon-warning 9650)
+ '(flycheck-indicator-status-icons '((finished . "✓YAY✓") (errored . "XXX ERROR XXX")))
+ '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
+ '(global-hl-line-mode t)
+ '(global-hl-line-sticky-flag t)
+ '(global-prettify-symbols-mode t)
+ '(global-superword-mode t)
+ '(global-yascroll-bar-mode t)
+ '(highlight-nonselected-windows t)
+ '(highlight-parentheses-colors '("red" "IndianRed1"))
+ '(highlight-parentheses-delay 0.3)
+ '(highlight-parentheses-highlight-adjacent t)
+ '(hl-line-flash-show-period 2.0)
+ '(hs-hide-comments-when-hiding-all nil)
+ '(icomplete-prospects-height 70)
+ '(imenu-list-focus-after-activation t)
+ '(imenu-list-position 'left)
+ '(imenu-list-size 0.1)
+ '(inhibit-startup-screen nil)
+ '(live-completions-columns 'single)
+ '(live-completions-mode t)
+ '(live-completions-sort-order 'cycle)
+ '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
+ '(magit-revision-insert-related-refs nil)
+ '(marginalia-margin-threshold 120)
+ '(markdown-header-scaling t)
+ '(markdown-wiki-link-search-subdirectories t)
+ '(mlscroll-border 20)
+ '(mlscroll-minimum-current-width 10)
+ '(mlscroll-right-align t)
+ '(mode-line-percent-position nil)
+ '(mood-line-show-cursor-point nil)
+ '(mood-line-show-encoding-information nil)
+ '(mouse-avoidance-mode 'exile nil (avoid))
+ '(nyan-mode t)
+ '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
+ '(package-selected-packages
+   '(pickle monokai-theme mlscroll rich-minority yascroll keycast org-tree-slide auto-dim-other-buffers simple-modeline popper easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+ '(page-break-lines-max-width 80)
+ '(page-break-lines-modes
+   '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
+ '(persp-sort 'access)
+ '(quick-peek-add-spacer nil)
+ '(quick-peek-position 'above)
+ '(recentf-auto-cleanup 300)
+ '(recentf-max-menu-items 100)
+ '(recentf-max-saved-items 500)
+ '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
+ '(safe-local-variable-values
+   '((eval with-eval-after-load 'cider
+	   (setq cider-default-cljs-repl 'figwheel))
+     (url-max-redirections . 0)))
+ '(save-completions-retention-time 700)
+ '(scroll-bar-mode nil)
+ '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
+ '(show-trailing-whitespace t)
+ '(size-indication-mode nil)
+ '(split-height-threshold 100)
+ '(split-width-threshold 30)
+ '(standard-indent 2)
+ '(symbol-overlay-displayed-window nil)
+ '(symbol-overlay-faces
+   '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
+ '(text-scale-mode-step 1.1)
+ '(tldr-enabled-categories '("common"))
+ '(tramp-default-method "ssh")
+ '(uniquify-min-dir-content 1)
+ '(uniquify-trailing-separator-p t)
+ '(vertico-count 50)
+ '(vertico-cycle nil)
+ '(which-key-frame-max-width 100)
+ '(which-key-idle-delay 0.4)
+ '(which-key-idle-secondary-delay 0.0)
+ '(which-key-max-description-length 45)
+ '(which-key-popup-type 'side-window)
+ '(which-key-show-docstrings t)
+ '(which-key-side-window-location 'left)
+ '(which-key-side-window-max-height 0.9)
+ '(which-key-side-window-max-width 0.9)
+ '(which-key-unicode-correction 30)
+ '(yascroll:delay-to-hide nil))
+
 
 ;; DISABLED
 ;; rainbow-identifiers
@@ -156,7 +294,6 @@
 ;; ivy-posframe
 ;; ivy-rich
 ;; counsel
-;; counsel-projectile
 ;; ivy
 ;; ivy-rich
 ;; ivy-posframe
@@ -196,7 +333,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "gray5" :foreground "#bdbdb3" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 75 :width normal :foundry "CTDB" :family "Iosevka Term"))))
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "gray2" :foreground "#bdbdb3" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 75 :width normal :foundry "UKWN" :family "Iosevka Term"))))
+ '(auto-dim-other-buffers-face ((t (:background "gray12"))))
+ '(avy-lead-face-0 ((t (:background "RoyalBlue4" :foreground "white"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
@@ -204,15 +343,16 @@
  '(ctrlf-highlight-line ((t (:background "chocolate4"))))
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
+ '(flycheck-indicator-success ((t (:inherit custom-state))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
- '(font-lock-comment-face ((t (:foreground "#75715E" :slant italic))))
+ '(font-lock-comment-face ((t (:foreground "gray22" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "SlateGray3" :slant italic :weight bold))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "gray45" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
- '(highlight ((t (:background "dark blue"))))
- '(hl-line ((t (:extend t :background "black"))))
+ '(highlight ((t (:background "RoyalBlue4"))))
+ '(hl-line ((t (:extend t :background "#260100" :box (:line-width 1 :color "grey75")))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -223,8 +363,9 @@
  '(markdown-inline-code-face ((t (:inherit font-lock-constant-face))))
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
- '(mode-line ((t (:background "orange red" :foreground "#252525" :height 1.2 :family "Fira Sans"))))
- '(mode-line-inactive ((t (:background "midnight blue" :foreground "cornsilk4" :height 1.2 :family "Fira Sans"))))
+ '(minibuffer-prompt ((t (:foreground "#fffe0a" :underline t :slant italic :weight bold :height 1.0))))
+ '(mode-line ((t (:background "RoyalBlue4" :foreground "gray75" :inverse-video nil :box (:line-width 3 :color "grey75" :style released-button) :height 1.0))))
+ '(mode-line-inactive ((t (:background "gray22" :foreground "cornsilk4" :inverse-video nil :box (:line-width 3 :color "grey75" :style pressed-button) :height 1.0))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
@@ -234,8 +375,9 @@
  '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :height 2.0))))
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
+ '(org-list-dt ((t (:foreground "DeepSkyBlue" :weight bold))))
  '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
- '(persp-selected-face ((t (:foreground "chartreuse" :weight bold))))
+ '(persp-selected-face ((t (:inherit custom-state :weight bold))))
  '(quick-peek-background-face ((t (:inherit default :extend t :background "gray22"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
@@ -255,6 +397,8 @@
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
+
+;; '(hl-line ((t (:extend t :background "gray12" :box (:line-width 1 :color "black")))))
 
 ;; '(default ((t (:inherit nil :stipple nil :background (if (eq system-type 'darwin) "gray16" "gray5") :foreground "#F8F8F2" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height (if (eq system-type 'darwin) 100 62) :width normal :foundry "nil" :family "Fira Code"))))
 ;; '(auto-dim-other-buffers-face ((t (:background "gray29"))))
@@ -343,8 +487,8 @@
 (key-chord-define-global "q'" 'crux-smart-open-line-above)
 
 ;; Also special
-(key-seq-define-global "q-" 'text-scale-decrease)
-(key-seq-define-global "q+" 'text-scale-increase)
+(key-seq-define-global "q-" 'default-text-scale-decrease)
+(key-seq-define-global "q+" 'default-text-scale-increase)
 (key-seq-define-global "qq" 'aw-flip-window)
 (key-seq-define-global "''" 'aw-flip-window)
 
@@ -370,7 +514,7 @@
   ;; (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
   (define-key my-buffer-keymap "e" 'crux-recentf-find-file)
   ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
-  (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
+  ;; (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
   ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
   (define-key my-buffer-keymap "i" 'ibuffer) ; ibuffer
   ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
@@ -380,10 +524,10 @@
 
 ;; C — Character goto (fast)
 ;; (key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
-(key-seq-define-global "'c" 'avy-goto-char-2-below)
-;; (key-seq-define-global "'c" 'avy-goto-word-1-below)
-(key-seq-define-global "'f" 'avy-goto-char-2-above)
-;; (key-seq-define-global "'f" 'avy-goto-word-1-above)
+;; (key-seq-define-global "'c" 'avy-goto-char-2-below)
+(key-seq-define-global "'c" 'avy-goto-word-1-below)
+;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
+(key-seq-define-global "'f" 'avy-goto-word-1-above)
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
 (key-seq-define-global "xc" 'avy-goto-word-0)
@@ -494,7 +638,7 @@
 ;; P — Project
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
 (let ((my-project-keymap (make-sparse-keymap)))
-  (define-key my-project-keymap "a" 'projectile-add-known-project)
+  ;; (define-key my-project-keymap "a" 'projectile-add-known-project)
   ;; (define-key my-project-keymap "b" 'counsel-projectile-switch-to-buffer)
   ;; (define-key my-project-keymap "b" 'projectile-switch-to-buffer)
   (define-key my-project-keymap "b" 'project-display-buffer)
@@ -507,8 +651,8 @@
   (define-key my-project-keymap "g" 'project-find-regexp)
   (define-key my-project-keymap "k" 'project-kill-buffers)
   ;; (define-key my-project-keymap "i" 'projectile-invalidate-cache)
-  (define-key my-project-keymap "o" 'projectile-multi-occur)
-  (define-key my-project-keymap "p" 'projectile-switch-project)
+  ;; (define-key my-project-keymap "o" 'projectile-multi-occur)
+  ;; (define-key my-project-keymap "p" 'projectile-switch-project)
   (define-key my-project-keymap "r" 'project-query-replace-regexp)
   ;; (define-key my-project-keymap "s" 'projectile-ag)
   (define-key my-project-keymap "s" 'consult-ripgrep)
@@ -518,7 +662,7 @@
   ;; (define-key my-project-keymap "S" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-ag))))
   ;; ag with options prompt
   ;; (define-key my-project-keymap "G" (lambda () (interactive) (let ((current-prefix-arg 4)) (counsel-projectile-ag))))
-  (define-key my-project-keymap "B" 'projectile-ibuffer)
+  ;; (define-key my-project-keymap "B" 'projectile-ibuffer)
   (define-key my-project-keymap "D" 'project-dired)
   ;; (define-key my-project-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-project-keymap "I" 'ivy-imenu-anywhere)
@@ -562,9 +706,11 @@
 
 ;; V — Vterm
 (let ((my-vterm-keymap (make-sparse-keymap)))
-  (define-key my-vterm-keymap "v" 'vterm-toggle)
+  (define-key my-vterm-keymap "v" 'multi-vterm-dedicated-toggle)
+  ;; (define-key my-vterm-keymap "v" 'vterm-toggle)
+  ;; (define-key my-vterm-keymap "v" 'vterm-toggle-show)
   (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
-  (define-key my-vterm-keymap "n" 'vterm)
+  (define-key my-vterm-keymap "n" 'my-vterm-new)
   (define-key my-vterm-keymap "o" 'my-vterm-other)
   (key-seq-define-global "'v" my-vterm-keymap))
 
@@ -648,6 +794,7 @@
 
 ;; TODO key seqs for opposited toggle
 (key-seq-define-global "PB" 'make-frame-command)
+;; (key-seq-define-global "PB" (lambda () (interactive) (make-frame-command) (crux-switch-to-previous-buffer)))
 (key-seq-define-global "BP" 'delete-frame)
 
 (key-seq-define-global "JL" 'beacon-blink)
@@ -658,7 +805,9 @@
 (key-chord-define-global "AA" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 
-(key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
+;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
+(key-seq-define-global "PT" 'dired-sidebar-jump-to-sidebar)
+(key-seq-define-global "TP" 'dired-sidebar-hide-sidebar)
 
 (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
 (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
@@ -745,8 +894,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-p") 'previous-line)
 
-(global-set-key (kbd "C-M-_") 'text-scale-decrease)
-(global-set-key (kbd "C-M-+") 'text-scale-increase)
+(global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
+(global-set-key (kbd "C-M-+") 'default-text-scale-increase)
 
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
 (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
@@ -922,7 +1071,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-`") 'jump-to-mark)
+;; (global-set-key (kbd "M-`") 'jump-to-mark)
 
 (global-set-key (kbd "C-n") 'my-next-line)
 (global-set-key (kbd "C-p") 'my-previous-line)
@@ -957,23 +1106,34 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; mode line settings
 (column-number-mode t)
-(size-indication-mode t)
+;; (size-indication-mode t) ; show size of file in mode-line
 
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
+
+;; Make mouse invisible (hide)
+(mouse-avoidance-mode 1)
 
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
       '("" invocation-name " MDE - " (:eval (if (buffer-file-name)
-                                                    (abbreviate-file-name (buffer-file-name))
+                                                (abbreviate-file-name (buffer-file-name))
                                               "%b"))))
 
+
+;;; THEME
+
+(require 'monokai-theme)
+(enable-theme 'monokai)
+
 (require 'ample-theme)
-(load-theme 'ample t t)
-;; (load-theme 'ample-flat t t)
-;; (load-theme 'ample-light t t)
-(enable-theme 'ample)
+;; (load-theme 'ample t t)
+;; (enable-theme 'ample)
+;; ;; (load-theme 'ample-flat t t)
+;; ;; (load-theme 'ample-light t t)
+
+;; (load-theme 'dracula t)
 
 ;; https://seagle0128.github.io/doom-modeline/
 ;; (require 'doom-modeline)
@@ -993,8 +1153,6 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'which-key)
 (which-key-mode +1)
 ;; (which-key-setup-side-window-right-bottom)
-(setq which-key-popup-type 'side-window)
-(setq which-key-side-window-location 'left)
 
 ;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (scroll-bar-mode -1)
@@ -1011,6 +1169,18 @@ Here 'words' are defined as characters separated by whitespace."
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+
+;; https://github.com/technomancy/better-defaults/blob/master/better-defaults.el
+(autoload 'zap-up-to-char "misc"
+  "Kill up to, but not including ARGth occurrence of CHAR." t)
+
+;; meaningful names for buffers with the same name
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-separator "/")
+(setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
+(setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
 
 ;; Goggles: https://github.com/minad/goggles
 ;; Pulse modified region
@@ -1154,28 +1324,16 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'text-mode 'mixed-pitch-mode)
 
 
+;; https://github.com/purcell/default-text-scale
 (require 'default-text-scale)
 (default-text-scale-mode)
 
 
 ;;; IVY, COUNSEL, SWIPER
 
-;; (require 'ivy)
-;; (ivy-mode 1)
-;; (counsel-mode)
-;; (setq ivy-height 30)
-;; (setq ivy-use-virtual-buffers t)
-;; (setq ivy-count-format "(%d/%d) ")
-;; (setq projectile-completion-system 'ivy)
-
 ;; Disabling since obscures search results
 ;; (require 'ivy-posframe)
 ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
-
-;; Enable counsel replacements for projectile.
-;; https://github.com/ericdanan/counsel-projectile
-;; (require 'counsel-projectile)
-;; (counsel-projectile-mode)
 
 ;; https://github.com/raxod502/prescient.el
 ;; (require 'ivy-prescient)
@@ -1183,14 +1341,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; (require 'oneonone)
 ;; (1on1-emacs)
-
-
-;; Projectile
-;; Use C-u to alter grepping behavior.
-(require 'projectile)
-(projectile-mode +1)
-;; https://github.com/nlamirault/ripgrep.el
-
 
 
 (require 'ripgrep)
@@ -1254,6 +1404,18 @@ Here 'words' are defined as characters separated by whitespace."
 (with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
 
+;; FIXME This might be breaking my own clojure quickpeek for docs
+;; Make inline message pretty with quick-peek
+;; https://github.com/flycheck/flycheck-inline#configuration
+;; (setq flycheck-inline-display-function
+;;       (lambda (msg pos err)
+;;         (let* ((ov (quick-peek-overlay-ensure-at pos))
+;;                (contents (quick-peek-overlay-contents ov)))
+;;           (setf (quick-peek-overlay-contents ov)
+;;                 (concat contents (when contents "\n") msg))
+;;           (quick-peek-update ov)))
+;;       flycheck-inline-clear-function #'quick-peek-hide)
+
 
 ;; Typopunct: fancy/pretty quotes, etc: — ‘’ “”
 ;; enable: M-x typopunct-mode
@@ -1314,8 +1476,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'hide-comnt) ; in vendor/ since not in melpa
 
 
-;; ;; auto-dim
-;; ;; https://github.com/mina86/auto-dim-other-buffers.el
+;; auto-dim
+;; SLOW probably: https://ahmadnazir.github.io/posts/2016-03-02-debugging-slow-emacs/post.html
+;; NOTE use this instead of hiwin mode
+;; https://github.com/mina86/auto-dim-other-buffers.el
 ;; (add-hook 'after-init-hook
 ;;           (lambda ()
 ;;             (when (fboundp 'auto-dim-other-buffers-mode)
@@ -1392,6 +1556,7 @@ Here 'words' are defined as characters separated by whitespace."
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 ;; Make Emacs use the $PATH set up by the user's shell
+;; Affects other envvars too.
 (require 'exec-path-from-shell)
 
 ;; Whitespace removal DWIM key for emacs.
@@ -1611,6 +1776,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;;   (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
 
 ;; This is actually perspective, not persp.
+;; https://github.com/nex3/perspective-el
+;; Don't want to be saving since not sure how much bad/stale state gets saved/loaded.
+;; So easiest to just create new perpectives every time emacs starts.
 (persp-mode)
 ;; Maybe this causes problems??
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
@@ -1619,7 +1787,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
-(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y))
+(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y ?n ?e ?i ?o))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -1767,8 +1935,8 @@ Here 'words' are defined as characters separated by whitespace."
 (pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
 (pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
 (pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
-(pretty-magit "master"  ?👑 (:box t :height 1.2) t)
-(pretty-magit "origin"  ?💦  (:box t :height 1.2) t)
+(pretty-magit "master"  ?👑 (:height 1.2) t)
+(pretty-magit "origin"  ?💦  (:height 1.2) t)
 
 (defun add-magit-faces ()
   "Add face properties and compose symbols for buffer from pretty-magit."
@@ -2001,11 +2169,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (show-smartparens-global-mode +1)
 ;; (setq sp-override-key-bindings '(("C-<right>" . nil)))
 
-;; ;; diminish keeps the modeline tidy
-;; (require 'diminish)
-;; (diminish 'my-keys)
-;; (diminish 'hs)
-
 ;; saveplace remembers your location in a file when saving files
 (defvar root-dir (file-name-directory load-file-name)
   "The root dir of the Emacs Prelude distribution.")
@@ -2141,6 +2304,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (prelude-require-package 'ecukes)
 ;; (require 'cucumber-goto-step)
 
+;; Have "pickle" installed but maybe not using it.
+;; Comment in package: If you just want syntax highlighting in a lightweight mode, use this.
+
 
 ;; Database UI
 ;; (require 'edbi)
@@ -2172,6 +2338,9 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'sotclojure)
 (speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
+
+;; Disable syntax highlighting in repl
+(add-hook 'cider-repl-mode-hook (lambda () (font-lock-mode 0)))
 
 ;; Quick-Peek for Cider
 ;; https://github.com/clojure-emacs/cider/issues/2968
@@ -2207,7 +2376,7 @@ Here 'words' are defined as characters separated by whitespace."
 (if (eq system-type 'darwin)
     (setq alert-default-style 'mode-line)
   (setq alert-default-style 'libnotify))
-(alert "Tis but an alert" :severity 'low :title "some title")
+(alert "Start mlscroll manually" :severity 'low :title "NOTICE:")
 
 ;; (setq hs-special-modes-alist)
 
@@ -2237,17 +2406,17 @@ Here 'words' are defined as characters separated by whitespace."
   (cider-load-buffer))
 
 
-(defun my-cider-eval-db ()
+(defun my-cider-eval-db-hugs ()
   "Re-evaluate crawlingchaos.db.core file."
   (interactive)
   (save-buffer)
-  (let* ((proot (projectile-project-root)) ; "/home/mde/work/cc/"
+  (let* ((proot (consult--project-root)) ; "/home/mde/work/cc/"
 	 (dbpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/db/core.clj")))
     (cider-map-repls :auto
       (lambda (repl)
 	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
 
-(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db)))
+(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
 
 
 (defun my-cider-load-route-handler ()
@@ -2255,7 +2424,7 @@ Here 'words' are defined as characters separated by whitespace."
   (interactive)
   (save-buffer)
   (let* ((fname (file-name-base)) ; some_route
-	 (proot (projectile-project-root)) ; "/home/mde/work/cc/"
+	 (proot (consult--project-root)) ; "/home/mde/work/cc/"
 	 (handlerpath (concat proot "/cc-base/src/main/clojure/crawlingchaos/handler.clj")))
     ;; Check current file name for "route"
     (when (string-match-p "route" fname)
@@ -2268,16 +2437,25 @@ Here 'words' are defined as characters separated by whitespace."
   (cider-load-buffer))  ; C-c C-k
 (add-hook 'clojure-mode (lambda () (local-set-key (kbd "C-c K") 'my-cider-load-route-handler)))
 
+
+
+;; https://gist.github.com/plexus/5418819323afb892b481816745be15e0
+;; Rename clj/cljs/cljc buffers to their namespace name, so you see
+;; `foo.bar.core' in the modeline, rather than `core.clj'
+;; (advice-add 'rename-buffer :around #'plexus/clj-ns--rename-buffer-advice)
+;; Killed since not working.
+
+
 (defun my-jump-to-hugsql-defn ()
   "Jump to HugSQL db symbol at point, through grep result buffer.
-Relies on projectile, cider."
+Relies on consult (for project-root), cider."
   (interactive)
   ;; https://emacs.stackexchange.com/questions/28367/get-word-at-point
   (let ((sym (thing-at-point 'symbol 'no-properties))) ; ex: "db/get-project-root-doc-pkgs-by-id-2"
     (if (s-starts-with? "db/" sym)
 	;; Match the pattern like: ":name get-project-root\b" (use word boundary)
 	(let* ((symstr (concat ":name " (string-trim sym "db/") "\\b "))
-	       (sqldir (concat (projectile-project-root) "resources/sql/")))
+	       (sqldir (concat (consult--project-root) "resources/sql/")))
 	  ;; (rgrep "get-project-root-doc-pkgs-by-id-2" "*.sql" "~/work/cc/resources/sql/")
 	  ;; FIXME Seems this has to be run once interactively to work in function
           (rgrep symstr "*.sql" sqldir nil) ; ex: "~/work/cc/resources/sql/"
@@ -2320,7 +2498,7 @@ Relies on projectile, cider."
        (setq-local cider-repl-wrap-history t)
        (setq-local cider-repl-history-size 1000)
        (setq-local cider-repl-history-file "~/.cider-repl-history")
-       (cider-auto-test-mode 1)
+       ;; (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        ;; (cljr-add-keybindings-with-prefix "C-S-r")
        ;; (key-chord-define-global "'r" 'cljr-add-keybindings-with-prefix)
@@ -2340,7 +2518,7 @@ Relies on projectile, cider."
        ;; Make similar to wrapping with M-(
        (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
        ;; Overrides tmm-menubar
-       (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
+       ;; (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
        (setq-local completion-styles '(orderless cider)))
 
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
@@ -2482,6 +2660,15 @@ Relies on projectile, cider."
     (kill-new fname)
     (message "Copied buffer file name '%s' to the clipboard." fname)))
 
+
+;; Copy git-branch to clipboard
+(defun my-copy-branch-name ()
+  "Copy current branch name to clipboard."
+  (interactive)
+  (kill-new (substring vc-mode 5))
+  (message "Copied buffer branch name '%s' to the clipboard." vc-mode))
+
+
 (require 'dumb-jump)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -2601,6 +2788,11 @@ chord."
 ;; (global-set-key [f2] 'vterm-toggle)
 ;; Not working
 (setq vterm-toggle-hide-method nil)
+
+(defun my-vterm-new ()
+  (interactive)
+  (split-window-balancedly)
+  (multi-vterm))
 
 (defun my-vterm-other ()
   (interactive)
@@ -2912,9 +3104,22 @@ chord."
   :init
   (setq completion-styles '(orderless)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion))))
+        ;; completion-category-overrides '((file (styles . (partial-completion))))
 	orderless-component-separator " +"
 	))
+
+
+
+
+;; https://github.com/minad/vertico/wiki#customize-sorting-based-on-completion-category
+;; https://github.com/minad/vertico/issues/160 ; my issue
+;; try the `completion-category-sort-function' first
+;; (advice-add #'vertico--sort-function :before-until #'completion-category-sort-function)
+;; ;; (advice-remove #'vertico--sort-function #'completion-category-sort-function)
+
+
+
+
 ;; (setq completion-styles '(orderless flex basic))
 (setq completion-styles '(orderless))
 ;; (setq completion-styles '(initials basic))
@@ -2923,7 +3128,7 @@ chord."
 (use-package consult-dir
   :ensure t
   :bind (("C-x C-d" . consult-dir)
-         :map minibuffer-local-completion-map
+         :map vertico-map
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
@@ -3131,7 +3336,23 @@ chord."
 	register-preview-function #'consult-register-format)
   ;; Optionally tweak the register preview window.
   ;; This adds stripes, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
+  ;; (advice-add #'register-preview :override #'consult-register-window)
+
+
+
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq-default completion-in-region-function
+		(lambda (&rest args)
+		  (apply (if vertico-mode
+			     #'consult-completion-in-region
+			   #'completion--in-region)
+			 args)))
+
+  ;; (setq-default completion-in-region-function 'consult-completion-in-region)
+  ;; (setq completion-in-region-function 'consult-completion-in-region)
+  ;; (setq-default completion-in-region-function 'corfu--completion-in-region)
+
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
@@ -3195,6 +3416,39 @@ chord."
 
 
 
+(defun my/popper-toggle-latest ()
+  (interactive)
+  (aw--push-window (get-buffer-window))
+  (popper-toggle-latest))
+
+;; https://github.com/karthink/popper
+(use-package popper
+  :ensure t ; or :straight t
+  :bind (;("C-`"   . popper-toggle-latest)
+	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
+	 ;; ("C-`"   . my/popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
+
+(defun copy-namespace-name ()
+  "Copy the namespace name to kill ring."
+  (interactive)
+  (kill-new (cider-current-ns))
+  ;; (message-box "Copied to kill ring")
+  (alert "Copied to kill ring" :severity 'low :title (cider-current-ns)))
+(define-key cider-mode-map (kbd "C-c C-n c") 'copy-namespace-name)
+
+
 ;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
 ;; Maybe needs to be at end of file
 ;; Navigate: C-x ] and C-x [
@@ -3203,9 +3457,121 @@ chord."
 (global-page-break-lines-mode)
 
 
-;; Modeline
-(require 'mood-line)
-(mood-line-mode)
+
+;;; MODE-LINE
+
+;; Mode-line, modeline
+;; (require 'mood-line)
+;; (mood-line-mode)
+
+;; https://github.com/Malabarba/smart-mode-line
+;; (setq sml/theme 'respectful)
+;; (sml/setup)
+
+;; Show buffer position in mode-line, turn 70+ cols red
+;; https://raw.githubusercontent.com/emacsmirror/modeline-posn/master/modeline-posn.el
+(require 'modeline-posn)
+
+
+;; https://github.com/gexplorer/flycheck-indicator
+(use-package flycheck-indicator
+  :hook (flycheck-mode . flycheck-indicator-mode))
+
+
+;; mlscroll: tiny purple scrollbar in mode-line
+;; Might have to run manually: mlscroll-mode after starting
+;; Ignore the :box warnings; seems to work fine/better with mode-line box
+;; (use-package mlscroll
+;;   :ensure t
+;;   :hook (server-after-make-frame . mlscroll-mode))
+;; (use-package mlscroll
+;;   :ensure t
+;;   :config
+;;   (setq mlscroll-shortfun-min-width 11) ;truncate which-func, for default mode-line-format's
+;;   (mlscroll-mode 1))
+
+
+;; ;; diminish keeps the modeline tidy
+;; (require 'diminish)
+;; (diminish 'my-keys)
+;; (diminish 'hs)
+
+;; (require 'delight)
+;; (delight '((abbrev-mode " Abv" abbrev)
+;;            (smart-tab-mode " \\t" smart-tab)
+;;            (eldoc-mode nil "eldoc")
+;;            (rainbow-mode)
+;;            (overwrite-mode " Ov" t)
+;;            (emacs-lisp-mode "Elisp" :major)))
+
+;;  hiding and/or highlighting the list of minor-modes in the mode-line.
+;; cf. delight, diminish
+;; https://github.com/Malabarba/rich-minority
+(setq rm-blacklist
+      (format "^ \\(%s\\)$"
+              (mapconcat #'identity
+                         '(
+			   "Test"
+			   "ElDoc"
+			   "cider.*"
+			   "Abbrev"
+                           "PgLn"
+			   "ARev"
+			   "Dot"
+			   "Abv"
+			   "WK"
+			   "Undo-Tree"
+			   "super-save"
+			   "SP/s"
+			   "my-keys"
+			   "envrc.*"
+			   "Goggles"
+			   "SoT"
+			   "hs"
+			   "²"
+			   ;; "light" cider-enlighten
+			   "superword-mode")
+                         "\\|")))
+;; No need to activate if using smart-mode-line
+(rich-minority-mode 1)
+
+
+;; ;; Tabs and ribbons for the mode-line
+;; ;; https://github.com/tarsius/moody
+;; (use-package moody
+;;   :config
+;;   (setq x-underline-at-descent-line t)
+;;   (moody-replace-mode-line-buffer-identification)
+;;   (moody-replace-vc-mode)
+;;   (moody-replace-eldoc-minibuffer-message-function))
+
+;; Truncate branch name in mode-line
+;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
+(defadvice vc-mode-line (after strip-backend () activate)
+  (when (stringp vc-mode)
+    ;; (replace-regexp-in-string "^Git" " " "Git-mde/SCRUM-12345-foo-bar")
+    ;; (replace-regexp-in-string "SCRUM-\\([0-9]+\\)-.*" "\\1" "Git-mde/SCRUM-12345-foo-bar")
+    (let ((noback (replace-regexp-in-string
+                   ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
+		   ;; Git-mde/SCRUM-12345-foo-bar
+                   "mde/SCRUM-\\([0-9]+\\)-.*"
+                   "\\1" vc-mode)))
+      (setq vc-mode noback))))
+
+;; https://emacs.stackexchange.com/questions/10222/make-the-mode-line-display-percentage-and-not-top-bottom-all
+;; (setcar mode-line-position
+;;         ;; '(:eval (format "%3d%%" (/ (window-start) 0.01 (point-max)))))
+;; 	'(:eval (format "%3d%%" (/ (window-start) 0.01 (point-max)))))
+
+;; Not using since hides some important modes, like flycheck
+;; (use-package minions
+;;   :config (minions-mode 1))
+
+;; https://github.com/tarsius/keycast
+;; Enable keycast for demos to log all keys to separate buffer
+;; (keycast-log-mode 1)
+
+
 
 ;; Could remove the -'s
 ;; http://hideki.hclippr.com/2014/02/02/on-generating-uuid/
@@ -3253,113 +3619,28 @@ chord."
 ;;      (scss-mode
 ;;       (css-indent-offset . 2))))
 
+;; Make the active window more visible than others
+;; https://github.com/yoshida-mediba/hiwin-mode
+;; Ugh, make cider repl go blank when switching out
+;; (require 'hiwin)
+;; (hiwin-activate)
+;; Set face color with customize
+;; (set-face-background 'hiwin-face "gray80")
+
+;; ;; https://stackoverflow.com/questions/1516830/custom-background-for-active-window
+;; (defadvice handle-switch-frame (around switch-frame-set-background)
+;;   (set-background-color "black")
+;;   ad-do-it
+;;   (set-background-color "blue"))
+;; (ad-activate 'handle-switch-frame)
+
+;; (defadvice delete-frame (after delete-frame-set-background)
+;;   (set-background-color "yellow"))
+;; (ad-activate 'delete-frame)
 
 ;;; init ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ace-window-display-mode t)
- '(auto-dim-other-buffers-mode nil)
- '(auto-revert-interval 2)
- '(avy-orders-alist nil)
- '(avy-styles-alist '((avy-goto-char-2 . pre)))
- '(avy-timeout-seconds 0.2)
- '(aw-char-position 'center)
- '(aw-display-mode-overlay nil)
- '(aw-ignore-current nil)
- '(beacon-blink-duration 0.4)
- '(beacon-blink-when-focused t)
- '(beacon-blink-when-point-moves-vertically 5)
- '(beacon-color "red")
- '(beacon-push-mark nil)
- '(browse-url-browser-function 'browse-url-firefox)
- '(case-fold-search nil)
- '(cider-comment-prefix " ;=> ")
- '(cider-repl-history-file "~/.cider-repl-history")
- '(cider-repl-history-size 1000)
- '(cider-repl-use-clojure-font-lock nil)
- '(cider-repl-use-pretty-printing nil)
- '(cider-special-mode-truncate-lines nil)
- '(clojure-defun-indents '(fn-traced))
- '(col-highlight-show-only 'forward-paragraph)
- '(completion-show-help nil)
- '(consult-preview-max-size 1048576000)
- '(consult-ripgrep-args
-   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
- '(ctrlf-auto-recenter nil)
- '(ctrlf-show-match-count-at-eol t)
- '(custom-safe-themes
-   '("39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
- '(dynamic-completion-mode nil)
- '(ediff-split-window-function 'split-window-horizontally)
- '(fci-rule-color "#383838")
- '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode t)
- '(global-prettify-symbols-mode t)
- '(global-superword-mode t)
- '(global-yascroll-bar-mode t)
- '(highlight-nonselected-windows t)
- '(highlight-parentheses-colors '("red" "IndianRed1"))
- '(highlight-parentheses-delay 0.3)
- '(highlight-parentheses-highlight-adjacent t)
- '(hl-line-flash-show-period 2.0)
- '(hs-hide-comments-when-hiding-all nil)
- '(icomplete-prospects-height 70)
- '(imenu-list-focus-after-activation t)
- '(imenu-list-position 'left)
- '(imenu-list-size 0.1)
- '(inhibit-startup-screen nil)
- '(live-completions-columns 'single)
- '(live-completions-mode t)
- '(live-completions-sort-order 'cycle)
- '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
- '(magit-revision-insert-related-refs nil)
- '(marginalia-margin-threshold 120)
- '(markdown-header-scaling t)
- '(markdown-wiki-link-search-subdirectories t)
- '(mood-line-show-cursor-point nil)
- '(mood-line-show-encoding-information nil)
- '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
- '(package-selected-packages
-   '(easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum mood-line auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
- '(page-break-lines-max-width 80)
- '(page-break-lines-modes
-   '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
- '(persp-sort 'access)
- '(projectile-enable-caching t)
- '(projectile-file-exists-remote-cache-expire nil)
- '(projectile-globally-ignored-directories
-   '(".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "vendor"))
- '(projectile-indexing-method 'hybrid)
- '(projectile-mode t nil (projectile))
- '(projectile-sort-order 'recently-active)
- '(quick-peek-add-spacer nil)
- '(quick-peek-position 'above)
- '(recentf-auto-cleanup 300)
- '(recentf-max-menu-items 100)
- '(recentf-max-saved-items 500)
- '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
- '(save-completions-retention-time 700)
- '(scroll-bar-mode nil)
- '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
- '(show-trailing-whitespace t)
- '(split-height-threshold 100)
- '(split-width-threshold 30)
- '(standard-indent 2)
- '(symbol-overlay-displayed-window nil)
- '(symbol-overlay-faces
-   '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
- '(text-scale-mode-step 1.1)
- '(tldr-enabled-categories '("common"))
- '(tramp-default-method "ssh")
- '(vertico-count 50)
- '(vertico-cycle nil)
- '(which-key-frame-max-width 100)
- '(which-key-idle-delay 0.4)
- '(which-key-idle-secondary-delay 0.0)
- '(which-key-max-description-length 45))
+
+
 
 
 ;; '(popwin:popup-window-height 30)
