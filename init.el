@@ -21,8 +21,8 @@
 
 ;; https://stackoverflow.com/questions/5570451/how-to-start-emacs-server-only-if-it-is-not-started
 ;; upsets magit
-;; (load "server")
-;; (unless (server-running-p) (server-start))
+(load "server")
+(unless (server-running-p) (server-start))
 
 
 ;;; PACKAGING
@@ -114,7 +114,6 @@
     magit
     marginalia
     markdown-mode
-    mlscroll
     move-text
     multi-vterm
     nlinum-relative
@@ -126,7 +125,6 @@
     paren-face
     perspective
     pickle
-    popper
     python
     quick-peek
     rainbow-delimiters
@@ -150,7 +148,6 @@
     vterm
     vterm-toggle
     which-key
-    yascroll
     zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -221,6 +218,7 @@
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
+ '(initial-buffer-choice nil)
  '(live-completions-columns 'single)
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
@@ -235,11 +233,12 @@
  '(mode-line-percent-position nil)
  '(mood-line-show-cursor-point nil)
  '(mood-line-show-encoding-information nil)
+ '(moody-mode-line-height 25)
  '(mouse-avoidance-mode 'exile nil (avoid))
  '(nyan-mode t)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(package-selected-packages
-   '(pickle monokai-theme mlscroll rich-minority yascroll keycast org-tree-slide auto-dim-other-buffers simple-modeline popper easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -345,7 +344,7 @@
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(flycheck-indicator-success ((t (:inherit custom-state))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
- '(font-lock-comment-face ((t (:foreground "gray22" :slant italic))))
+ '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
  '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "gray45" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
@@ -1490,8 +1489,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
 (require 'nlinum-relative) ; SLOW (for high LOC)
-(global-nlinum-relative-mode 1) ; trying without to see if faster
-;; (global-display-line-numbers-mode)
+;; (global-nlinum-relative-mode 1) ; trying without to see if faster
 (setq nlinum-relative-redisplay-delay 1)
 (setq nlinum-relative-offset 0)
 
@@ -2339,8 +2337,10 @@ Here 'words' are defined as characters separated by whitespace."
 (speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
 
-;; Disable syntax highlighting in repl
-(add-hook 'cider-repl-mode-hook (lambda () (font-lock-mode 0)))
+;; Disable syntax highlighting and line-numbering in repl
+(add-hook 'cider-repl-mode-hook (lambda ()
+				  (font-lock-mode 0)
+				  (nlinum-mode 0)))
 
 ;; Quick-Peek for Cider
 ;; https://github.com/clojure-emacs/cider/issues/2968
@@ -3422,22 +3422,22 @@ chord."
   (popper-toggle-latest))
 
 ;; https://github.com/karthink/popper
-(use-package popper
-  :ensure t ; or :straight t
-  :bind (;("C-`"   . popper-toggle-latest)
-	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
-	 ;; ("C-`"   . my/popper-toggle-latest)
-         ("M-`"   . popper-cycle)
-         ("C-M-`" . popper-toggle-type))
-  :init
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$"
-          "\\*Async Shell Command\\*"
-          help-mode
-          compilation-mode))
-  (popper-mode +1)
-  (popper-echo-mode +1))
+;; (use-package popper
+;;   :ensure t ; or :straight t
+;;   :bind (;("C-`"   . popper-toggle-latest)
+;; 	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
+;; 	 ;; ("C-`"   . my/popper-toggle-latest)
+;;          ("M-`"   . popper-cycle)
+;;          ("C-M-`" . popper-toggle-type))
+;;   :init
+;;   (setq popper-reference-buffers
+;;         '("\\*Messages\\*"
+;;           "Output\\*$"
+;;           "\\*Async Shell Command\\*"
+;;           help-mode
+;;           compilation-mode))
+;;   (popper-mode +1)
+;;   (popper-echo-mode +1))
 
 
 (defun copy-namespace-name ()
@@ -3470,7 +3470,7 @@ chord."
 
 ;; Show buffer position in mode-line, turn 70+ cols red
 ;; https://raw.githubusercontent.com/emacsmirror/modeline-posn/master/modeline-posn.el
-(require 'modeline-posn)
+;; (require 'modeline-posn)
 
 
 ;; https://github.com/gexplorer/flycheck-indicator
@@ -3547,16 +3547,16 @@ chord."
 
 ;; Truncate branch name in mode-line
 ;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
-(defadvice vc-mode-line (after strip-backend () activate)
-  (when (stringp vc-mode)
-    ;; (replace-regexp-in-string "^Git" " " "Git-mde/SCRUM-12345-foo-bar")
-    ;; (replace-regexp-in-string "SCRUM-\\([0-9]+\\)-.*" "\\1" "Git-mde/SCRUM-12345-foo-bar")
-    (let ((noback (replace-regexp-in-string
-                   ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
-		   ;; Git-mde/SCRUM-12345-foo-bar
-                   "mde/SCRUM-\\([0-9]+\\)-.*"
-                   "\\1" vc-mode)))
-      (setq vc-mode noback))))
+;; (defadvice vc-mode-line (after strip-backend () activate)
+;;   (when (stringp vc-mode)
+;;     ;; (replace-regexp-in-string "^Git" " " "Git-mde/SCRUM-12345-foo-bar")
+;;     ;; (replace-regexp-in-string "SCRUM-\\([0-9]+\\)-.*" "\\1" "Git-mde/SCRUM-12345-foo-bar")
+;;     (let ((noback (replace-regexp-in-string
+;;                    ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
+;; 		   ;; Git-mde/SCRUM-12345-foo-bar
+;;                    "mde/SCRUM-\\([0-9]+\\)-.*"
+;;                    "\\1" vc-mode)))
+;;       (setq vc-mode noback))))
 
 ;; https://emacs.stackexchange.com/questions/10222/make-the-mode-line-display-percentage-and-not-top-bottom-all
 ;; (setcar mode-line-position
