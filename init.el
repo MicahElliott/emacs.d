@@ -83,6 +83,7 @@
     dumb-jump
     easy-kill
     edbi
+    edebug-inline-result
     edit-indirect
     embark
     embark-consult
@@ -148,6 +149,7 @@
     vterm
     vterm-toggle
     which-key
+    yascroll
     zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -186,7 +188,9 @@
  '(col-highlight-show-only 'forward-paragraph)
  '(column-number-mode t)
  '(completion-show-help nil)
- '(consult-preview-max-size 1048576000)
+ '(consult-preview-max-count 5)
+ '(consult-preview-max-size 104857)
+ '(consult-preview-raw-size 1024)
  '(consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
  '(ctrlf-auto-recenter nil)
@@ -196,6 +200,10 @@
  '(dired-sidebar-width 50)
  '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
+ '(epresent-hide-properties nil)
+ '(epresent-hide-tags nil)
+ '(epresent-mode-line '(:eval (int-to-string epresent-page-number)))
+ '(epresent-text-scale 300)
  '(fci-rule-color "#383838")
  '(flycheck-indicator-icon-error 9632)
  '(flycheck-indicator-icon-info 9679)
@@ -218,13 +226,13 @@
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(inhibit-startup-screen nil)
- '(initial-buffer-choice nil)
+ '(initial-buffer-choice t)
  '(live-completions-columns 'single)
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(magit-revision-insert-related-refs nil)
- '(marginalia-margin-threshold 120)
+ '(marginalia-margin-threshold 120 t)
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
  '(mlscroll-border 20)
@@ -235,10 +243,13 @@
  '(mood-line-show-encoding-information nil)
  '(moody-mode-line-height 25)
  '(mouse-avoidance-mode 'exile nil (avoid))
+ '(multi-vterm-dedicated-window-height 70)
  '(nyan-mode t)
+ '(org-babel-clojure-backend 'cider)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
+ '(org-confirm-babel-evaluate nil)
  '(package-selected-packages
-   '(pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -281,7 +292,8 @@
  '(which-key-side-window-max-height 0.9)
  '(which-key-side-window-max-width 0.9)
  '(which-key-unicode-correction 30)
- '(yascroll:delay-to-hide nil))
+ '(yascroll:delay-to-hide nil)
+ '(yascroll:scroll-bar '(right-fringe left-fringe text-area)))
 
 
 ;; DISABLED
@@ -346,12 +358,12 @@
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "gray45" :slant italic :weight bold))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "gray50" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(highlight ((t (:background "RoyalBlue4"))))
- '(hl-line ((t (:extend t :background "#260100" :box (:line-width 1 :color "grey75")))))
+ '(hl-line ((t (:extend t :background "#180826" :box (:line-width 1 :color "grey75")))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -363,21 +375,22 @@
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
  '(minibuffer-prompt ((t (:foreground "#fffe0a" :underline t :slant italic :weight bold :height 1.0))))
- '(mode-line ((t (:background "RoyalBlue4" :foreground "gray75" :inverse-video nil :box (:line-width 3 :color "grey75" :style released-button) :height 1.0))))
+ '(mode-line ((t (:background "RoyalBlue3" :foreground "gray75" :inverse-video nil :box (:line-width 3 :color "grey75" :style released-button) :height 1.0))))
  '(mode-line-inactive ((t (:background "gray22" :foreground "cornsilk4" :inverse-video nil :box (:line-width 3 :color "grey75" :style pressed-button) :height 1.0))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
- '(org-block ((t (:background "#3E3D31" :foreground "#F8F8F0" :family "Fira Code"))))
+ '(org-block ((t (:extend t :background "#3E3D31" :foreground "#F8F8F0" :family "Iosevka Term"))))
  '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
  '(org-document-title ((t (:inherit (variable-pitch font-lock-constant-face) :weight bold :height 2.0))))
- '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :height 2.0))))
+ '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :extend t :foreground "#FD971F" :height 3.0))))
  '(org-level-2 ((t (:inherit (outline-2 variable-pitch) :slant italic :height 1.6))))
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
  '(org-list-dt ((t (:foreground "DeepSkyBlue" :weight bold))))
+ '(outline-1 ((t (:inherit org-level-1 :weight bold))))
  '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
  '(persp-selected-face ((t (:inherit custom-state :weight bold))))
- '(quick-peek-background-face ((t (:inherit default :extend t :background "gray22"))))
+ '(quick-peek-background-face ((t (:inherit default :extend t :background "gray10"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow" :weight bold))))
@@ -395,7 +408,8 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "purple4" :foreground "#757575")))))
+ '(whitespace-tab ((t (:background "purple4" :foreground "#757575"))))
+ '(yascroll:thumb-fringe ((t (:background "#75715E" :foreground "orange red")))))
 
 ;; '(hl-line ((t (:extend t :background "gray12" :box (:line-width 1 :color "black")))))
 
@@ -485,9 +499,11 @@
 ;; Very special!
 (key-chord-define-global "q'" 'crux-smart-open-line-above)
 
-;; Also special
+;; Also special (zoom font size)
 (key-seq-define-global "q-" 'default-text-scale-decrease)
 (key-seq-define-global "q+" 'default-text-scale-increase)
+(key-seq-define-global "Q+" 'text-scale-increase)
+(key-seq-define-global "Q_" 'text-scale-decrease)
 (key-seq-define-global "qq" 'aw-flip-window)
 (key-seq-define-global "''" 'aw-flip-window)
 
@@ -778,7 +794,12 @@
 (key-chord-define-global "WF" 'windmove-up)
 ;; (key-chord-define-global "XC" 'counsel-M-x)
 (key-chord-define-global "DV" 'cider-clojuredocs)
-(key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
+(key-chord-define-global "CD" 'clojure-docs-peek-toggle)
+(key-chord-define-global "XC" 'cider-xref-fn-refs-select)
+(key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
+
+
+
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "KH" 'kill-this-buffer)
@@ -807,6 +828,8 @@
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-jump-to-sidebar)
 (key-seq-define-global "TP" 'dired-sidebar-hide-sidebar)
+
+(key-chord-define-global "GV" 'set-variable)
 
 (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
 (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
@@ -893,6 +916,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-p") 'previous-line)
 
+;; Zoom font size
 (global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
 (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
 
@@ -1156,6 +1180,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (scroll-bar-mode -1)
 (setq scroll-bar-width 2)
+
+(require 'yascroll)
 
 ;; No splash screen
 (setq inhibit-startup-message nil)
@@ -2318,8 +2344,33 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (key-chord-define-global "CD" 'my-describe-function-at-point)
 ;; TODO bind to just elisp mode
 
+
+
+;;; ELISP
+
+;; (add-hook 'inferior-emacs-lisp-mode-hook (lambda () ))
+(define-key emacs-lisp-mode-map (kbd "C-c C-d") 'helpful-at-point)
+;; (define-key ielm-map (kbd "C-c C-d") 'helpful-at-point)
+(define-key emacs-lisp-mode-map (kbd "C-c C-k") (lambda () (interactive)
+						  (message (concat "Loading " (buffer-name)))
+						  (eval-buffer)))
+
+(use-package edebug-inline-result
+  :ensure t
+  :defer t
+  :custom (edebug-inline-result-backend 'quick-peek)
+  :hook (edebug-mode . edebug-inline-result-mode))
+
 
 ;;; Clojure
+
+;; My first elisp package!
+(require 'clojure-docs-peek)
+
+;; For controlling clj tests from CSV/TSV
+;; TODO Turn into proper fns/lib
+;; (cider-test-execute "crawlingchaos.domain.installer.installer-api.solarsystemvalidations.max-solar-cost-per-watt-test" nil nil nil)
+;; (cider-load-buffer (get-buffer "solarsystemvalidations/max_solar_cost_per_watt_test.clj"))
 
 ;; Still need to highleight and press TAB to make work.
 (setq clojure-align-forms-automatically t)
@@ -2341,34 +2392,6 @@ Here 'words' are defined as characters separated by whitespace."
 (add-hook 'cider-repl-mode-hook (lambda ()
 				  (font-lock-mode 0)
 				  (nlinum-mode 0)))
-
-;; Quick-Peek for Cider
-;; https://github.com/clojure-emacs/cider/issues/2968
-(require 'quick-peek)
-(defvar my-cider-inline-docs-opened-p nil
-  "Toggle to support an inline help being open (expanded) or not.")
-(defun my-cider-inline-docs-toggle ()
-  "Show a fn or ns docstring's key pieces as inline overlay."
-  ;; Another way to do this is to use "popup" instead of quick-peek.
-  (interactive)
-  (if my-cider-inline-docs-opened-p
-      (progn
-	(setq my-cider-inline-docs-opened-p nil)
-	(quick-peek-hide))
-    ;; If not on a word, let it error
-    (let* ((info    (cider-var-info (thing-at-point 'word 'no-properties)))
-           ;; Built-in fns' info are indexed differently from user-defined.
-	   (arglist (nrepl-dict-get info "arglists-str"))
-	   (doc     (nrepl-dict-get info "doc")))
-      (if doc
-	  (progn
-	    (quick-peek-show
-	     (concat (if arglist (concat arglist "\n") "")
-		     (replace-regexp-in-string "^  " "" doc)))
-	    (setq my-cider-inline-docs-opened-p t))
-	(message "Missing docstring or invalid thing at point")))))
-;; (key-chord-define-global "CD" 'my-cider-inline-docs-toggle)
-
 
 ;;; Nofitications
 ;; https://github.com/jwiegley/alert
@@ -2498,6 +2521,10 @@ Relies on consult (for project-root), cider."
        (setq-local cider-repl-wrap-history t)
        (setq-local cider-repl-history-size 1000)
        (setq-local cider-repl-history-file "~/.cider-repl-history")
+
+       (key-chord-define clojure-mode-map "XC" (lambda () (interactive)
+						 (consult-ripgrep nil (concat (thing-at-point 'word) "#src"))))
+
        ;; (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
        ;; (cljr-add-keybindings-with-prefix "C-S-r")
@@ -2623,7 +2650,16 @@ Relies on consult (for project-root), cider."
              (define-key org-mode-map (kbd "C-M-f") 'org-forward-element)
              (define-key org-mode-map (kbd "C-M-b") 'org-backward-element)
              (define-key org-mode-map (kbd "C-C C-x l") 'org-toggle-link-display)
-             (define-key org-mode-map (kbd "M-}") 'beginning-of-buffer)))
+             (define-key org-mode-map (kbd "M-}") 'beginning-of-buffer)
+
+	     ;; https://www.emacswiki.org/emacs/FacesPerBuffer
+             (face-remap-add-relative 'default :family "Fira Sans")
+	     (buffer-face-mode)
+	     ))
+
+(add-hook 'epresent-mode-hook '(lambda ()
+				 (face-remap-add-relative 'default :family "Fira Sans")
+				 (buffer-face-mode)))
 
 (require 'org-preview-html)
 (require 'org-bullets)
@@ -3547,16 +3583,16 @@ chord."
 
 ;; Truncate branch name in mode-line
 ;; https://emacs.stackexchange.com/questions/10955/customize-vc-mode-appearance-in-mode-line
-;; (defadvice vc-mode-line (after strip-backend () activate)
-;;   (when (stringp vc-mode)
-;;     ;; (replace-regexp-in-string "^Git" " " "Git-mde/SCRUM-12345-foo-bar")
-;;     ;; (replace-regexp-in-string "SCRUM-\\([0-9]+\\)-.*" "\\1" "Git-mde/SCRUM-12345-foo-bar")
-;;     (let ((noback (replace-regexp-in-string
-;;                    ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
-;; 		   ;; Git-mde/SCRUM-12345-foo-bar
-;;                    "mde/SCRUM-\\([0-9]+\\)-.*"
-;;                    "\\1" vc-mode)))
-;;       (setq vc-mode noback))))
+(defadvice vc-mode-line (after strip-backend () activate)
+  (when (stringp vc-mode)
+    ;; (replace-regexp-in-string "^Git" " " "Git-mde/SCRUM-12345-foo-bar")
+    ;; (replace-regexp-in-string "SCRUM-\\([0-9]+\\)-.*" "\\1" "Git-mde/SCRUM-12345-foo-bar")
+    (let ((noback (replace-regexp-in-string
+                   ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
+		   ;; Git-mde/SCRUM-12345-foo-bar
+                   "mde/SCRUM-\\([0-9]+\\)-.*"
+                   "\\1" vc-mode)))
+      (setq vc-mode noback))))
 
 ;; https://emacs.stackexchange.com/questions/10222/make-the-mode-line-display-percentage-and-not-top-bottom-all
 ;; (setcar mode-line-position
