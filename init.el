@@ -155,7 +155,6 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -209,12 +208,14 @@
  '(flycheck-indicator-icon-info 9679)
  '(flycheck-indicator-icon-warning 9650)
  '(flycheck-indicator-status-icons '((finished . "✓YAY✓") (errored . "XXX ERROR XXX")))
+ '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
+ '(flycheck-markdown-mdl-executable "nothing")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode t)
  '(global-superword-mode t)
- '(global-yascroll-bar-mode t)
+ '(global-yascroll-bar-mode nil)
  '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
@@ -260,10 +261,6 @@
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
  '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
- '(safe-local-variable-values
-   '((eval with-eval-after-load 'cider
-	   (setq cider-default-cljs-repl 'figwheel))
-     (url-max-redirections . 0)))
  '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
@@ -293,6 +290,7 @@
  '(which-key-side-window-max-width 0.9)
  '(which-key-unicode-correction 30)
  '(yascroll:delay-to-hide nil)
+ '(yascroll:disabled-modes '(image-mode cider-repl-mode vterm-mode))
  '(yascroll:scroll-bar '(right-fringe left-fringe text-area)))
 
 
@@ -527,7 +525,7 @@
   (define-key my-buffer-keymap "b" 'crux-switch-to-previous-buffer) ; default
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
   ;; (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
-  (define-key my-buffer-keymap "e" 'crux-recentf-find-file)
+  (define-key my-buffer-keymap "e" 'consult-recent-file)
   ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   ;; (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
   ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
@@ -797,6 +795,8 @@
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
 (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
 (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
+(key-chord-define-global "IO" 'delete-other-windows) ; Only One
+(key-chord-define-global "MN" 'winner-undo) ; MaNy
 
 
 
@@ -1737,16 +1737,22 @@ Here 'words' are defined as characters separated by whitespace."
   '((?x aw-delete-window "Delete Window")
     (?m aw-swap-window "Swap Window")
     (?M aw-move-window "Move Window")
-    (?j aw-switch-buffer-in-window "Select Buffer")
+    (?s aw-switch-buffer-in-window "Select Buffer")
     (?n aw-flip-window)
     (?\t aw-flip-window)
     (?c aw-split-window-fair "Split Fair Window")
     (?v aw-split-window-vert "Split Vert Window")
-    (?b aw-split-window-horz "Split Horz Window")
+    (?h aw-split-window-horz "Split Horz Window")
     (?i delete-other-windows "Delete Other Windows")
     (?o delete-other-windows)
     (?? aw-show-dispatch-help))
   "List of actions for `aw-dispatch-default'.")
+
+;; Colemak
+;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
+(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y ?n ?e ?i ?o))
+(setq aw-dispatch-always t)
+(setq aw-scope 'frame) ; or 'global
 
 
 ;; Nice size for the default window to match screen height
@@ -1808,12 +1814,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'kill-emacs-hook #'persp-state-save)
 ;; (setq persp-state-default-file "~/.emacs.d/persp-mde")
 
-
-;; Colemak
-;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
-(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y ?n ?e ?i ?o))
-(setq aw-dispatch-always t)
-(setq aw-scope 'frame) ; or 'global
 
 ;; (ace-window-display-mode t)
 
@@ -2069,6 +2069,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; if there is a dired buffer displayed in the next window, use its
 ;; current subdir, instead of the current subdir of this dired buffer
 (setq dired-dwim-target t)
+
+;; https://stackoverflow.com/a/20303342/326516
+(with-eval-after-load 'dired (define-key dired-mode-map "c" 'find-file))
 
 ;; ediff - don't start another frame
 (require 'ediff)
@@ -2350,7 +2353,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; (add-hook 'inferior-emacs-lisp-mode-hook (lambda () ))
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'helpful-at-point)
-;; (define-key ielm-map (kbd "C-c C-d") 'helpful-at-point)
+(add-hook 'ielm-mode-hook (lambda () (define-key ielm-map (kbd "C-c C-d") 'helpful-at-point)))
+
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") (lambda () (interactive)
 						  (message (concat "Loading " (buffer-name)))
 						  (eval-buffer)))
@@ -3132,6 +3136,14 @@ chord."
 (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
 (define-key vertico-map (kbd "C-n") #'next-line)
 (define-key vertico-map (kbd "C-p") #'previous-line)
+(define-key vertico-map (kbd "M-r") 'vertico-repeat)
+
+;; Enable C-SPC to select multiple candidates
+(advice-add #'completing-read-multiple
+            :override #'consult-completing-read-multiple)
+(defun crm-indicator (args)
+  (cons (concat "[CRM] " (car args)) (cdr args)))
+(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
 ;; Use the `orderless' completion style.
 ;; Enable `partial-completion' for files to allow path expansion.
@@ -3246,6 +3258,8 @@ chord."
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand)))
+;; Expand file names too!
+(global-set-key (kbd "C-M-?") 'hippie-expand) ; C-M-S-/
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 ;; savehist keeps track of some history
