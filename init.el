@@ -117,7 +117,6 @@
     markdown-mode
     move-text
     multi-vterm
-    nlinum-relative
     orderless
     org-bullets
     org-download
@@ -197,6 +196,7 @@
  '(custom-safe-themes
    '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(dired-sidebar-width 50)
+ '(display-line-numbers-type 'visual)
  '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
  '(epresent-hide-properties nil)
@@ -250,7 +250,7 @@
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(org-confirm-babel-evaluate nil)
  '(package-selected-packages
-   '(yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -624,8 +624,15 @@
 
 ;; L — Line-numbering/viewing
 (let ((my-lines-keymap (make-sparse-keymap)))
-  (define-key my-lines-keymap "r" 'nlinum-relative-toggle)
-  (define-key my-lines-keymap "l" 'nlinum-mode)
+  (define-key my-lines-keymap "r" (lambda () (interactive)
+				    (set-variable 'display-line-numbers-type 'visual)
+				    (display-line-numbers-mode 0)
+				    (display-line-numbers-mode t)))
+  (define-key my-lines-keymap "a" (lambda () (interactive)
+				    (set-variable 'display-line-numbers-type 'absolute)
+				    (display-line-numbers-mode 0)
+				    (display-line-numbers-mode t)))
+  (define-key my-lines-keymap "l" 'display-line-numbers-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
   (define-key my-lines-keymap "h" 'hl-line-flash)
@@ -796,7 +803,9 @@
 (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
 (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
 (key-chord-define-global "IO" 'delete-other-windows) ; Only One
-(key-chord-define-global "MN" 'winner-undo) ; MaNy
+(key-seq-define-global   "IO" 'delete-other-windows) ; Only One
+(key-seq-define-global   "OI" 'winner-undo)
+;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
 
 
 
@@ -1514,10 +1523,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Line numbers
 ;; https://github.com/xcodebuild/nlinum-relative
 ;; Supposedly faster than linum
-(require 'nlinum-relative) ; SLOW (for high LOC)
+;; (require 'nlinum-relative) ; SLOW (for high LOC)
 ;; (global-nlinum-relative-mode 1) ; trying without to see if faster
-(setq nlinum-relative-redisplay-delay 1)
-(setq nlinum-relative-offset 0)
+;; (setq nlinum-relative-redisplay-delay 1)
+;; (setq nlinum-relative-offset 0)
 
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
@@ -2394,8 +2403,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Disable syntax highlighting and line-numbering in repl
 (add-hook 'cider-repl-mode-hook (lambda ()
-				  (font-lock-mode 0)
-				  (nlinum-mode 0)))
+				  (font-lock-mode 0)))
 
 ;;; Nofitications
 ;; https://github.com/jwiegley/alert
