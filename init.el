@@ -76,6 +76,7 @@
     dash
     default-text-scale
     diff-hl
+    dired-rainbow
     dired-sidebar
     direnv
     dotenv-mode
@@ -125,6 +126,7 @@
     paren-face
     perspective
     pickle
+    popper
     python
     quick-peek
     rainbow-delimiters
@@ -191,6 +193,8 @@
  '(consult-preview-raw-size 1024)
  '(consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
+ '(corfu-doc-max-height 30)
+ '(corfu-doc-max-width 120)
  '(ctrlf-auto-recenter nil)
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
@@ -250,7 +254,7 @@
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(org-confirm-babel-evaluate nil)
  '(package-selected-packages
-   '(highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -266,8 +270,8 @@
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
  '(size-indication-mode nil)
- '(split-height-threshold 100)
- '(split-width-threshold 30)
+ '(split-height-threshold 500)
+ '(split-width-threshold 300)
  '(standard-indent 2)
  '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
@@ -495,7 +499,10 @@
       key-chord-one-key-delay  .3) ; default is .2
 
 ;; Very special!
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
+;; (key-chord-define-global "q'" 'crux-smart-open-line-above)
+(key-chord-define-global "q'" (lambda () (interactive)
+				(crux-smart-open-line-above)
+				(crux-smart-open-line-above)))
 
 ;; Also special (zoom font size)
 (key-seq-define-global "q-" 'default-text-scale-decrease)
@@ -526,6 +533,9 @@
   (define-key my-buffer-keymap "B" 'my-2back-buffers)
   ;; (define-key my-buffer-keymap "e" 'counsel-buffer-or-recentf)
   (define-key my-buffer-keymap "e" 'consult-recent-file)
+  (define-key my-buffer-keymap "f" 'my-copy-filename)
+  (define-key my-buffer-keymap "F" 'my-copy-buffername)
+  (define-key my-buffer-keymap "n" 'my-copy-namespace-name)
   ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   ;; (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
   ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
@@ -652,7 +662,13 @@
 (key-seq-define-global "QN" 'split-window-vertically-balancedly)
 
 ;; O — Open,Other
-(key-seq-define-global "qo" 'crux-smart-open-line)
+;; (key-seq-define-global "qo" 'crux-smart-open-line)
+(key-seq-define-global "qo" (lambda () (interactive)
+			      (crux-smart-open-line nil)
+			      (crux-smart-open-line nil)
+			      (forward-line -1)
+
+                              (indent-for-tab-command)))
 (key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
 ;; P — Project
@@ -1694,8 +1710,71 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (with-eval-after-load 'treemacs
 ;;   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
 
+
+
+
+;;; DIRED
+
+(load "dired-x")
+
+(use-package dired-rainbow
+  :config
+  (progn
+    (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+    (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+    (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+    (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+    (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+    (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+    (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+    (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+    (dired-rainbow-define log "#c17d11" ("log"))
+    (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+    (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+    (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+    (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+    (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+    (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+    (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+    (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+    (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
+    ))
+
+
 ;; https://github.com/jojojames/dired-sidebar
 (require 'dired-sidebar)
+
+;; Neotree bindings
+;; n next line, p previous line。
+;; SPC or RET or TAB Open current item if it is a file. Fold/Unfold current item if it is a directory.
+;; U Go up a directory
+;; g Refresh
+;; A Maximize/Minimize the NeoTree Window
+;; H Toggle display hidden files
+;; O Recursively open a directory
+;; C-c C-n Create a file or create a directory if filename ends with a ‘/’
+;; C-c C-d Delete a file or a directory.
+;; C-c C-r Rename a file or a directory.
+;; C-c C-c Change the root directory.
+;; C-c C-p Copy a file or a directory.
+
+(define-key dired-sidebar-mode-map (kbd "<backtab>") 'dired-subtree-cycle)
+;; (define-key dired-sidebar-mode-map (kbd "TAB") 'dired-sidebar-subtree-toggle)
+;; (define-key dired-sidebar-mode-map (kbd "N") 'dired-subtree-narrow)
+;; (define-key dired-sidebar-mode-map (kbd "U") 'dired-subtree-up)
+(define-key dired-sidebar-mode-map (kbd "M-u") 'dired-subtree-up)
+(define-key dired-sidebar-mode-map (kbd "M-d") 'dired-subtree-down)
+(define-key dired-sidebar-mode-map (kbd "M-e") 'dired-subtree-end)
+(define-key dired-sidebar-mode-map (kbd "M-b") 'dired-subtree-beginning)
+(define-key dired-sidebar-mode-map (kbd "M-n") 'dired-subtree-next-sibling)
+(define-key dired-sidebar-mode-map (kbd "M-p") 'dired-subtree-previous-sibling)
+(define-key dired-sidebar-mode-map (kbd "M-o") 'dired-subtree-only-this-directory)
+(define-key dired-sidebar-mode-map (kbd "M-M") 'dired-subtree-mark-subtree)
+(define-key dired-sidebar-mode-map (kbd "M-U") 'dired-subtree-unmark-subtree)
+
+
 
 
 
@@ -2708,6 +2787,11 @@ Relies on consult (for project-root), cider."
     (kill-new fname)
     (message "Copied buffer file name '%s' to the clipboard." fname)))
 
+(defun my-copy-buffername ()
+  (interactive)
+  (let ((bname (buffer-name)))
+    (kill-new bname)
+    (message "Copied buffer name '%s' to the clipboard." bname)))
 
 ;; Copy git-branch to clipboard
 (defun my-copy-branch-name ()
@@ -2736,6 +2820,42 @@ Relies on consult (for project-root), cider."
 ;; But it's broken, so:
 (require 'my-re-jump)
 ;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "C->") 're-frame-jump-to-reg)))
+
+
+
+;;; Cider Customizations
+
+(defun cider-company-docsig (thing)
+  "Return signature for THING."
+  (let* ((eldoc-info (cider-eldoc-info thing))
+         (ns (lax-plist-get eldoc-info "ns"))
+         (symbol (lax-plist-get eldoc-info "symbol"))
+         (arglists (lax-plist-get eldoc-info "arglists"))
+	 (docstring (lax-plist-get eldoc-info "docstring")))
+    (when eldoc-info
+      ;; (message "inn cider-company-docsig")
+      (format "%s: %s\n%s"
+              (cider-eldoc-format-thing ns symbol thing
+                                        (cider-eldoc-thing-type eldoc-info))
+              (cider-eldoc-format-arglist arglists 0)
+
+	      ;; This is the big addition, to show docstrings as part of completion in echo area
+	      docstring))))
+
+(defun cider-eldoc-format-function (thing pos eldoc-info)
+  "Return the formatted eldoc string for a function.
+THING is the function name.  POS is the argument-index of the functions
+arglists.  ELDOC-INFO is a p-list containing the eldoc information."
+  (let ((ns (lax-plist-get eldoc-info "ns"))
+        (symbol (lax-plist-get eldoc-info "symbol"))
+        (arglists (lax-plist-get eldoc-info "arglists")))
+    (format "%s: %s\n%s"
+            (cider-eldoc-format-thing ns symbol thing 'fn)
+            (cider-eldoc-format-arglist arglists pos)
+
+	    ;; Show docstring always in echo area
+	    (lax-plist-get eldoc-info "docstring"))))
+
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 (global-set-key  (kbd "C-M->") 'dumb-jump-go)
@@ -3224,6 +3344,19 @@ chord."
 ;; (corfu-mode -1)
 
 
+;; Corfu-doc
+;; Display a documentation popup for completion candidate when using
+;; Corfu. It can be regarded as company-quickhelp for Corfu.
+;; https://github.com/galeo/corfu-doc
+(require 'corfu-doc)
+;; (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down) ;; corfu-next
+;; (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up)  ;; corfu-previous
+(define-key corfu-map (kbd "M-n") #'corfu-next)
+(define-key corfu-map (kbd "M-p") #'corfu-previous)
+(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+
+
+
 (defun my-cider-try-completion (string table pred point &optional metadata)
   ;; call cider-complete and MASSAGE it into a pair???
   ;; (message "\n")
@@ -3304,6 +3437,19 @@ chord."
 ;; In vendor now since C-L hack: https://github.com/raxod502/ctrlf/pull/92/files
 (use-package ctrlf)
 (ctrlf-mode +1)
+
+(defun my-ctrlf-tap-simplified ()
+  "Remove leading colon(s) since often want to match both symbols and keywords.
+So when point is on a keyword like ':foo', you'll still find 'foo'.
+This is way faster than 'C-s M-n C-a C-d'."
+  (interactive)
+  (let* ((tap (thing-at-point 'word))
+	 ;; TODO Use `string-replace' instead when v28.2 is out (https://stackoverflow.com/a/66039099/326516)
+	 (word (when tap (s-replace ":" "" tap))))
+    (ctrlf-forward 'literal nil word)))
+;; (global-set-key (kbd "C-S-f") 'my-ctrlf-tap-simplified)
+(global-set-key (kbd "C-s") 'my-ctrlf-tap-simplified)
+
 
 ;; Enable richer annotations using the Marginalia package
 (use-package marginalia
@@ -3480,31 +3626,31 @@ chord."
   (popper-toggle-latest))
 
 ;; https://github.com/karthink/popper
-;; (use-package popper
-;;   :ensure t ; or :straight t
-;;   :bind (;("C-`"   . popper-toggle-latest)
-;; 	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
-;; 	 ;; ("C-`"   . my/popper-toggle-latest)
-;;          ("M-`"   . popper-cycle)
-;;          ("C-M-`" . popper-toggle-type))
-;;   :init
-;;   (setq popper-reference-buffers
-;;         '("\\*Messages\\*"
-;;           "Output\\*$"
-;;           "\\*Async Shell Command\\*"
-;;           help-mode
-;;           compilation-mode))
-;;   (popper-mode +1)
-;;   (popper-echo-mode +1))
+(use-package popper
+  :ensure t ; or :straight t
+  :bind (;("C-`"   . popper-toggle-latest)
+	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
+	 ;; ("C-`"   . my/popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
 
 
-(defun copy-namespace-name ()
+(defun my-copy-namespace-name ()
   "Copy the namespace name to kill ring."
   (interactive)
   (kill-new (cider-current-ns))
   ;; (message-box "Copied to kill ring")
   (alert "Copied to kill ring" :severity 'low :title (cider-current-ns)))
-(define-key cider-mode-map (kbd "C-c C-n c") 'copy-namespace-name)
+(define-key cider-mode-map (kbd "C-c C-n c") 'my-copy-namespace-name)
 
 
 ;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
