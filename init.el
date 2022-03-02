@@ -101,6 +101,7 @@
     github-browse-file
     goggles
     helpful
+    highlight
     highlight-escape-sequences
     highlight-indentation
     highlight-numbers
@@ -199,6 +200,13 @@
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
    '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+ '(dired-sidebar-icon-scale 0.18)
+ '(dired-sidebar-mode-line-format
+   '("%e" mode-line-front-space mode-line-buffer-identification " " mode-line-end-spaces))
+ '(dired-sidebar-should-follow-file t)
+ '(dired-sidebar-subtree-line-prefix "__")
+ '(dired-sidebar-theme 'nerd)
+ '(dired-sidebar-use-custom-font t)
  '(dired-sidebar-width 50)
  '(display-line-numbers-type 'visual)
  '(dynamic-completion-mode nil)
@@ -215,6 +223,7 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "nothing")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
+ '(global-display-line-numbers-mode t)
  '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode t)
@@ -249,12 +258,14 @@
  '(moody-mode-line-height 25)
  '(mouse-avoidance-mode 'exile nil (avoid))
  '(multi-vterm-dedicated-window-height 70)
+ '(nrepl-sync-request-timeout 30)
  '(nyan-mode t)
  '(org-babel-clojure-backend 'cider)
  '(org-babel-load-languages '((emacs-lisp . t) (clojure . t) (shell . t)))
  '(org-confirm-babel-evaluate nil)
+ '(org-return-follows-link t)
  '(package-selected-packages
-   '(dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -270,8 +281,8 @@
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
  '(size-indication-mode nil)
- '(split-height-threshold 500)
- '(split-width-threshold 300)
+ '(split-height-threshold 100)
+ '(split-width-threshold 30)
  '(standard-indent 2)
  '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
@@ -390,7 +401,7 @@
  '(org-level-3 ((t (:inherit (outline-3 variable-pitch)))))
  '(org-list-dt ((t (:foreground "DeepSkyBlue" :weight bold))))
  '(outline-1 ((t (:inherit org-level-1 :weight bold))))
- '(page-break-lines ((t (:foreground "#c4bf27" :slant normal :weight normal :height 100 :width condensed :family "Fira Code"))))
+ '(page-break-lines ((t (:foreground "#c4bf27"))))
  '(persp-selected-face ((t (:inherit custom-state :weight bold))))
  '(quick-peek-background-face ((t (:inherit default :extend t :background "gray10"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
@@ -469,6 +480,7 @@
 (setq auto-window-vscroll nil)
 
 
+
 ;; Stop Emacs from processing .Xresources/.Xdefaults
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Resources.html#Resources
 (setq inhibit-x-resources t)
@@ -499,10 +511,8 @@
       key-chord-one-key-delay  .3) ; default is .2
 
 ;; Very special!
-;; (key-chord-define-global "q'" 'crux-smart-open-line-above)
-(key-chord-define-global "q'" (lambda () (interactive)
-				(crux-smart-open-line-above)
-				(crux-smart-open-line-above)))
+(key-chord-define-global "q'" 'crux-smart-open-line-above)
+;; (key-chord-define-global "q'" (lambda () (interactive) (crux-smart-open-line-above) (crux-smart-open-line-above)))
 
 ;; Also special (zoom font size)
 (key-seq-define-global "q-" 'default-text-scale-decrease)
@@ -536,10 +546,14 @@
   (define-key my-buffer-keymap "f" 'my-copy-filename)
   (define-key my-buffer-keymap "F" 'my-copy-buffername)
   (define-key my-buffer-keymap "n" 'my-copy-namespace-name)
+  (define-key my-buffer-keymap "p" (lambda () (interactive)
+				     (my-ibuffer)
+				     (persp-ibuffer nil)))
   ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   ;; (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
   ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
-  (define-key my-buffer-keymap "i" 'ibuffer) ; ibuffer
+  ;; (define-key my-buffer-keymap "i" 'ibuffer) ; ibuffer
+  (define-key my-buffer-keymap "i" 'my-ibuffer) ; ibuffer
   ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   ;; (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   ;; (define-key my-buffer-keymap "P" 'projectile-ibuffer)
@@ -548,9 +562,9 @@
 ;; C — Character goto (fast)
 ;; (key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
 ;; (key-seq-define-global "'c" 'avy-goto-char-2-below)
-(key-seq-define-global "'c" 'avy-goto-word-1-below)
+(key-seq-define-global "'c" 'avy-goto-symbol-1-below)
 ;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
-(key-seq-define-global "'f" 'avy-goto-word-1-above)
+(key-seq-define-global "'f" 'avy-goto-symbol-1-above)
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
 (key-seq-define-global "xc" 'avy-goto-word-0)
@@ -662,13 +676,8 @@
 (key-seq-define-global "QN" 'split-window-vertically-balancedly)
 
 ;; O — Open,Other
-;; (key-seq-define-global "qo" 'crux-smart-open-line)
-(key-seq-define-global "qo" (lambda () (interactive)
-			      (crux-smart-open-line nil)
-			      (crux-smart-open-line nil)
-			      (forward-line -1)
-
-                              (indent-for-tab-command)))
+(key-seq-define-global "qo" 'crux-smart-open-line)
+;; (key-seq-define-global "qo" (lambda () (interactive) (crux-smart-open-line nil) (crux-smart-open-line nil) (forward-line -1) (indent-for-tab-command)))
 (key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
 ;; P — Project
@@ -686,10 +695,11 @@
   (define-key my-project-keymap "f" 'project-find-file)
   (define-key my-project-keymap "g" 'project-find-regexp)
   (define-key my-project-keymap "k" 'project-kill-buffers)
+  (define-key my-project-keymap "i" (lambda () (interactive) (split-window-balancedly) (persp-ibuffer nil) (message "kill window to quit")))
   ;; (define-key my-project-keymap "i" 'projectile-invalidate-cache)
   ;; (define-key my-project-keymap "o" 'projectile-multi-occur)
-  ;; (define-key my-project-keymap "p" 'projectile-switch-project)
   (define-key my-project-keymap "r" 'project-query-replace-regexp)
+  (define-key my-project-keymap "R" 'persp-remove-buffer)
   ;; (define-key my-project-keymap "s" 'projectile-ag)
   (define-key my-project-keymap "s" 'consult-ripgrep)
   ;; (define-key my-project-keymap "t" 'projectile-toggle-between-implementation-and-test)
@@ -1093,8 +1103,8 @@ Here 'words' are defined as characters separated by whitespace."
 				  (call-interactively 'move-to-window-line-top-bottom))))
 (global-set-key (kbd "C-S-b") (lambda () (interactive)
 				(push-mark (point)) ; save place
-				(let ((current-prefix-arg '(-1)))
-				  (call-interactively 'move-to-window-line-top-bottom))))
+				(let ((current-prefix-arg '(-1))) (call-interactively 'move-to-window-line-top-bottom))))
+
 (global-set-key (kbd "M-S-v") 'jump-to-top)
 ;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
 (global-set-key (kbd "M-L") 'recenter-top-bottom)
@@ -1290,7 +1300,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Make it easier to switch to swiper search from overlay
 ;; (with-eval-after-load 'symbol-overlay (define-key symbol-overlay-map (kbd "s") 'swiper-isearch-thing-at-point))
 ;; (define-key symbol-overlay-map (kbd "s") 'symbol-overlay-isearch-literally)
-(define-key symbol-overlay-map (kbd "s") 'ctrlf-forward-symbol-at-point)
+;; (define-key symbol-overlay-map (kbd "s") 'ctrlf-forward-symbol-at-point)
+;; Try to hack to reset the boundaries
+(define-key symbol-overlay-map (kbd "s") (lambda () (interactive) (ctrlf-forward-symbol-at-point) (message "hit RET to remove boundaries")))
 
 ;; Nice transient example
 ;; https://github.com/wolray/symbol-overlay/issues/59
@@ -2182,7 +2194,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (number-sequence ?a ?f))
 ;; Use only easiest left and right keys
 ;; (setq avy-keys (string-to-list "asdfwerkluioghqtypvcxzj"))
-;; (setq avy-keys (string-to-list "arstneioqwfpluyzxcdh"))
+;; (setq avy-keys (string-to-list "rstneioqwfpluyzxcdhbjgmva"))
 (setq avy-keys (string-to-list "qwfpluyzxcdhgmbgvjmkneioarst"))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
@@ -2194,6 +2206,25 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; (setq avy-orders-alist '((avy-goto-char-2-above . avy-order-closest)
 ;; 			 (avy-goto-char-2-below . avy-order-closest)))
+
+
+(global-set-key (kbd "C-S-n") 'my-goto-line-and-char)
+(defun my-goto-line-and-char (arg char)
+  (interactive "P\ncwhatchar: ")
+  ;; (interactive (list (read-char "char: " t)))
+  ;; (avy-goto-char-in-line "a")
+  ;; (message (string char))
+  ;; (message (string arg))
+  (if (and arg (< 4 arg))
+      (progn
+	(push-mark (point))
+	(next-line arg)
+	(avy-with avy-goto-char
+	  (avy-jump
+	   (regexp-quote (string char))
+	   :beg (line-beginning-position) :end (line-end-position)
+	   )))
+    (next-line arg)))
 
 
 
@@ -2349,6 +2380,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
 (defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Special Comment" :group 'clojure-mode)
+(defface boolean-true '((t (:foreground "green" :weight bold))) "Boolean true" :group 'clojure-mode)
+(defface boolean-false '((t (:foreground "red" :weight bold))) "Boolean true" :group 'clojure-mode)
 (defface sfdc-field      '((t (:foreground "#dF9522" :weight ultra-bold))) "My SFDC Field" :group 'clojure-mode)
 (defface sql-field       '((t (:foreground "#528fd1" :weight ultra-bold))) "My SQL Field" :group 'clojure-mode)
 ;; Play with setting dynamically
@@ -2356,6 +2389,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (face-spec-set 'sfdc-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 ;; (face-spec-set 'sql-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
+(font-lock-add-keywords 'clojure-mode '(("\btrue\b" 0 'boolean-true t)))
+(font-lock-add-keywords 'clojure-mode '(("\bfalse\b" 0 'boolean-false t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
 (font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
@@ -2411,6 +2446,12 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'markdown-toc)
 ;; Enable syntax highlighting of code in blocks.
 (setq markdown-fontify-code-blocks-natively t)
+
+
+;; (require 'markdown-mode)
+;; (eval-after-load 'markdown-mode (define-key markdown-mode-map (kbd "C-RET") 'markdown-follow-thing-at-point))
+;; FIXME not working
+(add-hook 'markdown-mode (lambda () (define-key markdown-mode-map (kbd "C-RET") 'markdown-follow-thing-at-point)))
 
 
 ;; Gherkin/Cucumber
@@ -2812,6 +2853,19 @@ Relies on consult (for project-root), cider."
   (recenter-top-bottom))
 
 (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "M-.") 'cider-or-dumb-jump)))
+
+(defun endless/visit-pull-request-url ()
+  "Visit the current branch's PR on Github."
+  (interactive)
+  (browse-url
+   (format "https://github.com/%s/pull/new/%s"
+	   (replace-regexp-in-string
+	    "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
+	    (magit-get "remote"
+                       (magit-get-current-remote)
+                       "url"))
+	   (magit-get-current-branch))))
+
 
 ;; Re-frame jumping through keywords
 ;; https://github.com/oliyh/re-jump.el
@@ -3308,6 +3362,9 @@ chord."
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
+(require 'consult-proj)
+
+
 (use-package embark
   :ensure t
   :bind
@@ -3441,14 +3498,16 @@ chord."
 (defun my-ctrlf-tap-simplified ()
   "Remove leading colon(s) since often want to match both symbols and keywords.
 So when point is on a keyword like ':foo', you'll still find 'foo'.
+Press C-s/C-r repeatedly afterward to bounce results.
 This is way faster than 'C-s M-n C-a C-d'."
   (interactive)
   (let* ((tap (thing-at-point 'word))
-	 ;; TODO Use `string-replace' instead when v28.2 is out (https://stackoverflow.com/a/66039099/326516)
+	 ;; TODO Use `string-replace' instead when v28 is out (https://stackoverflow.com/a/66039099/326516)
 	 (word (when tap (s-replace ":" "" tap))))
     (ctrlf-forward 'literal nil word)))
-;; (global-set-key (kbd "C-S-f") 'my-ctrlf-tap-simplified)
-(global-set-key (kbd "C-s") 'my-ctrlf-tap-simplified)
+(global-set-key (kbd "C-S-f") 'my-ctrlf-tap-simplified)
+;; (global-set-key (kbd "C-s") 'ctrlf-forward-default)
+
 
 
 ;; Enable richer annotations using the Marginalia package
@@ -3639,7 +3698,9 @@ This is way faster than 'C-s M-n C-a C-d'."
           "Output\\*$"
           "\\*Async Shell Command\\*"
           help-mode
-          compilation-mode))
+	  cider-browse-ns-mode
+	  "\\*cider-ns-browser\\*"
+	  compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
 
@@ -3790,12 +3851,54 @@ This is way faster than 'C-s M-n C-a C-d'."
 ;; https://stackoverflow.com/questions/18172728/the-difference-between-setq-and-setq-default-in-emacs-lisp
 ;; (add-to-list 'endless/clojure-prettify-alist '(">=" . (?\s (Br . Bl) ?\s (Bc . Bc) ?≥)))
 (setq-default clojure-prettify-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
-				       ;; (";;" . ?∥)
-				       (";;" . ?|)
-				       (";;;" . "||")
-				       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
-						     (Bc . Br) #x21a6 (Bc . Bl) #x21a6))))
+				       ("if" . (?\s (Br . Bl) ?\s (Bc . Bc) ?⊃))
+				       ("ns" . (?\s (Br . Bl) ?\s (Bc . Bc) ?§))
+				       ("=" .  ?≡)
+				       ("/" .  ?÷)
+				       ("\"" .  ?»)
+                                       ;; (";;" . ?∥)
+				       (";; " . (?\s (Br . Bl) ?\s (Bc . Bc) ?|))
+				       ;; ("#\"" . (?\s (Br . Bl) ?\s (Bc . Bc) ?®))
+				       (";;;" . (?\s (Br . Bl) ?\s (Bc . Bc) ?¶))
+				       ("---" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
+				       ;; ("" . ?|)
+				       ("###" . ?|)
+				       ;; (";;;" . "||")
+				       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) #x21a6 (Bc . Bl) #x21a6))
+				       ("->" . (?- (Br . Bc) ?- (Br . Bc) ?>))
+				       ("->>" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s
+						      (Bl . Bl) ?- (Bc . Br) ?- (Bc . Bc) ?>
+						      (Bc . Bl) ?- (Br . Br) ?>))
+				       ("or" . (?\s (Br . Bl) ?\s (Bc . Bc) ?\∥))
+				       ;; ("and" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?\∧ (Bc . Bl) ?\∧))
+				       ("and" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?∧))
+				       ("not" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?¬))
+				       ("let" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?∃))
+				       ("nil" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?∅))
+				       ("def" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?≔))
+				       ("try" .   (?¿ (Br . Bl) ?t (Br . Bl) ?\s))
+                                       ("not=" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?\≢))
+				       ("defn" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?λ (Bc . Bl) ?≔))
+				       ("when" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?⊃ (Bc . Bl) ?⊃))
+				       ;; ("true" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?⊤ (Bc . Bl) ?⊤))
+				       ("true" .  (?⊤  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+				       ;; ("nil?" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?∅ (Bc . Bl) ??))
+				       ("nil?" .  (?¿ (Br . Bl) ?∅  (Br . Bl) ?? (Br . Bl) ?\s))
+				       ;; ("catch" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?≔))
+				       ("false" . (?⊥  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+				       ("catch" . (?¿  (Br . Bl) ?c (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+				       ("throw" . (?¿  (Br . Bl) ?⊗ (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+                                       ("true?" . (?¿ (Br . Bl) ?⊤  (Bc . Br) ??  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+                                       ("defn-" . (?— (Br . Bl) ?λ (Br . Bl) ?≔ (Br . Bl) ?—  (Br . Bl) ?\s))
+				       ("false?" . (?¿ (Br . Bl) ?⊥ (Br . Bl) ?? (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
+				       ("if-not" . (?⊃ (Br . Bl) ?¬ (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))))
 
+(prettify-symbols-mode +1)
+
+(eval-after-load 'clojure-mode '(setq clojure--prettify-symbols-alist (append clojure-prettify-alist clojure--prettify-symbols-alist)))
+
+;; https://emacs.stackexchange.com/questions/47706/how-to-prettify-symbols-inside-comments
+;; For some reason this needs to be set in the clojure buffer, then turn on/off prettify-symbols-mode
 (setq prettify-symbols-compose-predicate
       (defun my-prettify-symbols-default-compose-p (start end _match)
         "Same as `prettify-symbols-default-compose-p', except compose symbols in comments as well."
@@ -3805,11 +3908,21 @@ This is way faster than 'C-s M-n C-a C-d'."
                                  '(?w ?_) '(?. ?\\))))
           (not (or (memq (char-syntax (or (char-before start) ?\s)) syntaxes-beg)
                    (memq (char-syntax (or (char-after end) ?\s)) syntaxes-end)
-                   (nth 3 (syntax-ppss)))))))
+		   ;; This is the bit that says to only operate on comments but not strings
+                   (nth 3 (syntax-ppss))
+		   )))))
 
-(prettify-symbols-mode +1)
 
-(eval-after-load 'clojure-mode '(setq clojure--prettify-symbols-alist (append clojure-prettify-alist clojure--prettify-symbols-alist)))
+
+(setq clj-imenu-generic-expression
+      '(
+	("Comments" "^;;; \\(.+\\)" 1)
+	;; ("Comments" "^-- \\(.+\\)" 1)
+
+	("Functions" "^(defn \\(.+\\) \\(.+\\)" 1)
+	("Vars" "^(def \\(.*\\)" 1)
+	))
+(add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
 
 
 ;;; END (effectively)
