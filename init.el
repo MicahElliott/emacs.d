@@ -71,6 +71,7 @@
     consult-flycheck
     consult-dir
     corfu
+    corfu-doc
     crux
     csv
     dash
@@ -208,6 +209,7 @@
  '(dired-sidebar-theme 'nerd)
  '(dired-sidebar-use-custom-font t)
  '(dired-sidebar-width 50)
+ '(display-line-numbers-major-tick 0)
  '(display-line-numbers-type 'visual)
  '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
@@ -223,7 +225,6 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "nothing")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-display-line-numbers-mode t)
  '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode t)
@@ -265,7 +266,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 80)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -371,12 +372,12 @@
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
- '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "gray50" :slant italic :weight bold))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "white" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(highlight ((t (:background "RoyalBlue4"))))
- '(hl-line ((t (:extend t :background "#180826" :box (:line-width 1 :color "grey75")))))
+ '(hl-line ((t (:extend t :background "#011a40" :box nil))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -469,8 +470,9 @@
 ;; https://www.facebook.com/notes/daniel-colascione/buttery-smooth-emacs/10155313440066102/
 (add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;; https://www.reddit.com/r/emacs/comments/4j828f/comment/d34gbsp (the default is on every 0.76MB)
+(setq gc-cons-threshold 100000000)
+(add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
 ;; warn when opening files bigger than 1MB
 (setq large-file-warning-threshold 1000000)
@@ -821,6 +823,8 @@
 (key-chord-define-global "AR" (lambda () (interactive)  (windmove-left)))
 (key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
 (key-chord-define-global "WF" (lambda () (interactive)  (windmove-up)))
+(key-chord-define-global "TT" 'my-buf-move-right)
+(key-chord-define-global "RR" 'my-buf-move-left)
 (key-chord-define-global "RS" 'windmove-down)
 (key-chord-define-global "WF" 'windmove-up)
 ;; (key-chord-define-global "XC" 'counsel-M-x)
@@ -1927,7 +1931,21 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 
+(defun my-buf-move-right ()
+  (interactive)
+  (windmove-right)
+  (split-window-vertically-balancedly)
+  (buf-move-left)
+  (delete-window-balancedly)
+  (windmove-left))
 
+(defun my-buf-move-left ()
+  (interactive)
+  (windmove-left)
+  (split-window-vertically-balancedly)
+  (buf-move-right)
+  (delete-window-balancedly)
+  (windmove-right))
 
 (defun delete-window-balancedly ()
   (interactive)
@@ -2021,6 +2039,25 @@ Here 'words' are defined as characters separated by whitespace."
   (interactive)
   (magit-status)
   (balance-windows))
+
+;; https://emacs.stackexchange.com/a/28541/11025
+(defun my-git-commit-setup ()
+  (message "Setting up magit for canned messaging")
+  (let* ((orig (magit-get-current-branch))
+	 ;; (orig "mde/SCRUM-12345_this-is-temp")
+	 (bonly (s-replace "mde/" "" orig))
+	 ;; FIXME enable this line instead
+	 (parts (s-split "_" bonly))
+	 ;; (parts (s-split "[0-9]+-" bonly))
+         (title (s-replace "-" " " (nth 1 parts)))
+	 (scrum (car parts)))
+    ;; (message bonly)
+    ;; (message scrum)
+    ;; (message title)
+    (insert (concat "feat: (" scrum ") " title))))
+;; (my-git-commit-setup)
+
+(add-hook 'git-commit-setup-hook 'my-git-commit-setup)
 
 (add-hook 'magit-mode-hook #'emojify-mode)
 
@@ -2195,7 +2232,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Use only easiest left and right keys
 ;; (setq avy-keys (string-to-list "asdfwerkluioghqtypvcxzj"))
 ;; (setq avy-keys (string-to-list "rstneioqwfpluyzxcdhbjgmva"))
-(setq avy-keys (string-to-list "qwfpluyzxcdhgmbgvjmkneioarst"))
+(setq avy-keys (string-to-list "qwfpluyarstneiozxcdhbjgmvk"))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -2392,7 +2429,7 @@ Here 'words' are defined as characters separated by whitespace."
 (font-lock-add-keywords 'clojure-mode '(("\btrue\b" 0 'boolean-true t)))
 (font-lock-add-keywords 'clojure-mode '(("\bfalse\b" 0 'boolean-false t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
-(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
+(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
 (defface my-backslash-escape-backslash-face
@@ -2451,7 +2488,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'markdown-mode)
 ;; (eval-after-load 'markdown-mode (define-key markdown-mode-map (kbd "C-RET") 'markdown-follow-thing-at-point))
 ;; FIXME not working
-(add-hook 'markdown-mode (lambda () (define-key markdown-mode-map (kbd "C-RET") 'markdown-follow-thing-at-point)))
+(add-hook 'markdown-mode-hook (lambda () (define-key markdown-mode-map (kbd "C-RET") 'markdown-follow-thing-at-point)))
 
 
 ;; Gherkin/Cucumber
@@ -2571,7 +2608,9 @@ Here 'words' are defined as characters separated by whitespace."
       (lambda (repl)
 	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
 
-(add-hook 'sql-mode (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
+(add-hook 'sql-mode-hook (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
+;; https://stackoverflow.com/questions/9818307/emacs-mode-specific-custom-key-bindings-local-set-key-vs-define-key
+;; (eval-after-load "sql-mode" (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
 
 
 (defun my-cider-load-route-handler ()
@@ -2590,7 +2629,7 @@ Here 'words' are defined as characters separated by whitespace."
       ;; Send to REPL a restart-limited so new routes are loaded
       (cider-interactive-eval "(user/restart-limited)")))
   (cider-load-buffer))  ; C-c C-k
-(add-hook 'clojure-mode (lambda () (local-set-key (kbd "C-c K") 'my-cider-load-route-handler)))
+(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "C-c K") 'my-cider-load-route-handler)))
 
 
 
@@ -2879,6 +2918,7 @@ Relies on consult (for project-root), cider."
 
 ;;; Cider Customizations
 
+;; SLOW maybe, test with disbursement-create
 (defun cider-company-docsig (thing)
   "Return signature for THING."
   (let* ((eldoc-info (cider-eldoc-info thing))
@@ -3362,7 +3402,7 @@ chord."
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
-(require 'consult-proj)
+;; (require 'consult-proj)
 
 
 (use-package embark
@@ -3819,7 +3859,7 @@ This is way faster than 'C-s M-n C-a C-d'."
     (let ((noback (replace-regexp-in-string
                    ;; (format "^ %s" (vc-backend buffer-file-name)) ; orig from malabarba
 		   ;; Git-mde/SCRUM-12345-foo-bar
-                   "mde/SCRUM-\\([0-9]+\\)-.*"
+                   "mde/SCRUM-\\([0-9]+\\)_.*"
                    "\\1" vc-mode)))
       (setq vc-mode noback))))
 
@@ -3844,58 +3884,7 @@ This is way faster than 'C-s M-n C-a C-d'."
   (interactive)
   (shell-command "uuidgen" t))
 
-
-;; Pretty/fancy glyphs for code
-;; https://endlessparentheses.com/using-prettify-symbols-in-clojure-and-elisp-without-breaking-indentation.html
-;; FIXME Maybe has to be set before global mode turned on?
-;; https://stackoverflow.com/questions/18172728/the-difference-between-setq-and-setq-default-in-emacs-lisp
-;; (add-to-list 'endless/clojure-prettify-alist '(">=" . (?\s (Br . Bl) ?\s (Bc . Bc) ?≥)))
-(setq-default clojure-prettify-alist '(("fn" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
-				       ("if" . (?\s (Br . Bl) ?\s (Bc . Bc) ?⊃))
-				       ("ns" . (?\s (Br . Bl) ?\s (Bc . Bc) ?§))
-				       ("=" .  ?≡)
-				       ("/" .  ?÷)
-				       ("\"" .  ?»)
-                                       ;; (";;" . ?∥)
-				       (";; " . (?\s (Br . Bl) ?\s (Bc . Bc) ?|))
-				       ;; ("#\"" . (?\s (Br . Bl) ?\s (Bc . Bc) ?®))
-				       (";;;" . (?\s (Br . Bl) ?\s (Bc . Bc) ?¶))
-				       ("---" . (?\s (Br . Bl) ?\s (Bc . Bc) ?λ))
-				       ;; ("" . ?|)
-				       ("###" . ?|)
-				       ;; (";;;" . "||")
-				       ("#_>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) #x21a6 (Bc . Bl) #x21a6))
-				       ("->" . (?- (Br . Bc) ?- (Br . Bc) ?>))
-				       ("->>" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s
-						      (Bl . Bl) ?- (Bc . Br) ?- (Bc . Bc) ?>
-						      (Bc . Bl) ?- (Br . Br) ?>))
-				       ("or" . (?\s (Br . Bl) ?\s (Bc . Bc) ?\∥))
-				       ;; ("and" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?\∧ (Bc . Bl) ?\∧))
-				       ("and" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?∧))
-				       ("not" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?¬))
-				       ("let" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?∃))
-				       ("nil" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?∅))
-				       ("def" .   (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?≔))
-				       ("try" .   (?¿ (Br . Bl) ?t (Br . Bl) ?\s))
-                                       ("not=" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?\≢))
-				       ("defn" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?λ (Bc . Bl) ?≔))
-				       ("when" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?⊃ (Bc . Bl) ?⊃))
-				       ;; ("true" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Bc) ?⊤ (Bc . Bl) ?⊤))
-				       ("true" .  (?⊤  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-				       ;; ("nil?" .  (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?∅ (Bc . Bl) ??))
-				       ("nil?" .  (?¿ (Br . Bl) ?∅  (Br . Bl) ?? (Br . Bl) ?\s))
-				       ;; ("catch" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s (Bc . Br) ?≔))
-				       ("false" . (?⊥  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-				       ("catch" . (?¿  (Br . Bl) ?c (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-				       ("throw" . (?¿  (Br . Bl) ?⊗ (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-                                       ("true?" . (?¿ (Br . Bl) ?⊤  (Bc . Br) ??  (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-                                       ("defn-" . (?— (Br . Bl) ?λ (Br . Bl) ?≔ (Br . Bl) ?—  (Br . Bl) ?\s))
-				       ("false?" . (?¿ (Br . Bl) ?⊥ (Br . Bl) ?? (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))
-				       ("if-not" . (?⊃ (Br . Bl) ?¬ (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s (Br . Bl) ?\s))))
-
-(prettify-symbols-mode +1)
-
-(eval-after-load 'clojure-mode '(setq clojure--prettify-symbols-alist (append clojure-prettify-alist clojure--prettify-symbols-alist)))
+(require 'symbolic-clojure)
 
 ;; https://emacs.stackexchange.com/questions/47706/how-to-prettify-symbols-inside-comments
 ;; For some reason this needs to be set in the clojure buffer, then turn on/off prettify-symbols-mode
