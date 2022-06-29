@@ -61,6 +61,7 @@
     aggressive-indent
     alert
     ample-theme
+    auto-compile
     avy
     beacon
     buffer-move
@@ -125,6 +126,7 @@
     org-download
     org-preview-html
     page-break-lines
+    paredit
     paren-face
     perspective
     pickle
@@ -157,6 +159,12 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+(setq load-prefer-newer t)
+(package-initialize)
+(require 'auto-compile)
+(auto-compile-on-load-mode)
+(auto-compile-on-save-mode)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -192,6 +200,12 @@
  '(col-highlight-show-only 'forward-paragraph)
  '(column-number-mode t)
  '(completion-show-help nil)
+ '(consult-mode-histories
+   '((eshell-mode . eshell-history-ring)
+     (comint-mode . comint-input-ring)
+     (term-mode . term-input-ring)
+     (clojure-mode . clojure-input-ring)
+     (elisp-mode . elisp-input-ring)))
  '(consult-preview-max-count 5)
  '(consult-preview-max-size 104857)
  '(consult-preview-raw-size 1024)
@@ -258,6 +272,7 @@
      ("HELP" . "red")))
  '(hs-hide-comments-when-hiding-all nil)
  '(icomplete-prospects-height 70)
+ '(imenu-list-auto-resize t)
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
@@ -287,11 +302,12 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
- '(page-break-lines-max-width 80)
+   '(paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+ '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
  '(persp-sort 'access)
+ '(popper-window-height 20)
  '(quick-peek-add-spacer nil)
  '(quick-peek-position 'above)
  '(recentf-auto-cleanup 300)
@@ -302,7 +318,7 @@
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
- '(size-indication-mode nil)
+ '(size-indication-mode t)
  '(split-height-threshold 100)
  '(split-width-threshold 30)
  '(standard-indent 2)
@@ -830,15 +846,28 @@
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
 ;; https://emacs.stackexchange.com/questions/33684/proper-way-to-change-prefix-key-for-minor-mode-map
 (let ((my-hs-keymap (make-sparse-keymap)))
-  (define-key my-hs-keymap "c" 'hs-hide-block)
-  (define-key my-hs-keymap "C" 'hs-hide-all)
-  (define-key my-hs-keymap "o" 'hs-show-block)
-  (define-key my-hs-keymap "O" 'hs-show-all)
-  (define-key my-hs-keymap "z" 'hs-toggle-hiding)
-  (define-key my-hs-keymap "t" 'hs-toggle-hiding)
+  ;; (define-key my-hs-keymap "c" 'hs-hide-block)
+  (define-key my-hs-keymap "c" 'hs-hide-all) ; hide for very Compact view
+  ;; (define-key my-hs-keymap "o" 'hs-show-block)
+  ;; (define-key my-hs-keymap "O" 'hs-show-all)
+  ;; (define-key my-hs-keymap "z" 'hs-toggle-hiding)
+;  (define-key my-hs-keymap "f" ')
+;  (define-key my-hs-keymap "F" ')
+  (define-key my-hs-keymap "g" 'my-hs-hide-functions-all)
+  (define-key my-hs-keymap "G" 'hs-show-all)
+  ;; (define-key my-hs-keymap "c" 'my-hs-toggle-function)
+  ;; (define-key my-hs-keymap "l" 'hs-hide-level)
+  ;; (define-key my-hs-keymap "t" 'outline-show-all)
+  (define-key my-hs-keymap "s" 'outline-toggle-children)
+  (define-key my-hs-keymap "S" 'outline-toggle-children)
+  (define-key my-hs-keymap "t" 'outline-hide-body) ; hide all
+  (define-key my-hs-keymap "T" 'outline-show-all)
+  ;; Show docstrings only; file-level setting :(
+  ;; (define-key my-hs-keymap "d" (lambda () (interactive) (set-selective-display 3)))
+  ;; (define-key my-hs-keymap "D" (lambda () (interactive) (set-selective-display 0)))
   (key-seq-define-global "'z" my-hs-keymap))
 
-;; MASHINGS
+;;; MASHINGS
 (key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
 (key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
@@ -854,10 +883,23 @@
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
 (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
 (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
-(key-chord-define-global "IO" 'delete-other-windows) ; Only One
 (key-seq-define-global   "IO" 'delete-other-windows) ; Only One
 (key-seq-define-global   "OI" 'winner-undo)
 ;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
+
+(key-seq-define-global   "H<" 'outline-show-entry)
+(key-seq-define-global   "<H" (lambda () (interactive) (outline-hide-subtree) (recenter-top-bottom)))
+(key-seq-define-global   "HN" 'outline-show-all)
+(key-seq-define-global   "NH" 'outline-hide-sublevels)
+
+(key-seq-define-global   "FP" 'hs-show-block)
+(key-seq-define-global   "PF" 'my-hs-hide-block)
+(key-seq-define-global   "FS" 'my-hs-hide-functions-all)
+;; (key-seq-define-global   "SF" 'hs-show-all)
+(key-seq-define-global   "SF" (lambda () "Show all" (interactive) (hs-show-all) (recenter-top-bottom)))
+(key-seq-define-global   "BF" 'hs-hide-all)
+(key-seq-define-global   "FT" 'hs-hide-block) ; fully hide single block; for ns and vars
+
 
 
 
@@ -1317,7 +1359,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'occur-hook '(lambda () (switch-to-buffer-other-window "*Occur*")))
 ;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
-
+;; FIXME not taking effect
+(symbol-overlay-mode +1)
 ;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
@@ -1327,8 +1370,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Disabling since might play badly with org-mode
 ;; Also screws with visible-mark.
 ;; Now part of symbol-overlay
-;; FIXME not taking effect
-(symbol-overlay-mode +1)
 
 ;; ;; Highlight at point
 ;; (require 'highlight-thing)
@@ -1654,6 +1695,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; whitespace-mode config
 (require 'whitespace)
+(whitespace-mode)
 (setq whitespace-line-column 100) ;; limit line length
 (setq whitespace-style '(face tabs empty trailing lines-tail))
 
@@ -1901,6 +1943,17 @@ Here 'words' are defined as characters separated by whitespace."
 (defun joe-scroll-other-window-down ()
   (interactive)
   (scroll-other-window-down 1))
+
+;; TODO replace balance-windows with this, maybe
+;; With imenu open, built-in balance-windows makes imenu take up half of screen
+;; https://github.com/emacs-lsp/lsp-ui/issues/543
+(defun my-balance-windows ()
+  (interactive)
+  (imenu-list)
+  (window-preserve-size (get-buffer-window imenu-list-buffer-name) t t)
+  (balance-windows))
+
+(add-hook 'imenu-list-minor-mode-hook #'(lambda () (message "in minor hook") (window-preserve-size (get-buffer-window imenu-list-buffer-name) t t)))
 
 ;; (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
 ;;       '((?x aw-delete-window "Ace - Delete Window")
@@ -2203,11 +2256,12 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'clojure-mode-hook 'hs-clojure-hide-namespace-and-folds)
 
 
-(defun my-hs-hide-block ()
-  (interactive)
-  (my-beginning-of-defun)
-  (hs-hide-block))
-(add-hook 'prog-mode-hook 'hs-minor-mode)
+
+(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'outline-toggle-children)))
+
+(setq outline-minor-mode 1)
+(outline-minor-mode)
+
 
 
 
@@ -2364,10 +2418,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (define-key smartparens-mode-map [control-bracketleft] 'sp-backward-barf-sexp)
 
 ;; https://github.com/Fuco1/.emacs.d/blob/master/files/smartparens.el
-(define-key smartparens-mode-map (kbd "C-}") 'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-)") 'sp-forward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-{") 'sp-backward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-(") 'sp-backward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-S-SPC") 'sp-forward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-S-_") 'sp-backward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
 
 ;; Remove unneeded bindings: https://emacs.stackexchange.com/a/54651/11025
 (define-key smartparens-mode-map (kbd "M-`") nil)
@@ -2444,6 +2498,7 @@ Here 'words' are defined as characters separated by whitespace."
 (defface boolean-true '((t (:foreground "green" :weight bold))) "Boolean true" :group 'clojure-mode)
 (defface boolean-false '((t (:foreground "red" :weight bold))) "Boolean true" :group 'clojure-mode)
 (defface sfdc-field      '((t (:foreground "#dF9522" :weight ultra-bold))) "My SFDC Field" :group 'clojure-mode)
+(defface sfdc-record '((t (:foreground "#dF9522" :weight normal))) "SFDC Record" :group 'clojure-mode)
 (defface sql-field       '((t (:foreground "#528fd1" :weight ultra-bold))) "My SQL Field" :group 'clojure-mode)
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
@@ -2453,6 +2508,7 @@ Here 'words' are defined as characters separated by whitespace."
 (font-lock-add-keywords 'clojure-mode '(("\btrue\b" 0 'boolean-true t)))
 (font-lock-add-keywords 'clojure-mode '(("\bfalse\b" 0 'boolean-false t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
+(font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__r" 0 'sfdc-record t)))
 (font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
@@ -2702,6 +2758,15 @@ Relies on consult (for project-root), cider."
 
 (global-set-key (kbd "M-h") 'mark-paragraph)
 
+;; (s-replace-regexp "^::*" "" ":::foo-bar")
+(defun my-rg-xref ()
+  "Like xref but remove leading colons and NS."
+  (interactive)
+  (let* ((word (thing-at-point 'word))
+	 (word (s-replace-regexp "^::*" "" word))
+	 (word (s-replace-regexp ".*/" "" word)))
+    (consult-ripgrep nil (concat word "#src"))))
+
 ;; https://github.com/clojure-emacs/clj-refactor.el
 (defun my-clojure-mode-hook () "Foo bar."
        (message "in my-clojure-mode-hook")
@@ -2717,8 +2782,7 @@ Relies on consult (for project-root), cider."
        (setq-local cider-repl-history-size 1000)
        (setq-local cider-repl-history-file "~/.cider-repl-history")
 
-       (key-chord-define clojure-mode-map "XC" (lambda () (interactive)
-						 (consult-ripgrep nil (concat (thing-at-point 'word) "#src"))))
+       (key-chord-define clojure-mode-map "XC" 'my-rg-xref)
 
        ;; (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
@@ -2741,7 +2805,10 @@ Relies on consult (for project-root), cider."
        (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
        ;; Overrides tmm-menubar
        ;; (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
-       (setq-local completion-styles '(orderless cider)))
+       ;; FIXME
+       ;; (setq-local completion-styles '(orderless cider))
+       (setq-local completion-styles '(orderless))
+       )
 
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
@@ -2888,6 +2955,65 @@ Relies on consult (for project-root), cider."
   (end-of-defun)
   (end-of-defun)
   (my-beginning-of-defun))
+
+
+(defun my-hs-hide-block ()
+  "Hide just this block, keeping docstring."
+  (interactive)
+  (beginning-of-defun)
+  (forward-word)
+  (hs-hide-level 1))
+
+;; Not working
+(defun my-hs-toggle-function ()
+  "Hide/show one fn."
+  (interactive)
+  (save-excursion
+    (end-of-defun)
+    (backward-word 3)
+    (if (hs-already-hidden-p)
+	(hs-show-block)
+      (beginning-of-defun)
+      (hs-hide-level 1))))
+
+;; (defun my-hs-hide-functions-all ()
+;;   "Hide all fn levels."
+;;   (interactive)
+;;   (save-excursion
+;;     (end-of-buffer)
+;;     (backward-char)
+;;     (while (progn (forward-char)
+;; 		  (if (thing-at-point-looking-at "def-* ")
+;; 		      (hs-hide-block)
+;; 		    (hs-hide-level 1))
+;; 		  (backward-char)
+;; 		  (beginning-of-defun)))
+;;     (recenter-top-bottom)))
+
+(defun my-hs-hide-functions-all ()
+  "Hide all fn levels, but fully hide vars and deprecations."
+  (interactive)
+  (save-excursion
+    (end-of-buffer)
+    (backward-char)
+    (while (progn (forward-char)
+		  (if (or (thing-at-point-looking-at "def-* ")
+			  (s-match "deprecated" (thing-at-point 'line)))
+		      (hs-hide-block)
+		    (hs-hide-level 1))
+		  (backward-char)
+		  (beginning-of-defun)))
+    (recenter-top-bottom)))
+
+;; (defun my-hs-hide-functions-all ()
+;;   "Hide all fn levels."
+;;   (interactive)
+;;   (save-excursion
+;;     (end-of-buffer)
+;;     (while (progn (hs-hide-level 1)
+;; 		  (beginning-of-defun)))))
+
+
 
 ;; Copy filename to clipboard
 ;; https://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
@@ -3389,11 +3515,15 @@ chord."
 (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
 (define-key vertico-map (kbd "C-n") #'next-line)
 (define-key vertico-map (kbd "C-p") #'previous-line)
+
+;; vertico-repeat extentsion; this works! added to savehist-additional-variables
+;; https://github.com/minad/vertico/blob/main/extensions/vertico-repeat.el
 (define-key vertico-map (kbd "M-r") 'vertico-repeat)
+(add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
 
 ;; Enable C-SPC to select multiple candidates
-(advice-add #'completing-read-multiple
-            :override #'consult-completing-read-multiple)
+;; (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
+(advice-remove #'completing-read-multiple  #'consult-completing-read-multiple)
 (defun crm-indicator (args)
   (cons (concat "[CRM] " (car args)) (cdr args)))
 (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
@@ -3421,6 +3551,8 @@ chord."
 
 
 ;; (setq completion-styles '(orderless flex basic))
+;; Cider completion bug!! Must have "basic" included for namespaces to work.
+;; https://github.com/clojure-emacs/cider/issues/3019
 (setq completion-styles '(orderless))
 
 ;; (setq completion-styles '(initials basic))
@@ -3468,12 +3600,26 @@ chord."
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since dabbrev can be used globally (M-/).
   :custom
-  ;; FIXME not allowing ?\s as separator
-  (corfu-separator ?-)
-  (corfu-quit-no-match nil)
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  (corfu-separator ?\s)          ;; Orderless field separator
+  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect-first t)    ;; Disable candidate preselection
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  (corfu-scroll-margin 20)        ;; Use scroll margin
   :init
   (global-corfu-mode))
 ;; (corfu-mode -1)
+
+(defun corfu-move-to-minibuffer ()
+  (interactive)
+  (let ((completion-extra-properties corfu--extra)
+        completion-cycle-threshold completion-cycling)
+    (apply #'consult-completion-in-region completion-in-region--data)))
+(define-key corfu-map "\M-m" #'corfu-move-to-minibuffer)
 
 
 ;; Corfu-doc
@@ -3489,6 +3635,9 @@ chord."
 
 
 
+
+
+
 (defun my-cider-try-completion (string table pred point &optional metadata)
   ;; call cider-complete and MASSAGE it into a pair???
   ;; (message "\n")
@@ -3500,7 +3649,8 @@ chord."
 
 ;; Replace cider's bad try-completion fn
 ;; https://github.com/minad/corfu/issues/30
-(add-to-list 'completion-styles-alist '(cider my-cider-try-completion cider-company-unfiltered-candidates "CIDER backend-driven completion style."))
+;; FIXME
+;; (add-to-list 'completion-styles-alist '(cider my-cider-try-completion cider-company-unfiltered-candidates "CIDER backend-driven completion style."))
 
 ;; Example of calling nrepl command directly, like cljr does!
 ;; (cider-nrepl-send-sync-request '("op" "clean-ns" "prefix-rewriting" "false" "debug" "false" "path" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "relative-path" "src/clj/crawlingchaos/process/changeorder/changes.clj" "prune-ns-form" "true"))
@@ -3540,7 +3690,8 @@ chord."
   :init
   (setq savehist-additional-variables
 	;; search entries
-	'(search-ring kill-ring regexp-search-ring)
+	'(search-ring kill-ring regexp-search-ring vertico-repeat-history)
+
 	;; save every minute
 	savehist-autosave-interval 60
 	;; keep the home clean
@@ -3955,14 +4106,152 @@ This is way faster than 'C-s M-n C-a C-d'."
 	("Functions :: Private" "^(defn- \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
 	("Functions :: Public"  "^(defn \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
         ("Vars"      "^(def \\(?3:\\^:private \\)?\\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+        ;; ("Sections" "^;;; \\(.+\\)" 1)
         ("Sections" "^;;; \\(.+\\)" 1)
 	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
 
-;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'outline-toggle-children)))
+
+
+
+;;; cljr piecemeal replacement
+
+
+;; FIXME replace all these paredit uses with puni
+(require 'paredit)
+
+(defun cljr--depth-at-point ()
+  "Returns the depth in s-expressions, or strings, at point."
+  (let ((depth (car (paredit-current-parse-state))))
+    (if (paredit-in-string-p)
+        (1+ depth)
+      depth)))
+
+
+(defun cljr--goto-toplevel ()
+  (paredit-backward-up (cljr--depth-at-point))
+  (when (looking-back "#" 1)
+    (backward-char)))
+
+
+(defun cljr--goto-ns ()
+  "Go to the first namespace defining form in the buffer."
+  (goto-char (point-min))
+  (if (re-search-forward
+       clojure-namespace-regexp ; defined in clojure-mode
+       nil t)
+      (cljr--goto-toplevel)
+    (error "No namespace declaration found")))
+
+(defun cljr--insert-in-ns (type)
+  "Insert another clause into the TYPE clause of the ns statement."
+  (cljr--goto-ns)
+  (if (search-forward (concat "(" type))
+      (if (looking-at " *)")
+          (progn
+            (search-backward "(")
+            (forward-list 1)
+            (forward-char -1)
+            (insert " "))
+        (search-backward "(")
+        (forward-list 1)
+        (forward-char -1)
+        (newline-and-indent))
+    (forward-list 1)
+    (forward-char -1)
+    (newline-and-indent)
+    (insert "(" type " )")
+    (forward-char -1)))
+
+
+;;; CLJNS
+
+(setq cljns--pairs (butlast (s-split "\n" (f-read-text "~/.emacs.d/cljns-canon.tsv"))))
+(setq cljns--mapping1 (--map (s-split "\t" it) cljns--pairs))
+(setq cljns--mapping2 (--map (reverse (s-split "\t" it)) cljns--pairs))
+(setq cljns--fqnss (--map (last it) cljns--mapping1))
+(setq cljns--aliases (--map (car it) cljns--mapping1))
+
+(defvar demo-var-with-docstrinng 24 "some info on the demo")
+
+(defun cljns-add-require ()
+  "Add a require."
+  (interactive)
+  (save-excursion
+    (let* ((alias  (car (s-split "/" (thing-at-point 'symbol 'no-properties))))
+	   ;; (choice (completing-read "namespace:" cljns--fqnss))
+	   (fqns   (first (last (assoc alias cljns--mapping1)))))
+
+      (cljr--insert-in-ns ":require")
+      (insert (format "[%s :as %s]" fqns alias))
+      (clojure-sort-ns)
+      (cider-eval-ns-form))))
+
+(defun cljns-completing-ns ()
+  "Complete a partially entered namespace alias."
+  (interactive)
+  (let ((ans (completing-read "fqns:" cljns--fqnss)))
+    (insert (first (last (assoc ans cljns--mapping2))))))
+
+;; Corfu
+;; (completion-in-region 2335 2337  '("ccc" "ccd" "cdd"))
+
+(defvar my-d (lazy-completion-table my-d my-d) "my ht")
+(defun my-d ()
+  (let ((tab (make-hash-table :test #'equal :size 3)))
+    (puthash "aaa" nil tab )
+    (puthash "aab" nil tab )
+    (puthash "abb" nil tab )
+    tab))
+
+;; https://with-emacs.com/posts/tutorials/customize-completion-at-point/
+;; https://emacs.stackexchange.com/a/37446/11025
+(defun cljns-complete-ns ()
+  (interactive)
+  ;; Get word-at-point
+  ;; Read all NSs into list
+  (let* ((tap (bounds-of-thing-at-point 'word))
+	 (beg (car tap))
+	 (end (cdr tap))
+	 ;; (alist '(("str"  "clojure.string") ("csv"  "clojure.data.csv")))
+	 (annotf (lambda (str)
+		   (format " (%s)" (first (cdr (assoc str cljns--mapping2))))))
+	 (ans (completing-read "Candidates: "
+			       (lambda (str pred action)
+				 (if (eq action 'metadata)
+				     `(metadata
+				       (annotation-function . ,annotf)
+				       (cycle-sort-function . identity)
+				       (display-sort-function . identity))
+				   (complete-with-action action cljns--mapping2 str pred)))
+			       nil nil (word-at-point) )))
+    (message ans)
+    (when beg (delete-region beg end))
+    ;; (insert (concat ans "/"))
+    ;; (first (cdr (assoc "clojure.string" cljns--mapping2)))
+    (insert (concat (first (cdr (assoc ans cljns--mapping2))) "/"))))
+
+(define-key clojure-mode-map (kbd "<backtab>") 'cljns-complete-ns)
+;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'cljns-complete-ns)))
 
 
 
+;; (defun cljr--call-middleware-for-namespace-aliases ()
+;;   (thread-first "namespace-aliases"
+;;     cljr--ensure-op-supported
+;;     cljr--create-msg
+;;     (cljr--call-middleware-sync "namespace-aliases")
+;;     parseedn-read-str))
+
+;; (defun cljr--maybe-rethrow-error (response)
+;;   response)
+;; ;; (apply #'list "op" "namespace-aliases")
+
+;; (defun cljr--call-middleware-sync (request &optional key)
+;;   (let* ((response (thread-first request cider-nrepl-send-sync-request (lambda (request) request))))
+;;     (if key
+;;         (nrepl-dict-get response key)
+;;       response)))
 
 
 
