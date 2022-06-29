@@ -177,6 +177,8 @@
  '(beacon-blink-when-point-moves-vertically 5)
  '(beacon-color "red")
  '(beacon-push-mark nil)
+ '(bqn-key-prefix 92)
+ '(bqn-mode-map-prefix "C-M-")
  '(browse-url-browser-function 'browse-url-firefox)
  '(case-fold-search nil)
  '(cider-comment-prefix " ;=> ")
@@ -201,11 +203,11 @@
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
    '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
- '(dired-sidebar-icon-scale 0.18)
+ '(dired-sidebar-icon-scale 1)
  '(dired-sidebar-mode-line-format
    '("%e" mode-line-front-space mode-line-buffer-identification " " mode-line-end-spaces))
  '(dired-sidebar-should-follow-file t)
- '(dired-sidebar-subtree-line-prefix "__")
+ '(dired-sidebar-subtree-line-prefix "——")
  '(dired-sidebar-theme 'nerd)
  '(dired-sidebar-use-custom-font t)
  '(dired-sidebar-width 50)
@@ -235,6 +237,25 @@
  '(highlight-parentheses-delay 0.3)
  '(highlight-parentheses-highlight-adjacent t)
  '(hl-line-flash-show-period 2.0)
+ '(hl-todo-keyword-faces
+   '(("HOLD" . "#d0bf8f")
+     ("TODO" . "#cc9393")
+     ("NEXT" . "#dca3a3")
+     ("THEM" . "#dc8cc3")
+     ("PROG" . "#7cb8bb")
+     ("OKAY" . "#7cb8bb")
+     ("DONT" . "#5f7f5f")
+     ("FAIL" . "#8c5353")
+     ("DONE" . "#afd8af")
+     ("NOTE" . "#d0bf8f")
+     ("KLUDGE" . "#d0bf8f")
+     ("HACK" . "#d0bf8f")
+     ("TEMP" . "#d0bf8f")
+     ("FIXME" . "#cc9393")
+     ("XXXX*" . "#cc9393")
+     ("SLOW" . "red")
+     ("BUG" . "red")
+     ("HELP" . "red")))
  '(hs-hide-comments-when-hiding-all nil)
  '(icomplete-prospects-height 70)
  '(imenu-list-focus-after-activation t)
@@ -362,6 +383,11 @@
  '(auto-dim-other-buffers-face ((t (:background "gray12"))))
  '(avy-lead-face-0 ((t (:background "RoyalBlue4" :foreground "white"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
+ '(bqn-function-face ((t (:foreground "#66D9EF"))))
+ '(bqn-list-face ((t (:foreground "#AE81FF"))))
+ '(bqn-one-modifier-face ((t (:foreground "dark red"))))
+ '(bqn-separator-face ((t (:foreground "#AE81FF"))))
+ '(bqn-two-modifier-face ((t (:foreground "hot pink" :weight extra-bold))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
  '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
@@ -419,6 +445,7 @@
  '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
+ '(vertico-group-title ((t (:foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
@@ -509,7 +536,7 @@
 
 (require 'key-chord)
 (key-chord-mode +1)
-(setq key-chord-two-keys-delay .1 ; default is .1
+(setq key-chord-two-keys-delay .2 ; default is .1
       key-chord-one-key-delay  .3) ; default is .2
 
 ;; Very special!
@@ -650,14 +677,8 @@
 
 ;; L — Line-numbering/viewing
 (let ((my-lines-keymap (make-sparse-keymap)))
-  (define-key my-lines-keymap "r" (lambda () (interactive)
-				    (set-variable 'display-line-numbers-type 'visual)
-				    (display-line-numbers-mode 0)
-				    (display-line-numbers-mode t)))
-  (define-key my-lines-keymap "a" (lambda () (interactive)
-				    (set-variable 'display-line-numbers-type 'absolute)
-				    (display-line-numbers-mode 0)
-				    (display-line-numbers-mode t)))
+  (define-key my-lines-keymap "r" 'display-line-numbers-relative)
+  (define-key my-lines-keymap "a" 'display-line-numbers-absolute)
   (define-key my-lines-keymap "l" 'display-line-numbers-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
@@ -688,7 +709,8 @@
   ;; (define-key my-project-keymap "a" 'projectile-add-known-project)
   ;; (define-key my-project-keymap "b" 'counsel-projectile-switch-to-buffer)
   ;; (define-key my-project-keymap "b" 'projectile-switch-to-buffer)
-  (define-key my-project-keymap "b" 'project-display-buffer)
+  ;; (define-key my-project-keymap "b" 'project-display-buffer)
+  (define-key my-project-keymap "b" 'consult-project-buffer)
   (define-key my-project-keymap "c" 'project-compile)
   (define-key my-project-keymap "d" 'project-find-dir)
   ;; Can't figure out how to bypass orderless with this
@@ -872,6 +894,22 @@
 
 (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
 (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
+
+
+(defun display-line-numbers-absolute ()
+  "Absolute line numbers."
+  (interactive)
+  (set-variable 'display-line-numbers-type 'absolute)
+  (display-line-numbers-mode 0)
+  (display-line-numbers-mode t))
+
+(defun display-line-numbers-relative ()
+  "Visual/relative line numbers."
+  (interactive)
+  (set-variable 'display-line-numbers-type 'visual)
+  (display-line-numbers-mode 0)
+  (display-line-numbers-mode t))
+
 
 ;; https://emacs.stackexchange.com/a/37894/11025
 (defun my-2back-buffers ()
@@ -1514,21 +1552,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; special treatment of FIXME, TODO, etc
 
-;; ("HOLD" . "#d0bf8f")
-;; ("TODO" . "#cc9393")
-;; ("NEXT" . "#dca3a3")
-;; ("THEM" . "#dc8cc3")
-;; ("PROG" . "#7cb8bb")
-;; ("OKAY" . "#7cb8bb")
-;; ("DONT" . "#5f7f5f")
-;; ("FAIL" . "#8c5353")
-;; ("DONE" . "#afd8af")
-;; ("NOTE"   . "#d0bf8f")
-;; ("KLUDGE" . "#d0bf8f")
-;; ("HACK"   . "#d0bf8f")
-;; ("TEMP"   . "#d0bf8f")
-;; ("FIXME"  . "#cc9393")
-;; ("XXX+"   . "#cc9393")
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
 (global-hl-todo-mode)
@@ -2155,8 +2178,9 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;; Adds the docstring detection to hs-minor-mode for clojure (not really)
-;; (add-to-list 'hs-special-modes-alist
-;;              '(clojure-mode "(defn [-a-z]+ \"[^\"]+\"" ")" ";; " nil nil))
+;; (add-to-list 'hs-special-modes-alist '(clojure-mode "(defn [-a-z]+ \"[^\"]+\"" ")" ";; " nil nil))
+
+;; (add-to-list 'hs-special-modes-alist '(clojure-mode "^;;; " "\f" ";;" nil nil))
 
 ;; Clojure folding
 ;; http://bytopia.org/2016/12/17/autocollapse-namespace-definitions-in/
@@ -2841,15 +2865,22 @@ Relies on consult (for project-root), cider."
 
 
 
-;;; EXTRA stuff
+;;; Folding, hide-show, outline
+
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 
 (defun my-beginning-of-defun ()
   "Jump to start of name of function, since often want to search it."
   (interactive)
   (beginning-of-line)
-  (beginning-of-defun)
-  (forward-word 2)
-  (backward-word))
+  (when (beginning-of-defun) ; check that not at first fn in file
+    (forward-word 1)
+    (forward-char 1)
+    (if (looking-at "[-<>a-z0-9?!]")
+        t
+      (if (looking-at "[\\^:{]")
+	  (my/forward-word-begin 1)
+	(backward-word)))))
 
 (defun my-end-of-defun ()
   "Jump to start of name of function, since often want to search it."
@@ -2958,13 +2989,13 @@ arglists.  ELDOC-INFO is a p-list containing the eldoc information."
   (interactive)
   (forward-page)
   (forward-char)
-  (recenter-top-bottom 1))
+  (recenter-top-bottom 50))
 (defun my-backward-jump-to-line-break ()
   (interactive)
   (backward-char 2)
   (backward-page)
   (backward-char)
-  (recenter-top-bottom 1))
+  (recenter-top-bottom 50))
 
 ;; https://github.com/kai2nenobu/guide-key/blob/master/guide-key.el#L578
 ;; key-chord hack
@@ -3380,7 +3411,6 @@ chord."
 
 
 
-
 ;; https://github.com/minad/vertico/wiki#customize-sorting-based-on-completion-category
 ;; https://github.com/minad/vertico/issues/160 ; my issue
 ;; try the `completion-category-sort-function' first
@@ -3392,6 +3422,7 @@ chord."
 
 ;; (setq completion-styles '(orderless flex basic))
 (setq completion-styles '(orderless))
+
 ;; (setq completion-styles '(initials basic))
 
 ;; https://github.com/karthink/consult-dir
@@ -3436,8 +3467,12 @@ chord."
 (use-package corfu
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since dabbrev can be used globally (M-/).
+  :custom
+  ;; FIXME not allowing ?\s as separator
+  (corfu-separator ?-)
+  (corfu-quit-no-match nil)
   :init
-  (corfu-global-mode))
+  (global-corfu-mode))
 ;; (corfu-mode -1)
 
 
@@ -3902,16 +3937,41 @@ This is way faster than 'C-s M-n C-a C-d'."
 		   )))))
 
 
+;; ;; Default elisp imenu-generic-expression:
+;; ((nil "^\\s-*(\\(transient-define-\\(?:argument\\|\\(?:in\\|pre\\|suf\\)fix\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+;;  (nil "^\\s-*(\\(cl-def\\(?:generic\\|ine-compiler-macro\\|m\\(?:acro\\|ethod\\)\\|subst\\|un\\)\\|def\\(?:advice\\|generic\\|ine-\\(?:advice\\|compil\\(?:ation-mode\\|er-macro\\)\\|derived-mode\\|g\\(?:\\(?:eneric\\|lobal\\(?:\\(?:ized\\)?-minor\\)\\)-mode\\)\\|inline\\|m\\(?:ethod-combination\\|inor-mode\\|odify-macro\\)\\|s\\(?:etf-expander\\|keleton\\)\\)\\|m\\(?:acro\\|ethod\\)\\|s\\(?:etf\\|ubst\\)\\|un\\*?\\)\\|ert-deftest\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+;;  ("Variables" "^\\s-*(\\(def\\(?:c\\(?:onst\\(?:ant\\)?\\|ustom\\)\\|ine-symbol-macro\\|parameter\\)\\)\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2)
+;;  ("Variables" "^\\s-*(defvar\\(?:-local\\)?\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)[[:space:]\n]+[^)]" 1)
+;;  ("Types" "^\\s-*(\\(cl-def\\(?:struct\\|type\\)\\|def\\(?:class\\|face\\|group\\|ine-\\(?:condition\\|error\\|widget\\)\\|package\\|struct\\|t\\(?:\\(?:hem\\|yp\\)e\\)\\)\\)\\s-+'?\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)" 2))
 
 (setq clj-imenu-generic-expression
-      '(
-	("Comments" "^;;; \\(.+\\)" 1)
-	;; ("Comments" "^-- \\(.+\\)" 1)
-
-	("Functions" "^(defn \\(.+\\) \\(.+\\)" 1)
-	("Vars" "^(def \\(.*\\)" 1)
-	))
+      ;; Ordering is reversed from this in imenu-list, so put most important at bottom.
+      '(("Deprecated" "^(defn-? \\^:deprecated \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+	("Fixme" ";; +\\(?:FIXME\\|TODO\\|XXX\\) \\(.*\\)" 1)
+	("Fixme" "; +\\(?:FIXME\\|TODO\\|XXX\\) \\(.*\\)" 1)
+	("Comment Blocks" "^(comment ; \\(.*\\)" 1)
+        ;; Intentionally ignore deprecated fns
+	;; ("Functions" "^(defn-? \\(?3:\\^:deprecated \\)?\\(?1:[a-z\\?<>!-]+\\)" 1)
+	("Functions :: Private" "^(defn- \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+	("Functions :: Public"  "^(defn \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+        ("Vars"      "^(def \\(?3:\\^:private \\)?\\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+        ("Sections" "^;;; \\(.+\\)" 1)
+	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
+
+;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'outline-toggle-children)))
+
+
+
+
+
+
+
+;;; BQN
+
+(add-to-list 'exec-path "~/src/CBQN")
+(add-to-list 'load-path "~/src/bqn-mode")
+(require 'bqn-mode)
 
 
 ;;; END (effectively)
