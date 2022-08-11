@@ -234,6 +234,7 @@
  '(epresent-mode-line '(:eval (int-to-string epresent-page-number)))
  '(epresent-text-scale 300)
  '(fci-rule-color "#383838")
+ '(fill-column 78)
  '(flycheck-indicator-icon-error 9632)
  '(flycheck-indicator-icon-info 9679)
  '(flycheck-indicator-icon-warning 9650)
@@ -241,7 +242,7 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "nothing")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode t)
+ '(global-hl-line-mode nil)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode t)
  '(global-superword-mode t)
@@ -258,16 +259,20 @@
      ("THEM" . "#dc8cc3")
      ("PROG" . "#7cb8bb")
      ("OKAY" . "#7cb8bb")
+     ("TESTING" . "#5f7f5f")
      ("DONT" . "#5f7f5f")
      ("FAIL" . "#8c5353")
      ("DONE" . "#afd8af")
      ("NOTE" . "#d0bf8f")
      ("KLUDGE" . "#d0bf8f")
      ("HACK" . "#d0bf8f")
+     ("REVIEW" . "#d0bf8f")
+     ("REFACTOR" . "#d0bf8f")
      ("TEMP" . "#d0bf8f")
      ("FIXME" . "#cc9393")
      ("XXXX*" . "#cc9393")
      ("SLOW" . "red")
+     ("OPTIMIZE" . "red")
      ("BUG" . "red")
      ("HELP" . "red")))
  '(hs-hide-comments-when-hiding-all nil)
@@ -1356,7 +1361,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq shackle-default-rule '(:select t))
 ;; OR
 ;; https://emacs.stackexchange.com/questions/13212/how-to-make-occur-mode-select-the-window-of-buffer-occur
-;; (add-hook 'occur-hook '(lambda () (switch-to-buffer-other-window "*Occur*")))
+;; (add-hook 'occur-hook (lambda () (switch-to-buffer-other-window "*Occur*")))
 ;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
 ;; FIXME not taking effect
@@ -1510,6 +1515,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'imenu-anywhere)
 (require 'imenu-list)
 ;; (require 'popup-imenu)
+
+;; navi-mode (needed by outshine)
 
 ;;; Outshine (like "outline")
 ;; Like imenu, but for pages/sections nav/highlighting.
@@ -1784,7 +1791,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; When some-var presents in SQL, treat it as a whole word (not 2 words).
 ;; https://emacs.stackexchange.com/a/59010/11025
-(add-hook 'sql-mode-hook #'(lambda () (modify-syntax-entry ?- "w"))) ; not working
+(add-hook 'sql-mode-hook (lambda () (modify-syntax-entry ?- "w"))) ; not working
 
 ;; ;; Ignore git ignored
 ;; ;; (treemacs-git-mode 'extended)
@@ -1953,7 +1960,7 @@ Here 'words' are defined as characters separated by whitespace."
   (window-preserve-size (get-buffer-window imenu-list-buffer-name) t t)
   (balance-windows))
 
-(add-hook 'imenu-list-minor-mode-hook #'(lambda () (message "in minor hook") (window-preserve-size (get-buffer-window imenu-list-buffer-name) t t)))
+(add-hook 'imenu-list-minor-mode-hook (lambda () (message "in minor hook") (window-preserve-size (get-buffer-window imenu-list-buffer-name) t t)))
 
 ;; (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
 ;;       '((?x aw-delete-window "Ace - Delete Window")
@@ -1983,7 +1990,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (with-eval-after-load "persp-mode-autoloads"
 ;;   (setq wg-morph-on nil) ;; switch off animation
 ;;   (setq persp-autokill-buffer-on-remove 'kill-weak)
-;;   (add-hook 'after-init-hook #'(lambda () (persp-mode 1))))
+;;   (add-hook 'after-init-hook (lambda () (persp-mode 1))))
 
 ;; This is actually perspective, not persp.
 ;; https://github.com/nex3/perspective-el
@@ -2774,6 +2781,7 @@ Relies on consult (for project-root), cider."
        ;; (yas-minor-mode 1) ; for adding require/use/import statements
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
        (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
+       (define-key clojure-mode-map (kbd "C-c C-S-p") 'cider-inspect-last-result)
        (setq-local cider-repl-pop-to-buffer-on-connect 'display-only)
        (setq-local cider-repl-result-prefix ";; => ")
        (setq-local cider-save-file-on-load t)
@@ -2783,6 +2791,7 @@ Relies on consult (for project-root), cider."
        (setq-local cider-repl-history-file "~/.cider-repl-history")
 
        (key-chord-define clojure-mode-map "XC" 'my-rg-xref)
+       ;; (key-chord-define sql-mode-map "XC" 'my-rg-xref)
 
        ;; (cider-auto-test-mode 1)
        ;; (cljr-add-keybindings-with-prefix "C-c r")
@@ -2905,23 +2914,23 @@ Relies on consult (for project-root), cider."
 
 ;; https://stackoverflow.com/questions/4333467/override-ctrl-tab-in-emacs-org-mode
 (add-hook 'org-mode-hook
-          '(lambda ()
-             (define-key org-mode-map [(control tab)] nil)
-             (define-key org-mode-map (kbd "C-M-u") 'org-up-element)
-             (define-key org-mode-map (kbd "C-M-d") 'org-down-element)
-             (define-key org-mode-map (kbd "C-M-f") 'org-forward-element)
-             (define-key org-mode-map (kbd "C-M-b") 'org-backward-element)
-             (define-key org-mode-map (kbd "C-C C-x l") 'org-toggle-link-display)
-             (define-key org-mode-map (kbd "M-}") 'beginning-of-buffer)
+          (lambda ()
+            (define-key org-mode-map [(control tab)] nil)
+            (define-key org-mode-map (kbd "C-M-u") 'org-up-element)
+            (define-key org-mode-map (kbd "C-M-d") 'org-down-element)
+            (define-key org-mode-map (kbd "C-M-f") 'org-forward-element)
+            (define-key org-mode-map (kbd "C-M-b") 'org-backward-element)
+            (define-key org-mode-map (kbd "C-C C-x l") 'org-toggle-link-display)
+            (define-key org-mode-map (kbd "M-}") 'beginning-of-buffer)
 
-	     ;; https://www.emacswiki.org/emacs/FacesPerBuffer
-             (face-remap-add-relative 'default :family "Fira Sans")
-	     (buffer-face-mode)
-	     ))
+	    ;; https://www.emacswiki.org/emacs/FacesPerBuffer
+            (face-remap-add-relative 'default :family "Fira Sans")
+	    (buffer-face-mode)
+	    ))
 
-(add-hook 'epresent-mode-hook '(lambda ()
-				 (face-remap-add-relative 'default :family "Fira Sans")
-				 (buffer-face-mode)))
+(add-hook 'epresent-mode-hook (lambda ()
+				(face-remap-add-relative 'default :family "Fira Sans")
+				(buffer-face-mode)))
 
 (require 'org-preview-html)
 (require 'org-bullets)
@@ -4070,7 +4079,7 @@ This is way faster than 'C-s M-n C-a C-d'."
   (interactive)
   (shell-command "uuidgen" t))
 
-(require 'symbolic-clojure)
+;; (require 'symbolic-clojure)
 
 ;; https://emacs.stackexchange.com/questions/47706/how-to-prettify-symbols-inside-comments
 ;; For some reason this needs to be set in the clojure buffer, then turn on/off prettify-symbols-mode
@@ -4252,6 +4261,16 @@ This is way faster than 'C-s M-n C-a C-d'."
 ;;     (if key
 ;;         (nrepl-dict-get response key)
 ;;       response)))
+
+(defun cljns-align ()
+  "Align ns requires."
+  (interactive)
+  (end-of-buffer)
+  (when (re-search-backward "^\(ns.*\\(\n.*\\)*\(:require" nil t nil)
+    (mark-sexp)
+    (align-regexp (region-beginning)
+                  (region-end)
+                  "\\(\\s-*\\)\\s-:")))
 
 
 
