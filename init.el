@@ -52,7 +52,7 @@
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
 
 (setq package-enable-at-startup nil)
-(package-initialize)
+;; (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
 (defvar my-packages
@@ -154,6 +154,7 @@
     vterm
     vterm-toggle
     which-key
+    xclip
     yascroll
     zop-to-char))
 (dolist (p my-packages)
@@ -161,7 +162,7 @@
     (package-install p)))
 
 (setq load-prefer-newer t)
-(package-initialize)
+;; (package-initialize)
 (require 'auto-compile)
 (auto-compile-on-load-mode)
 (auto-compile-on-save-mode)
@@ -216,7 +217,7 @@
  '(ctrlf-auto-recenter nil)
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
-   '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+   '("207431eaa6aa655a252d3807578bac8187fc0d87ccd2ace5538b1a3c048a5bf8" "a5944520983c5467f163f68d256ff869a338c88acbd3610ffde4ba259c51dc61" "3d38054b096d264c5e8bcf46820b31853989404dc41d3a43b6a071c54b32f7ad" "7d5007882734456bc3df171bb8b0a83962841e2a8a5e9b861fbe2f24b1265ffd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
  '(dired-sidebar-icon-scale 1)
  '(dired-sidebar-mode-line-format
    '("%e" mode-line-front-space mode-line-buffer-identification " " mode-line-end-spaces))
@@ -242,7 +243,7 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "nothing")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode nil)
+ '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode t)
  '(global-superword-mode t)
@@ -264,6 +265,7 @@
      ("FAIL" . "#8c5353")
      ("DONE" . "#afd8af")
      ("NOTE" . "#d0bf8f")
+     ("COMPAT" . "#d0bf8f")
      ("KLUDGE" . "#d0bf8f")
      ("HACK" . "#d0bf8f")
      ("REVIEW" . "#d0bf8f")
@@ -307,11 +309,13 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(xclip paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
+ '(persp-mode-prefix-key nil)
  '(persp-sort 'access)
+ '(persp-suppress-no-prefix-key-warning t)
  '(popper-window-height 20)
  '(quick-peek-add-spacer nil)
  '(quick-peek-position 'above)
@@ -1274,7 +1278,7 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'monokai-theme)
 (enable-theme 'monokai)
 
-(require 'ample-theme)
+;; (require 'ample-theme)
 ;; (load-theme 'ample t t)
 ;; (enable-theme 'ample)
 ;; ;; (load-theme 'ample-flat t t)
@@ -1675,6 +1679,13 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Seems the only way to have multiple vterms
 (when (eq system-type 'gnu/linux) (require 'multi-vterm))
 
+;; FIXME Might need to only do this when window-system
+(require 'term-keys-kitty)
+;; One-time setup
+;; (with-temp-buffer
+;;   (insert (term-keys/kitty-conf))
+;;   (write-region (point-min) (point-max) "~/kitty-for-term-keys.conf"))
+(term-keys-mode t)
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
 
@@ -1690,6 +1701,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Allow UTF or composed text from the clipboard, even in the terminal or on
 ;; non-X systems (like Windows or macOS), where only `STRING' is used.
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+
+;; https://stackoverflow.com/a/46219455/326516
+(xclip-mode)
 
 ;; Make Emacs use the $PATH set up by the user's shell
 ;; Affects other envvars too.
@@ -2142,63 +2156,69 @@ Here 'words' are defined as characters separated by whitespace."
 
 (add-hook 'git-commit-setup-hook 'my-git-commit-setup)
 
-(add-hook 'magit-mode-hook #'emojify-mode)
-
 ;; Pretty Magit Emoji
 ;; http://www.modernemacs.com/post/pretty-magit/
 (require 'dash)
 
-(defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
-  "Replace sanitized WORD with ICON, PROPS and by default add to prompts."
-  `(prog1
-       (add-to-list 'pretty-magit-alist
-                    (list (rx bow (group ,WORD (eval (if ,NO-PROMPT? "" ":"))))
-                          ,ICON ',PROPS))
-     (unless ,NO-PROMPT?
-       (add-to-list 'pretty-magit-prompt (concat ,WORD ": ")))))
 
-(setq pretty-magit-alist nil)
-(setq pretty-magit-prompt nil)
-(pretty-magit "Feature" ?✨ (:foreground "slate gray"))
-(pretty-magit "feat" ?✨ (:foreground "slate gray"))
-(pretty-magit ":sparkles" ?✨ (:foreground "slate gray"))
-(pretty-magit "Add"     ?✨ (:foreground "#375E97"))
-(pretty-magit "Fix"     ?🐛 (:foreground "#FB6542"))
-(pretty-magit "fix"     ?🐛 (:foreground "#FB6542"))
-(pretty-magit ":bug"    ?🐛 (:foreground "#FB6542"))
-(pretty-magit "Clean"   ?👮 (:foreground "#FFBB00"))
-(pretty-magit "refactor" ?👮  (:foreground "#FFBB00"))
-(pretty-magit ":cop"  ?👮  (:foreground "#00BB00")) ; refactor
-(pretty-magit "style"  ?👮  (:foreground "#00BB00"))
-(pretty-magit ":wrench"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
-(pretty-magit "build"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
-(pretty-magit "test" ?✅  (:foreground "#FFBB00"))
-(pretty-magit ":check"  ?✅  (:foreground "#FFBB00"))
-(pretty-magit "Docs"    ?📚 (:foreground "#3F681C"))
-(pretty-magit "docs"    ?📚 (:foreground "#3F681C"))
-(pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
-(pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
-(pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
-(pretty-magit "master"  ?👑 (:height 1.2) t)
-(pretty-magit "origin"  ?💦  (:height 1.2) t)
+(when window-system
+  (do
 
-(defun add-magit-faces ()
-  "Add face properties and compose symbols for buffer from pretty-magit."
-  (interactive)
-  (with-silent-modifications
-    (--each pretty-magit-alist
-      (-let (((rgx icon props) it))
-        (save-excursion
-          (goto-char (point-min))
-          (while (search-forward-regexp rgx nil t)
-            (compose-region
-             (match-beginning 1) (match-end 1) icon)
-            (when props
-              (add-face-text-property
-               (match-beginning 1) (match-end 1) props))))))))
+      (add-hook 'magit-mode-hook #'emojify-mode)
 
-(advice-add 'magit-status :after 'add-magit-faces)
-(advice-add 'magit-refresh-buffer :after 'add-magit-faces)
+      (defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
+	"Replace sanitized WORD with ICON, PROPS and by default add to prompts."
+	`(prog1
+	     (add-to-list 'pretty-magit-alist
+			  (list (rx bow (group ,WORD (eval (if ,NO-PROMPT? "" ":"))))
+				,ICON ',PROPS))
+	   (unless ,NO-PROMPT?
+	     (add-to-list 'pretty-magit-prompt (concat ,WORD ": ")))))
+
+    (setq pretty-magit-alist nil)
+    (setq pretty-magit-prompt nil)
+    (pretty-magit "Feature" ?✨ (:foreground "slate gray"))
+    (pretty-magit "feat" ?✨ (:foreground "slate gray"))
+    (pretty-magit ":sparkles" ?✨ (:foreground "slate gray"))
+    (pretty-magit "Add"     ?✨ (:foreground "#375E97"))
+    ;; (pretty-magit "Merge"     ?🔀 (:foreground "#375E97")) ; no colon
+    (pretty-magit "Fix"     ?🐛 (:foreground "#FB6542"))
+    (pretty-magit "fix"     ?🐛 (:foreground "#FB6542"))
+    (pretty-magit ":bug"    ?🐛 (:foreground "#FB6542"))
+    (pretty-magit "Clean"   ?👮 (:foreground "#FFBB00"))
+    (pretty-magit "refactor" ?👮  (:foreground "#FFBB00"))
+    (pretty-magit ":cop"  ?👮  (:foreground "#00BB00")) ; refactor
+    (pretty-magit "style"  ?👮  (:foreground "#00BB00"))
+    (pretty-magit ":wrench"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+    (pretty-magit "build"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+    (pretty-magit "test" ?✅  (:foreground "#FFBB00"))
+    (pretty-magit ":check"  ?✅  (:foreground "#FFBB00"))
+    (pretty-magit "Docs"    ?📚 (:foreground "#3F681C"))
+    (pretty-magit "docs"    ?📚 (:foreground "#3F681C"))
+    (pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
+    (pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
+    (pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
+    (pretty-magit "master"  ?👑 (:height 1.2) t)
+    (pretty-magit "origin"  ?💦  (:height 1.2) t)
+
+    (defun add-magit-faces ()
+      "Add face properties and compose symbols for buffer from pretty-magit."
+      (interactive)
+      (with-silent-modifications
+	(--each pretty-magit-alist
+	  (-let (((rgx icon props) it))
+	    (save-excursion
+	      (goto-char (point-min))
+	      (while (search-forward-regexp rgx nil t)
+		(compose-region
+		 (match-beginning 1) (match-end 1) icon)
+		(when props
+		  (add-face-text-property
+		   (match-beginning 1) (match-end 1) props))))))))
+
+    (advice-add 'magit-status :after 'add-magit-faces)
+    (advice-add 'magit-refresh-buffer :after 'add-magit-faces)
+    ))
 
 
 (require 'unicode-fonts)
@@ -2782,6 +2802,7 @@ Relies on consult (for project-root), cider."
        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
        (define-key clojure-mode-map (kbd "C-c C-k") 'my-cider-load-buffer)
        (define-key clojure-mode-map (kbd "C-c C-S-p") 'cider-inspect-last-result)
+       (define-key clojure-mode-map (kbd "C-c M-b") 'cider-browse-instrumented-defs)
        (setq-local cider-repl-pop-to-buffer-on-connect 'display-only)
        (setq-local cider-repl-result-prefix ";; => ")
        (setq-local cider-save-file-on-load t)
@@ -2811,7 +2832,8 @@ Relies on consult (for project-root), cider."
        ;; (define-key (kbd "C-c r"))
        (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
        ;; Make similar to wrapping with M-(
-       (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
+       ;; COMPAT: no go in termenal
+       ;; (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
        ;; Overrides tmm-menubar
        ;; (define-key clojure-mode-map (kbd "M-`") (lambda () (interactive) (sp-wrap-with-pair "`")))
        ;; FIXME
