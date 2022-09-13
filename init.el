@@ -2650,7 +2650,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;;; Clojure
 
 ;; My first elisp package!
-(require 'clojure-docs-peek)
+(when (not (eq system-type 'darwin))
+  (require 'clojure-docs-peek))
 
 ;; For controlling clj tests from CSV/TSV
 ;; TODO Turn into proper fns/lib
