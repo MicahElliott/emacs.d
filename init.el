@@ -135,6 +135,7 @@
     quick-peek
     rainbow-delimiters
     restclient
+    restclient-jq
     rich-minority
     ripgrep
     rg
@@ -191,10 +192,12 @@
  '(browse-url-browser-function 'browse-url-firefox)
  '(case-fold-search nil)
  '(cider-comment-prefix " ;=> ")
+ '(cider-inspector-auto-select-buffer t)
+ '(cider-inspector-page-size 50)
  '(cider-repl-history-file "~/.cider-repl-history")
  '(cider-repl-history-size 1000)
- '(cider-repl-use-clojure-font-lock nil)
- '(cider-repl-use-pretty-printing nil)
+ '(cider-repl-use-clojure-font-lock t)
+ '(cider-repl-use-pretty-printing t)
  '(cider-special-mode-truncate-lines nil)
  '(cider-test-defining-forms '("deftest" "defspec" "defcsvtest"))
  '(clojure-defun-indents '(fn-traced))
@@ -265,11 +268,11 @@
      ("FAIL" . "#8c5353")
      ("DONE" . "#afd8af")
      ("NOTE" . "#d0bf8f")
-     ("COMPAT" . "#d0bf8f")
      ("KLUDGE" . "#d0bf8f")
      ("HACK" . "#d0bf8f")
      ("REVIEW" . "#d0bf8f")
      ("REFACTOR" . "#d0bf8f")
+     ("FUTURE" . "#d0bf8f")
      ("TEMP" . "#d0bf8f")
      ("FIXME" . "#cc9393")
      ("XXXX*" . "#cc9393")
@@ -309,7 +312,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(xclip paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(restclient-jq jq-mode xclip paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -354,7 +357,6 @@
  '(yascroll:delay-to-hide nil)
  '(yascroll:disabled-modes '(image-mode cider-repl-mode vterm-mode))
  '(yascroll:scroll-bar '(right-fringe left-fringe text-area)))
-
 
 ;; DISABLED
 ;; rainbow-identifiers
@@ -413,6 +415,9 @@
  '(bqn-one-modifier-face ((t (:foreground "dark red"))))
  '(bqn-separator-face ((t (:foreground "#AE81FF"))))
  '(bqn-two-modifier-face ((t (:foreground "hot pink" :weight extra-bold))))
+ '(cider-instrumented-face ((t (:box (:line-width (1 . -1) :color "#AE81FF") :foreground "#AE81FF" :background "brightmagenta"))))
+ '(cider-repl-result-face ((t (:foreground "cyan"))))
+ '(cider-traced-face ((t (:slant italic :box (:line-width (1 . -1) :color "#66D9EF") :background "darkslategray"))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
  '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
@@ -470,7 +475,7 @@
  '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
- '(vertico-group-title ((t (:foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
+ '(vertico-group-title ((t (:background "brightwhite" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
@@ -599,7 +604,7 @@
   (define-key my-buffer-keymap "e" 'consult-recent-file)
   (define-key my-buffer-keymap "f" 'my-copy-filename)
   (define-key my-buffer-keymap "F" 'my-copy-buffername)
-  (define-key my-buffer-keymap "n" 'my-copy-namespace-name)
+  (define-key my-buffer-keymap "n" 'my-copy-namespace-function-lineno)
   (define-key my-buffer-keymap "p" (lambda () (interactive)
 				     (my-ibuffer)
 				     (persp-ibuffer nil)))
@@ -1021,8 +1026,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Don't want to suspend emacs!
 ;; http://superuser.com/questions/349943/how-to-awake-emacs-gui-after-pressing-ctrlz#349997
-(global-unset-key (kbd "C-z"))
-(global-set-key (kbd "C-z") 'delete-window-balancedly)
+;; (global-unset-key (kbd "C-z"))
+;; (global-set-key (kbd "C-z") 'delete-window-balancedly)
 
 (global-set-key (kbd "M-e") 'forward-word)
 ;; (global-set-key (kbd "M-f") 'forward-word)
@@ -1111,7 +1116,7 @@ Here 'words' are defined as characters separated by whitespace."
 	(sp-backward-up-sexp)))
     (progn
       (sp-wrap-with-pair
-       (case (char-after)
+       (cl-case (char-after)
 	 (?\( "[")
 	 (?\[ "{")
          (?\{ "(")
@@ -2162,7 +2167,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 (when window-system
-  (do
+  (cl-do
 
       (add-hook 'magit-mode-hook #'emojify-mode)
 
@@ -2228,7 +2233,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;;; REST CLIENTS
-;; (require 'restclient)
+(require 'restclient)
+(require 'restclient-jq)
 ;; (require 'httprepl)
 
 
@@ -2526,6 +2532,7 @@ Here 'words' are defined as characters separated by whitespace."
 (defface boolean-false '((t (:foreground "red" :weight bold))) "Boolean true" :group 'clojure-mode)
 (defface sfdc-field      '((t (:foreground "#dF9522" :weight ultra-bold))) "My SFDC Field" :group 'clojure-mode)
 (defface sfdc-record '((t (:foreground "#dF9522" :weight normal))) "SFDC Record" :group 'clojure-mode)
+(defface route-path '((t (:foreground "#4287f5" :weight ultra-bold))) "URL Route" :group 'clojure-mode)
 (defface sql-field       '((t (:foreground "#528fd1" :weight ultra-bold))) "My SQL Field" :group 'clojure-mode)
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
@@ -2536,6 +2543,7 @@ Here 'words' are defined as characters separated by whitespace."
 (font-lock-add-keywords 'clojure-mode '(("\bfalse\b" 0 'boolean-false t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__r" 0 'sfdc-record t)))
+(font-lock-add-keywords 'clojure-mode '(("\\\"/[-:a-z0-9/]+\\\"" 0 'route-path t)))
 (font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
@@ -3962,6 +3970,23 @@ This is way faster than 'C-s M-n C-a C-d'."
   (popper-echo-mode +1))
 
 
+(defun my-copy-namespace-function-lineno ()
+  "Copy the NS, function, and line number to kill ring.
+
+This is a replacement for `github-browse-file' and ilk. It's
+often nicer to just see a location of a fn/line that you can plug
+into Emacs, rather than jump to a browser and see it on GH."
+  (interactive)
+  (save-excursion
+    (my-beginning-of-defun)
+    (let* ((fn    (word-at-point))
+	   (ln    (number-to-string (line-number-at-pos)))
+	   (ns    (cider-current-ns))
+	   (combo (concat ns "/" fn ":" ln)))
+      (kill-new combo)
+      (message "Copied location '%s' to the clipboard." combo)
+      (alert "Copied to kill ring" :severity 'low :title combo))))
+
 (defun my-copy-namespace-name ()
   "Copy the namespace name to kill ring."
   (interactive)
@@ -4134,8 +4159,8 @@ This is way faster than 'C-s M-n C-a C-d'."
 	("Comment Blocks" "^(comment ; \\(.*\\)" 1)
         ;; Intentionally ignore deprecated fns
 	;; ("Functions" "^(defn-? \\(?3:\\^:deprecated \\)?\\(?1:[a-z\\?<>!-]+\\)" 1)
-	("Functions :: Private" "^(defn- \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
 	("Functions :: Public"  "^(defn \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+	("Functions :: Private" "^(defn- \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
         ("Vars"      "^(def \\(?3:\\^:private \\)?\\(?1:[a-z0-9\\?<>!-]+\\)" 1)
         ;; ("Sections" "^;;; \\(.+\\)" 1)
         ("Sections" "^;;; \\(.+\\)" 1)
