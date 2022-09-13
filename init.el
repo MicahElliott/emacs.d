@@ -2166,64 +2166,64 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'dash)
 
 
-(when window-system
-  (cl-do
+;; (when window-system
+;;   (cl-do
 
-      ;; (add-hook 'magit-mode-hook #'emojify-mode) ; needs emojify installed
+;;       ;; (add-hook 'magit-mode-hook #'emojify-mode) ; needs emojify installed
 
-      (defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
-	"Replace sanitized WORD with ICON, PROPS and by default add to prompts."
-	`(prog1
-	     (add-to-list 'pretty-magit-alist
-			  (list (rx bow (group ,WORD (eval (if ,NO-PROMPT? "" ":"))))
-				,ICON ',PROPS))
-	   (unless ,NO-PROMPT?
-	     (add-to-list 'pretty-magit-prompt (concat ,WORD ": ")))))
+;;       (defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
+;; 	"Replace sanitized WORD with ICON, PROPS and by default add to prompts."
+;; 	`(prog1
+;; 	     (add-to-list 'pretty-magit-alist
+;; 			  (list (rx bow (group ,WORD (eval (if ,NO-PROMPT? "" ":"))))
+;; 				,ICON ',PROPS))
+;; 	   (unless ,NO-PROMPT?
+;; 	     (add-to-list 'pretty-magit-prompt (concat ,WORD ": ")))))
 
-    (setq pretty-magit-alist nil)
-    (setq pretty-magit-prompt nil)
-    (pretty-magit "Feature" ?✨ (:foreground "slate gray"))
-    (pretty-magit "feat" ?✨ (:foreground "slate gray"))
-    (pretty-magit ":sparkles" ?✨ (:foreground "slate gray"))
-    (pretty-magit "Add"     ?✨ (:foreground "#375E97"))
-    ;; (pretty-magit "Merge"     ?🔀 (:foreground "#375E97")) ; no colon
-    (pretty-magit "Fix"     ?🐛 (:foreground "#FB6542"))
-    (pretty-magit "fix"     ?🐛 (:foreground "#FB6542"))
-    (pretty-magit ":bug"    ?🐛 (:foreground "#FB6542"))
-    (pretty-magit "Clean"   ?👮 (:foreground "#FFBB00"))
-    (pretty-magit "refactor" ?👮  (:foreground "#FFBB00"))
-    (pretty-magit ":cop"  ?👮  (:foreground "#00BB00")) ; refactor
-    (pretty-magit "style"  ?👮  (:foreground "#00BB00"))
-    (pretty-magit ":wrench"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
-    (pretty-magit "build"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
-    (pretty-magit "test" ?✅  (:foreground "#FFBB00"))
-    (pretty-magit ":check"  ?✅  (:foreground "#FFBB00"))
-    (pretty-magit "Docs"    ?📚 (:foreground "#3F681C"))
-    (pretty-magit "docs"    ?📚 (:foreground "#3F681C"))
-    (pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
-    (pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
-    (pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
-    (pretty-magit "master"  ?👑 (:height 1.2) t)
-    (pretty-magit "origin"  ?💦  (:height 1.2) t)
+;;     (setq pretty-magit-alist nil)
+;;     (setq pretty-magit-prompt nil)
+;;     (pretty-magit "Feature" ?✨ (:foreground "slate gray"))
+;;     (pretty-magit "feat" ?✨ (:foreground "slate gray"))
+;;     (pretty-magit ":sparkles" ?✨ (:foreground "slate gray"))
+;;     (pretty-magit "Add"     ?✨ (:foreground "#375E97"))
+;;     ;; (pretty-magit "Merge"     ?🔀 (:foreground "#375E97")) ; no colon
+;;     (pretty-magit "Fix"     ?🐛 (:foreground "#FB6542"))
+;;     (pretty-magit "fix"     ?🐛 (:foreground "#FB6542"))
+;;     (pretty-magit ":bug"    ?🐛 (:foreground "#FB6542"))
+;;     (pretty-magit "Clean"   ?👮 (:foreground "#FFBB00"))
+;;     (pretty-magit "refactor" ?👮  (:foreground "#FFBB00"))
+;;     (pretty-magit ":cop"  ?👮  (:foreground "#00BB00")) ; refactor
+;;     (pretty-magit "style"  ?👮  (:foreground "#00BB00"))
+;;     (pretty-magit ":wrench"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+;;     (pretty-magit "build"  ?🔧 (:foreground "#FFBB00")) ; ci, tooling, config
+;;     (pretty-magit "test" ?✅  (:foreground "#FFBB00"))
+;;     (pretty-magit ":check"  ?✅  (:foreground "#FFBB00"))
+;;     (pretty-magit "Docs"    ?📚 (:foreground "#3F681C"))
+;;     (pretty-magit "docs"    ?📚 (:foreground "#3F681C"))
+;;     (pretty-magit ":books"    ?📚 (:foreground "#3F681C"))
+;;     (pretty-magit "security"    ?🔒 (:foreground "#3F681C"))
+;;     (pretty-magit ":lock"    ?🔒 (:foreground "#3F681C"))
+;;     (pretty-magit "master"  ?👑 (:height 1.2) t)
+;;     (pretty-magit "origin"  ?💦  (:height 1.2) t)
 
-    (defun add-magit-faces ()
-      "Add face properties and compose symbols for buffer from pretty-magit."
-      (interactive)
-      (with-silent-modifications
-	(--each pretty-magit-alist
-	  (-let (((rgx icon props) it))
-	    (save-excursion
-	      (goto-char (point-min))
-	      (while (search-forward-regexp rgx nil t)
-		(compose-region
-		 (match-beginning 1) (match-end 1) icon)
-		(when props
-		  (add-face-text-property
-		   (match-beginning 1) (match-end 1) props))))))))
+;;     (defun add-magit-faces ()
+;;       "Add face properties and compose symbols for buffer from pretty-magit."
+;;       (interactive)
+;;       (with-silent-modifications
+;; 	(--each pretty-magit-alist
+;; 	  (-let (((rgx icon props) it))
+;; 	    (save-excursion
+;; 	      (goto-char (point-min))
+;; 	      (while (search-forward-regexp rgx nil t)
+;; 		(compose-region
+;; 		 (match-beginning 1) (match-end 1) icon)
+;; 		(when props
+;; 		  (add-face-text-property
+;; 		   (match-beginning 1) (match-end 1) props))))))))
 
-    (advice-add 'magit-status :after 'add-magit-faces)
-    (advice-add 'magit-refresh-buffer :after 'add-magit-faces)
-    ))
+;;     (advice-add 'magit-status :after 'add-magit-faces)
+;;     (advice-add 'magit-refresh-buffer :after 'add-magit-faces)
+;;     ))
 
 
 (require 'unicode-fonts)
