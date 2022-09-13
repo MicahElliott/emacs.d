@@ -90,7 +90,6 @@
     edit-indirect
     embark
     embark-consult
-    emojify
     envrc
     exec-path-from-shell
     flycheck-clj-kondo
@@ -1684,13 +1683,14 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Seems the only way to have multiple vterms
 (when (eq system-type 'gnu/linux) (require 'multi-vterm))
 
-;; FIXME Might need to only do this when window-system
-(require 'term-keys-kitty)
 ;; One-time setup
 ;; (with-temp-buffer
 ;;   (insert (term-keys/kitty-conf))
 ;;   (write-region (point-min) (point-max) "~/kitty-for-term-keys.conf"))
-(term-keys-mode t)
+(when (not (eq system-type 'darwin))
+  ;; FIXME Might need to only do this when window-system
+  (require 'term-keys-kitty)
+  (term-keys-mode t))
 
 ;; FIXME: C-d C-d d should pop up docs for various modes.
 
@@ -2169,7 +2169,7 @@ Here 'words' are defined as characters separated by whitespace."
 (when window-system
   (cl-do
 
-      (add-hook 'magit-mode-hook #'emojify-mode)
+      ;; (add-hook 'magit-mode-hook #'emojify-mode) ; needs emojify installed
 
       (defmacro pretty-magit (WORD ICON PROPS &optional NO-PROMPT?)
 	"Replace sanitized WORD with ICON, PROPS and by default add to prompts."
