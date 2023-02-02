@@ -49,7 +49,8 @@
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                          ;;("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
-                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")
+			 ("cselpa" . "https://elpa.thecybershadow.net/packages/")))
 
 (setq package-enable-at-startup nil)
 ;; (package-initialize)
@@ -88,6 +89,7 @@
     edbi
     edebug-inline-result
     edit-indirect
+    eglot
     embark
     embark-consult
     envrc
@@ -111,6 +113,8 @@
     ibuffer-vc
     imenu-list
     jump-char
+    just-mode
+    justl
     key-chord
     key-seq
     keycast
@@ -232,6 +236,7 @@
  '(display-line-numbers-type 'visual)
  '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
+ '(eglot-connect-timeout 120)
  '(epresent-hide-properties nil)
  '(epresent-hide-tags nil)
  '(epresent-mode-line '(:eval (int-to-string epresent-page-number)))
@@ -247,8 +252,9 @@
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
- '(global-prettify-symbols-mode t)
+ '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
+ '(global-whitespace-mode t)
  '(global-yascroll-bar-mode nil)
  '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
@@ -285,8 +291,10 @@
  '(imenu-list-focus-after-activation t)
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
+ '(indent-tabs-mode nil)
  '(inhibit-startup-screen nil)
  '(initial-buffer-choice t)
+ '(justl-recipe-width 50)
  '(live-completions-columns 'single)
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
@@ -311,7 +319,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(restclient-jq jq-mode xclip paredit windresize corfu-doc sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico default-text-scale dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill undo-tree typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -336,7 +344,6 @@
  '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
    '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
- '(text-scale-mode-step 1.1)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
  '(uniquify-min-dir-content 1)
@@ -478,7 +485,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3"))))
  '(visible-mark-face2 ((t (:background "burlywood4"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "purple4" :foreground "#757575"))))
+ '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold))))
  '(yascroll:thumb-fringe ((t (:background "#75715E" :foreground "orange red")))))
 
 ;; '(hl-line ((t (:extend t :background "gray12" :box (:line-width 1 :color "black")))))
@@ -573,8 +580,8 @@
 ;; (key-chord-define-global "q'" (lambda () (interactive) (crux-smart-open-line-above) (crux-smart-open-line-above)))
 
 ;; Also special (zoom font size)
-(key-seq-define-global "q-" 'default-text-scale-decrease)
-(key-seq-define-global "q+" 'default-text-scale-increase)
+;; (key-seq-define-global "q-" 'default-text-scale-decrease)
+;; (key-seq-define-global "q+" 'default-text-scale-increase)
 (key-seq-define-global "Q+" 'text-scale-increase)
 (key-seq-define-global "Q_" 'text-scale-decrease)
 (key-seq-define-global "qq" 'aw-flip-window)
@@ -625,7 +632,7 @@
 (key-seq-define-global "'f" 'avy-goto-symbol-1-above)
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
-(key-seq-define-global "xc" 'avy-goto-word-0)
+;; (key-seq-define-global "xc" 'avy-goto-word-0)
 (key-seq-define-global "qc" 'avy-goto-char-timer)
 (key-seq-define-global "\"C" 'beacon-blink) ; cursor
 
@@ -662,6 +669,7 @@
   (define-key my-git-keymap "B" 'git-link) ; browse
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
+  (define-key my-git-keymap "f" 'magit-diff-buffer-file)
   (define-key my-git-keymap "h" 'github-browse-file)
   ;; (define-key my-git-keymap "i" 'git-messenger:popup-message)
   (define-key my-git-keymap "l" 'magit-log-buffer-file)
@@ -942,8 +950,8 @@
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
-(key-seq-define-global "PT" 'dired-sidebar-jump-to-sidebar)
-(key-seq-define-global "TP" 'dired-sidebar-hide-sidebar)
+(key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
+(key-seq-define-global "TP" 'dired-sidebar-jump-to-sidebar)
 
 (key-chord-define-global "GV" 'set-variable)
 
@@ -1049,8 +1057,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-p") 'previous-line)
 
 ;; Zoom font size
-(global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
-(global-set-key (kbd "C-M-+") 'default-text-scale-increase)
+;; (global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
+;; (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
 
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
 (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
@@ -1126,13 +1134,16 @@ Here 'words' are defined as characters separated by whitespace."
       (sp-splice-sexp))))
 (global-set-key (kbd "C-c S") 'toggle-parens)
 
+;; https://stackoverflow.com/a/21780995/326516
+(global-set-key (kbd "C-S-k") (lambda () (interactive) (delete-region (point) (line-end-position))))
+
 
 ;; Planck-friendly
 (global-set-key (kbd "M-{") 'backward-paragraph)
 (global-set-key (kbd "M-<") 'forward-paragraph)
 (global-set-key (kbd "M->") 'end-of-buffer)
 (global-set-key (kbd "M-}") 'beginning-of-buffer)
-(global-set-key (kbd "C-?") 'undo-tree-redo) ; GUIONLY
+;; (global-set-key (kbd "C-?") 'undo-tree-redo) ; GUIONLY
 (global-set-key (kbd "M-Q") 'unfill-paragraph)
 ;; (global-set-key (kbd "M-S-q") 'unfill-paragraph)
 
@@ -1230,6 +1241,10 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-n") 'my-next-line)
 (global-set-key (kbd "C-p") 'my-previous-line)
+
+
+(global-set-key (kbd "C-c j") 'justl)
+(global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
 
 
 
@@ -1402,19 +1417,28 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Nice transient example
 ;; https://github.com/wolray/symbol-overlay/issues/59
+
 ;; (define-transient-command symbol-overlay-transient ()
-;;   "Symbol Overlay transient"
-;;   ["Symbol Overlay"
-;;    ["Overlays"
-;;     ("." "Add/Remove at point" symbol-overlay-put)
-;;     ("k" "Remove All" symbol-overlay-remove-all)]
-;;    ["Move to Symbol"
-;;     ("n" "Next" symbol-overlay-switch-forward)
-;;     ("p" "Previous" symbol-overlay-switch-backward)]
-;;    ["Other"
-;;     ("m" "Hightlight symbol-at-point" symbol-overlay-mode)]])
+;;  "Symbol Overlay transient"
+;;  ["Symbol Overlay"
+;;   ["Overlays"
+;;    ("." "Add/Remove at point" symbol-overlay-put)
+;;    ("k" "Remove All" symbol-overlay-remove-all)]
+;;   ["Move to Symbol"
+;;    ("n" "Next" symbol-overlay-switch-forward)
+;;    ("p" "Previous" symbol-overlay-switch-backward)]
+;;   ["Other"
+;;    ("m" "Hightlight symbol-at-point" symbol-overlay-mode)]])
 ;; (global-set-key (kbd "C->") 'symbol-overlay-transient)
 
+
+(require 'transient)
+(require 'cider-transient)
+;; Moved cider-transient to its own repo:
+;;
+
+;; (key-chord-define-global "CC" 'cider-transient)
+(key-chord-define-global "xc" 'cider-transient)
 
 
 
@@ -1483,8 +1507,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;; https://github.com/purcell/default-text-scale
-(require 'default-text-scale)
-(default-text-scale-mode)
+;; (require 'default-text-scale)
+;; (default-text-scale-mode)
 
 
 ;;; IVY, COUNSEL, SWIPER
@@ -1657,13 +1681,11 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Undo-tree: C-/ undo, M-_ redo
 ;; http://pragmaticemacs.com/emacs/advanced-undoredo-with-undo-tree/
 ;; FIXME: this is really needed package, but have to figure out now to clean its mess!
-(global-undo-tree-mode)
+;; (global-undo-tree-mode)
 
-(setq undo-tree-auto-save-history t)
-
-
+;; (setq undo-tree-auto-save-history t)
 ;; autosave the undo-tree history (from prelude)
-(setq undo-tree-history-directory-alist `((".*" . "~/.emacs.d/undo")))
+;; (setq undo-tree-history-directory-alist `((".*" . "~/.emacs.d/undo")))
 
 
 ;; Auto-save
@@ -1684,9 +1706,12 @@ Here 'words' are defined as characters separated by whitespace."
 (when (eq system-type 'gnu/linux) (require 'multi-vterm))
 
 ;; One-time setup
+;; https://github.com/CyberShadow/term-keys#kitty
+;; After generation, this file needs to be manually copied to ~/.config/kitty.conf
 ;; (with-temp-buffer
 ;;   (insert (term-keys/kitty-conf))
 ;;   (write-region (point-min) (point-max) "~/kitty-for-term-keys.conf"))
+
 (when (not (eq system-type 'darwin))
   ;; FIXME Might need to only do this when window-system
   (require 'term-keys-kitty)
@@ -1754,7 +1779,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+;; (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
 ;; (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
 
 
@@ -1926,6 +1951,19 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "M-7") 'winum-select-window-7)
 ;; (global-set-key (kbd "M-8") 'winum-select-window-8)
 ;; (global-set-key (kbd "M-9") 'winum-select-window-9)
+
+
+(defun my-vterm-push-goto ()
+  "Mark current window as recent and jump to vterm window.
+Enables jumping back to prior."
+  (interactive)
+  (if (s-starts-with? "*vterm" (buffer-name))
+      (aw-flip-window)
+    (aw--push-window (buffer-name))
+    (multi-vterm-dedicated-select)))
+;; (define-key cider-mode-map (kbd "C-c C-x") nil)
+(global-set-key (kbd "C-c C-x") 'my-vterm-push-goto)
+
 
 
 (defvar aw-dispatch-alist
@@ -2147,19 +2185,35 @@ Here 'words' are defined as characters separated by whitespace."
   (message "Setting up magit for canned messaging")
   (let* ((orig (magit-get-current-branch))
 	 ;; (orig "mde/SCRUM-12345_this-is-temp")
+	 ;; (orig "mde/SCRUM-12345_FEAT-this-is-temp")
 	 (bonly (s-replace "mde/" "" orig))
 	 ;; FIXME enable this line instead
-	 (parts (s-split "_" bonly))
+         (parts (s-split "_" bonly))
 	 ;; (parts (s-split "[0-9]+-" bonly))
          (title (s-replace "-" " " (nth 1 parts)))
-	 (scrum (car parts)))
+         (t2 (string-join (subseq (s-split " " title) 1) " "))
+         (ctype (downcase (car (s-split " " title))))
+         (scrum (car parts))
+         )
     ;; (message bonly)
+    ;; (message t2)
+    ;; (message (car parts))
     ;; (message scrum)
+    ;; (message ctype)
     ;; (message title)
-    (insert (concat "feat: (" scrum ") " title))))
-;; (my-git-commit-setup)
+    (insert (concat ctype ": (" scrum ") " t2))))
+;; Run this inside proj buffer: (my-git-commit-setup)
 
 (add-hook 'git-commit-setup-hook 'my-git-commit-setup)
+
+
+
+
+(require 'conventional-changelog)
+(with-eval-after-load 'magit-tag    ;; Integrate to `magit-tag'
+  (transient-append-suffix 'magit-tag
+    '(1 0 -1)
+    '("c" "changelog" conventional-changelog-menu)))
 
 ;; Pretty Magit Emoji
 ;; http://www.modernemacs.com/post/pretty-magit/
@@ -2850,6 +2904,9 @@ Relies on consult (for project-root), cider."
        (setq-local completion-styles '(orderless))
        )
 
+;; (add-hook 'justl-mode-hook (lambda () (local-set-key (kbd "C-c C-j") 'justl)))
+
+
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
 ;; (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
@@ -3239,6 +3296,16 @@ chord."
 (define-key shell-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
 ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
+
+;; vterm meta/alt not recognized, so adding manually
+;; https://github.com/akermu/emacs-libvterm/issues/632
+(define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
+(define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
+(define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
+(define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
+(define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
+(define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
+(define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
 
 
 ;; (require 'vterm) ; TEMPORARY
@@ -4310,6 +4377,8 @@ into Emacs, rather than jump to a browser and see it on GH."
 ;;         (nrepl-dict-get response key)
 ;;       response)))
 
+;; Don't add any spaces to align-regexp (1 is default?)
+;; (setq align-default-spacing 0)
 (defun cljns-align ()
   "Align ns requires."
   (interactive)
