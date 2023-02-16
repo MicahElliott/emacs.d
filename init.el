@@ -72,12 +72,13 @@
     consult
     consult-flycheck
     consult-dir
+    consult-eglot
+    conventional-changelog
     corfu
     corfu-doc
     crux
     csv
     dash
-    default-text-scale
     diff-hl
     dired-rainbow
     dired-sidebar
@@ -85,7 +86,6 @@
     dotenv-mode
     dot-mode
     dumb-jump
-    easy-kill
     edbi
     edebug-inline-result
     edit-indirect
@@ -147,9 +147,9 @@
     sotclojure
     super-save
     symbol-overlay
+    term-keys
     toggle-test
     typo
-    undo-tree
     unfill
     unicode-fonts
     use-package
@@ -319,7 +319,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline easy-kill zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -2298,16 +2298,19 @@ Enables jumping back to prior."
 (global-set-key [remap zap-to-char] 'zop-to-char)
 
 
+;; DISABLED Too annoying that easy-mark loses prior mark
 ;; Select/highlight with easy-kill
 ;; https://github.com/leoliu/easy-kill
 ;; http://stackoverflow.com/a/36631886/326516
 ;; (require 'easy-kill)
 ;; (global-set-key (kbd "M-w") 'kill-ring-save)
 ;; (global-set-key (kbd "C-M-SPC") 'easy-mark)
-(global-set-key [remap mark-sexp] 'easy-mark)
-(global-set-key [remap kill-ring-save] 'easy-kill)
 ;; (global-set-key [remap kill-ring-save] 'easy-mark)
 ;; (global-set-key [remap kill-ring-save] 'easy-mark)
+
+;; (global-set-key [remap mark-sexp] 'easy-mark)
+;; (global-set-key [remap kill-ring-save] 'easy-kill)
+
 
 
 
@@ -2916,6 +2919,12 @@ Relies on consult (for project-root), cider."
   '(progn
      ;; (define-key clojure-mode-map (kbd "C-c C-h") #'clojure-cheatsheet)
      (message "MDE: in clojure eval-after-load")))
+
+;; Remove : from word, no longer a constituent; for symbol-overlay
+(add-hook 'clojure-mode-hook (lambda () (modify-syntax-entry ?: ".")))
+;; Add - for sql mode words
+(add-hook 'sql-mode-hook     (lambda () (modify-syntax-entry ?- "w")))
+;; (modify-syntax-entry ?: "." clojure-mode-syntax-table)
 
 ;; https://github.com/clojure-emacs/squiggly-clojure
 ;; (eval-after-load 'flycheck '(flycheck-clojure-setup))
@@ -3640,7 +3649,7 @@ chord."
 ;; You may prefer to use `initials' instead of `partial-completion'.
 (use-package orderless
   :init
-  (setq completion-styles '(orderless)
+  (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         ;; completion-category-overrides '((file (styles . (partial-completion))))
 	orderless-component-separator " +"
@@ -3660,7 +3669,7 @@ chord."
 ;; (setq completion-styles '(orderless flex basic))
 ;; Cider completion bug!! Must have "basic" included for namespaces to work.
 ;; https://github.com/clojure-emacs/cider/issues/3019
-(setq completion-styles '(orderless))
+(setq completion-styles '(orderless basic))
 
 ;; (setq completion-styles '(initials basic))
 
@@ -4316,17 +4325,6 @@ into Emacs, rather than jump to a browser and see it on GH."
   (interactive)
   (let ((ans (completing-read "fqns:" cljns--fqnss)))
     (insert (first (last (assoc ans cljns--mapping2))))))
-
-;; Corfu
-;; (completion-in-region 2335 2337  '("ccc" "ccd" "cdd"))
-
-(defvar my-d (lazy-completion-table my-d my-d) "my ht")
-(defun my-d ()
-  (let ((tab (make-hash-table :test #'equal :size 3)))
-    (puthash "aaa" nil tab )
-    (puthash "aab" nil tab )
-    (puthash "abb" nil tab )
-    tab))
 
 ;; https://with-emacs.com/posts/tutorials/customize-completion-at-point/
 ;; https://emacs.stackexchange.com/a/37446/11025
