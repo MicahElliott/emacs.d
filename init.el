@@ -112,6 +112,7 @@
     hl-todo
     ibuffer-vc
     imenu-list
+    jet
     jump-char
     just-mode
     justl
@@ -319,7 +320,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -360,6 +361,8 @@
  '(which-key-side-window-max-height 0.9)
  '(which-key-side-window-max-width 0.9)
  '(which-key-unicode-correction 30)
+ '(whitespace-style
+   '(face trailing tabs spaces lines-tail empty indentation::tab indentation))
  '(yascroll:delay-to-hide nil)
  '(yascroll:disabled-modes '(image-mode cider-repl-mode vterm-mode))
  '(yascroll:scroll-bar '(right-fringe left-fringe text-area)))
@@ -427,7 +430,7 @@
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
  '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
- '(ctrlf-highlight-line ((t (:background "chocolate4"))))
+ '(ctrlf-highlight-line ((t (:background "red4"))))
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(flycheck-indicator-success ((t (:inherit custom-state))))
@@ -1833,10 +1836,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (treemacs-resize-icons 12)
 ;; https://github.com/Alexander-Miller/treemacs#faq
 
-;; When some-var presents in SQL, treat it as a whole word (not 2 words).
-;; https://emacs.stackexchange.com/a/59010/11025
-(add-hook 'sql-mode-hook (lambda () (modify-syntax-entry ?- "w"))) ; not working
-
 ;; ;; Ignore git ignored
 ;; ;; (treemacs-git-mode 'extended)
 ;; (with-eval-after-load 'treemacs
@@ -2173,7 +2172,49 @@ Enables jumping back to prior."
 
 ;; Auto-show magit-process-buffer on fetch
 ;; https://github.com/magit/magit/issues/4401
-(add-hook 'magit-credential-hook 'magit-process-buffer)
+;; (add-hook 'magit-credential-hook 'magit-process-buffer)
+;; Or always show process buffer
+;; https://github.com/magit/magit/wiki/Tips-and-Tricks#automatically-displaying-the-process-buffer
+(defun auto-display-magit-process-buffer (&rest args)
+  "Automatically display the process buffer when it is updated."
+  (let ((magit-display-buffer-noselect t))
+    (magit-process-buffer)))
+(advice-add 'magit-process-insert-section :before
+	    #'auto-display-magit-process-buffer)
+
+;; https://github.com/magit/magit/issues/1878#issuecomment-418763526
+;; Enable magit-process to interpret ansi colors
+(defun color-buffer (proc &rest args)
+  (interactive)
+  (with-current-buffer (process-buffer proc)
+    (read-only-mode -1)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode 1)))
+(advice-add 'magit-process-filter :after #'color-buffer)
+
+;; https://www.reddit.com/r/emacs/comments/fmd2qo/disabling_globalwhitespacemode_in_magit_buffers/
+(defun turn-off-whitespace-mode ()
+  "Unconditionally turn off Whitespace mode."
+  (whitespace-mode -1))
+(add-hook 'magit-section-mode-hook #'turn-off-whitespace-mode)
+
+(defun my-play-long-game ()    (play-sound '(sound :file "~/Music/game-sounds/624878__sonically_sound__old-video-game-4.wav" :volume 80)))
+(defun my-play-suntemple ()    (play-sound '(sound :file "~/Music/game-sounds/253177__suntemple__retro-accomplished-sfx.wav" :volume 80)))
+(defun my-play-uhoh ()         (play-sound '(sound :file "~/Music/game-sounds/361255__japanyoshithegamer__8-bit-uh-oh-sound.wav" :volume 80)))
+(defun my-play-accomplished () (play-sound '(sound :file "~/Music/game-sounds/253177__suntemple__retro-accomplished-sfx.wav" :volume 80)))
+(defun my-play-coins ()        (play-sound '(sound :file "~/Music/game-sounds/341695__projectsu012__coins-1.wav" :volume 80)))
+(defun my-play-heal ()         (play-sound '(sound :file "~/Music/game-sounds/346116__lulyc__retro-game-heal-sound.wav" :volume 80)))
+(defun my-play-laser ()        (play-sound '(sound :file "~/Music/game-sounds/413057__matrixxx__retro_laser_shot_01.wav" :volume 80)))
+(defun my-play-coin1 ()        (play-sound '(sound :file "~/Music/game-sounds/415083__harrietniamh__video-game-coin.wav" :volume 80)))
+(defun my-play-fx5 ()          (play-sound '(sound :file "~/Music/game-sounds/517756__danlucaz__game-fx-5.wav" :volume 80)))
+(defun my-play-jump ()         (play-sound '(sound :file "~/Music/game-sounds/580309__colorscrimsontears__jump-platformer.wav" :volume 80)))
+;; (defun my-play- () (play-sound '(sound :file "~/Music/game-sounds/" :volume 80)))
+
+(add-hook 'magit-log-mode-hook #'my-play-long-game)
+(add-hook 'magit-post-stage-hook #'my-play-coins)
+
+;; https://stackoverflow.com/questions/20126575/how-to-make-emacs-not-highlight-trailing-whitespace-in-term
+(add-hook 'term-mode-hook (lambda() (setq show-trailing-whitespace nil)))
 
 (defun my-magit-status ()
   (interactive)
@@ -2601,7 +2642,7 @@ Enables jumping back to prior."
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__r" 0 'sfdc-record t)))
 (font-lock-add-keywords 'clojure-mode '(("\\\"/[-:a-z0-9/]+\\\"" 0 'route-path t)))
-(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|GROUP\\|ORDER\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
+(font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|DELETE\\|GROUP\\|ORDER\\|NOT\\|NOT IN\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
 (defface my-backslash-escape-backslash-face
@@ -2741,7 +2782,7 @@ Enables jumping back to prior."
 (if (eq system-type 'darwin)
     (setq alert-default-style 'mode-line)
   (setq alert-default-style 'libnotify))
-(alert "Start mlscroll manually" :severity 'low :title "NOTICE:")
+;; (alert "Start mlscroll manually" :severity 'low :title "NOTICE:")
 
 ;; (setq hs-special-modes-alist)
 
@@ -2859,6 +2900,11 @@ Relies on consult (for project-root), cider."
 	 (word (s-replace-regexp "^::*" "" word))
 	 (word (s-replace-regexp ".*/" "" word)))
     (consult-ripgrep nil (concat word "#src"))))
+
+;; Convert EDN, JSON, Transit, YAML
+;; Good transient examples in this code.
+;; https://github.com/ericdallo/jet.el
+(require 'jet)
 
 ;; https://github.com/clojure-emacs/clj-refactor.el
 (defun my-clojure-mode-hook () "Foo bar."
@@ -3527,6 +3573,13 @@ chord."
 
 (define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
 
+
+(add-hook 'vterm-mode-hook (lambda ()
+                             (setq show-trailing-whitespace nil)
+                             (setf truncate-lines nil)
+                             (setq-local show-paren-mode nil)
+                             (flycheck-mode -1)))
+
 (defun ff-new-win ()
   (find-file))
 
@@ -4062,14 +4115,16 @@ into Emacs, rather than jump to a browser and see it on GH."
 	   (combo (concat ns "/" fn ":" ln)))
       (kill-new combo)
       (message "Copied location '%s' to the clipboard." combo)
-      (alert "Copied to kill ring" :severity 'low :title combo))))
+      ;; (alert "Copied to kill ring" :severity 'low :title combo)
+      )))
 
 (defun my-copy-namespace-name ()
   "Copy the namespace name to kill ring."
   (interactive)
   (kill-new (cider-current-ns))
   ;; (message-box "Copied to kill ring")
-  (alert "Copied to kill ring" :severity 'low :title (cider-current-ns)))
+  ;; (alert "Copied to kill ring" :severity 'low :title (cider-current-ns))
+  )
 (define-key cider-mode-map (kbd "C-c C-n c") 'my-copy-namespace-name)
 
 
