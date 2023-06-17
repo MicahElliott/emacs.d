@@ -71,7 +71,6 @@
     comment-dwim-2
     consult
     consult-flycheck
-    consult-dir
     consult-eglot
     conventional-changelog
     corfu
@@ -103,6 +102,7 @@
     git-timemachine
     github-browse-file
     goggles
+    gpt
     helpful
     highlight
     highlight-escape-sequences
@@ -122,6 +122,7 @@
     kibit-helper
     magit
     marginalia
+    mark-thing-at
     markdown-mode
     move-text
     multi-vterm
@@ -145,7 +146,6 @@
     rg
     shrink-whitespace
     smartparens
-    sotclojure
     super-save
     symbol-overlay
     term-keys
@@ -172,6 +172,8 @@
 (auto-compile-on-load-mode)
 (auto-compile-on-save-mode)
 
+;; '(consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -195,6 +197,7 @@
  '(bqn-mode-map-prefix "C-M-")
  '(browse-url-browser-function 'browse-url-firefox)
  '(case-fold-search nil)
+ '(cider-annotate-completion-function 'my-cider-annotate-completion-function)
  '(cider-comment-prefix " ;=> ")
  '(cider-inspector-auto-select-buffer t)
  '(cider-inspector-page-size 50)
@@ -217,8 +220,6 @@
  '(consult-preview-max-count 5)
  '(consult-preview-max-size 104857)
  '(consult-preview-raw-size 1024)
- '(consult-ripgrep-args
-   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number . --glob !*.xml")
  '(corfu-doc-max-height 30)
  '(corfu-doc-max-width 120)
  '(ctrlf-auto-recenter nil)
@@ -249,7 +250,7 @@
  '(flycheck-indicator-icon-warning 9650)
  '(flycheck-indicator-status-icons '((finished . "✓YAY✓") (errored . "XXX ERROR XXX")))
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
- '(flycheck-markdown-mdl-executable "nothing")
+ '(flycheck-markdown-mdl-executable "mdl")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(global-hl-line-mode t)
  '(global-hl-line-sticky-flag t)
@@ -302,11 +303,12 @@
  '(magit-log-arguments '("--graph" "--color" "--decorate" "--stat" "-n10"))
  '(magit-revision-insert-related-refs nil)
  '(marginalia-margin-threshold 120 t)
+ '(mark-thing-at-mode t)
  '(markdown-header-scaling t)
  '(markdown-wiki-link-search-subdirectories t)
  '(mlscroll-border 20)
  '(mlscroll-minimum-current-width 10)
- '(mlscroll-right-align t)
+ '(mlscroll-right-align nil)
  '(mode-line-percent-position nil)
  '(mood-line-show-cursor-point nil)
  '(mood-line-show-encoding-information nil)
@@ -320,7 +322,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char consult-dir restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek sotclojure rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clojure flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -424,9 +426,9 @@
  '(bqn-one-modifier-face ((t (:foreground "dark red"))))
  '(bqn-separator-face ((t (:foreground "#AE81FF"))))
  '(bqn-two-modifier-face ((t (:foreground "hot pink" :weight extra-bold))))
- '(cider-instrumented-face ((t (:box (:line-width (1 . -1) :color "#AE81FF") :foreground "#AE81FF" :background "brightmagenta"))))
+ '(cider-instrumented-face ((t (:foreground "#AE81FF" :background "brightmagenta"))))
  '(cider-repl-result-face ((t (:foreground "cyan"))))
- '(cider-traced-face ((t (:slant italic :box (:line-width (1 . -1) :color "#66D9EF") :background "darkslategray"))))
+ '(cider-traced-face ((t (:slant italic :background "darkslategray"))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
  '(col-highlight ((t (:background "RoyalBlue4"))))
  '(ctrlf-highlight-active ((t (:background "yellow" :foreground "black"))))
@@ -454,8 +456,8 @@
  '(markdown-italic-face ((t (:inherit italic :slant italic))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face))))
  '(minibuffer-prompt ((t (:foreground "#fffe0a" :underline t :slant italic :weight bold :height 1.0))))
- '(mode-line ((t (:background "RoyalBlue3" :foreground "gray75" :inverse-video nil :box (:line-width 3 :color "grey75" :style released-button) :height 1.0))))
- '(mode-line-inactive ((t (:background "gray22" :foreground "cornsilk4" :inverse-video nil :box (:line-width 3 :color "grey75" :style pressed-button) :height 1.0))))
+ '(mode-line ((t (:background "RoyalBlue3" :foreground "gray75" :inverse-video nil :height 1.0))))
+ '(mode-line-inactive ((t (:background "gray22" :foreground "cornsilk4" :inverse-video nil :height 1.0))))
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
@@ -479,14 +481,17 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
+ '(show-paren-match ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
+ '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "MediumBlue"))))
- '(symbol-overlay-face-3 ((t (:background "NavajoWhite3" :foreground "black"))))
+ '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "black"))))
  '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
+ '(symbol-overlay-face-6 ((t (:background "orange" :foreground "black"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(vertico-group-title ((t (:background "brightwhite" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
- '(visible-mark-face1 ((t (:background "DarkOrange3"))))
- '(visible-mark-face2 ((t (:background "burlywood4"))))
+ '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
+ '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold))))
  '(yascroll:thumb-fringe ((t (:background "#75715E" :foreground "orange red")))))
@@ -613,7 +618,8 @@
   (define-key my-buffer-keymap "e" 'consult-recent-file)
   (define-key my-buffer-keymap "f" 'my-copy-filename)
   (define-key my-buffer-keymap "F" 'my-copy-buffername)
-  (define-key my-buffer-keymap "n" 'my-copy-namespace-function-lineno)
+  (define-key my-buffer-keymap "N" 'my-copy-namespace-function-lineno)
+  (define-key my-buffer-keymap "n" 'my-copy-namespace-name)
   (define-key my-buffer-keymap "p" (lambda () (interactive)
 				     (my-ibuffer)
 				     (persp-ibuffer nil)))
@@ -632,7 +638,8 @@
 ;; (key-seq-define-global "'c" 'avy-goto-char-2-below)
 (key-seq-define-global "'c" 'avy-goto-symbol-1-below)
 ;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
-(key-seq-define-global "'f" 'avy-goto-symbol-1-above)
+;; (key-seq-define-global "'f" 'avy-goto-symbol-1-above)
+(key-seq-define-global "'f" (lambda () (interactive) (avy-goto-symbol-1-above 0 t)))
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
 ;; (key-seq-define-global "xc" 'avy-goto-word-0)
@@ -672,6 +679,7 @@
   (define-key my-git-keymap "B" 'git-link) ; browse
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
+  (define-key my-git-keymap "B" 'my-copy-branch-name)
   (define-key my-git-keymap "f" 'magit-diff-buffer-file)
   (define-key my-git-keymap "h" 'github-browse-file)
   ;; (define-key my-git-keymap "i" 'git-messenger:popup-message)
@@ -725,8 +733,9 @@
   (define-key my-lines-keymap "h" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
   (define-key my-lines-keymap "C" 'crosshairs-mode)
-  ;; (key-seq-define-global "ql" my-lines-keymap)
-  (key-seq-define-global "'l" my-lines-keymap))
+  (key-seq-define-global "ql" my-lines-keymap)
+  ;; (key-seq-define-global "'l" my-lines-keymap)
+  )
 
 ;; M — Mark
 (key-seq-define-global "qm" 'point-to-register)
@@ -757,7 +766,7 @@
   (define-key my-project-keymap "e" 'consult-recent-file)
   ;; (define-key my-project-keymap "e" 'consult-recent-file)
   (define-key my-project-keymap "f" 'project-find-file)
-  (define-key my-project-keymap "g" 'project-find-regexp)
+  (define-key my-project-keymap "F" 'project-find-regexp)
   (define-key my-project-keymap "k" 'project-kill-buffers)
   (define-key my-project-keymap "i" (lambda () (interactive) (split-window-balancedly) (persp-ibuffer nil) (message "kill window to quit")))
   ;; (define-key my-project-keymap "i" 'projectile-invalidate-cache)
@@ -766,6 +775,7 @@
   (define-key my-project-keymap "R" 'persp-remove-buffer)
   ;; (define-key my-project-keymap "s" 'projectile-ag)
   (define-key my-project-keymap "s" 'consult-ripgrep)
+  (define-key my-project-keymap "g" 'consult-grep)
   ;; (define-key my-project-keymap "t" 'projectile-toggle-between-implementation-and-test)
   (define-key my-project-keymap "t" 'tgt-toggle)
   ;; ag in custom specified dir
@@ -776,7 +786,9 @@
   (define-key my-project-keymap "D" 'project-dired)
   ;; (define-key my-project-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-project-keymap "I" 'ivy-imenu-anywhere)
-  (key-seq-define-global "'p" my-project-keymap))
+  (key-seq-define-global "'p" my-project-keymap)
+  (key-seq-define-global "qp" my-project-keymap)
+  )
 
 ;; Q — taken by q'
 
@@ -793,7 +805,8 @@
   (define-key my-cljr-keymap "s" 'cljr-auto-sort-ns)
   (define-key my-cljr-keymap "x" 'cljr-toggle-debug-mode)
   (define-key my-cljr-keymap "S" 'cljr-sort-project-dependencies)
-  (key-seq-define-global "'r" my-cljr-keymap))
+  ;; (key-seq-define-global "'r" my-cljr-keymap)
+  )
 
 ;; S — (BAD: possessives like Micah's)
 
@@ -822,7 +835,8 @@
   (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
   (define-key my-vterm-keymap "n" 'my-vterm-new)
   (define-key my-vterm-keymap "o" 'my-vterm-other)
-  (key-seq-define-global "'v" my-vterm-keymap))
+  ;; (key-seq-define-global "'v" my-vterm-keymap)
+  )
 
 ;; W — Windowing
 (key-seq-define-global "'w" 'ace-window)
@@ -898,29 +912,34 @@
 (key-chord-define-global "AR" (lambda () (interactive)  (windmove-left)))
 (key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
 (key-chord-define-global "WF" (lambda () (interactive)  (windmove-up)))
+(key-chord-define-global "GG" 'my-buf-pivot-right)
 (key-chord-define-global "TT" 'my-buf-move-right)
+(key-chord-define-global "FF" 'buf-move-up)
+(key-chord-define-global "SS" 'buf-move-down)
+
 (key-chord-define-global "RR" 'my-buf-move-left)
 (key-chord-define-global "RS" 'windmove-down)
 (key-chord-define-global "WF" 'windmove-up)
 ;; (key-chord-define-global "XC" 'counsel-M-x)
 (key-chord-define-global "DV" 'cider-clojuredocs)
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
-(key-chord-define-global "XC" 'cider-xref-fn-refs-select)
+;; (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
+(key-chord-define-global "XC" 'my-rg-xref)
 (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
 (key-seq-define-global   "IO" 'delete-other-windows) ; Only One
 (key-seq-define-global   "OI" 'winner-undo)
 ;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
 
 (key-seq-define-global   "H<" 'outline-show-entry)
-(key-seq-define-global   "<H" (lambda () (interactive) (outline-hide-subtree) (recenter-top-bottom)))
+;; (key-seq-define-global   "<H" (lambda () (interactive) (outline-hide-subtree) (recenter-top-bottom)))
 (key-seq-define-global   "HN" 'outline-show-all)
 (key-seq-define-global   "NH" 'outline-hide-sublevels)
 
 (key-seq-define-global   "FP" 'hs-show-block)
 (key-seq-define-global   "PF" 'my-hs-hide-block)
-(key-seq-define-global   "FS" 'my-hs-hide-functions-all)
+(key-seq-define-global   "SF" 'my-hs-hide-functions-all)
 ;; (key-seq-define-global   "SF" 'hs-show-all)
-(key-seq-define-global   "SF" (lambda () "Show all" (interactive) (hs-show-all) (recenter-top-bottom)))
+(key-seq-define-global   "FS" (lambda () "Show all" (interactive) (hs-show-all) (recenter-top-bottom)))
 (key-seq-define-global   "BF" 'hs-hide-all)
 (key-seq-define-global   "FT" 'hs-hide-block) ; fully hide single block; for ns and vars
 
@@ -951,6 +970,7 @@
 ;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
 (key-chord-define-global "AA" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
+(key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
@@ -958,8 +978,8 @@
 
 (key-chord-define-global "GV" 'set-variable)
 
-(key-chord-define-global "]]" 'my-forward-jump-to-line-break)
-(key-chord-define-global "[[" 'my-backward-jump-to-line-break)
+;; (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
+;; (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
 
 
 (defun display-line-numbers-absolute ()
@@ -1390,11 +1410,11 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'occur-hook (lambda () (switch-to-buffer-other-window "*Occur*")))
 ;; (define-key occur-mode-map (kbd "C-RET") (lambda () (occur-mode-goto-occurrence-other-window) (occq)))
 
-;; FIXME not taking effect
-(symbol-overlay-mode +1)
 ;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
+;; FIXME not taking effect
+(symbol-overlay-mode +1)
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -1441,7 +1461,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;;
 
 ;; (key-chord-define-global "CC" 'cider-transient)
-(key-chord-define-global "xc" 'cider-transient)
+(key-seq-define-global "xc" 'cider-transient)
 
 
 
@@ -1497,6 +1517,13 @@ Here 'words' are defined as characters separated by whitespace."
 ;; move line up/down (already enabled) -- M-S-up
 ;; move-text-up, move-text-down
 (require 'move-text)
+
+(global-unset-key (kbd "C-x m"))
+(global-unset-key (kbd "C-M-@"))
+(global-unset-key (kbd "M-@"))
+;; https://github.com/plandes/mark-thing-at
+(require 'mark-thing-at)
+
 
 ;; Focus — Dim the font color of text in surrounding paragraphs
 ;; https://github.com/larstvei/Focus
@@ -1665,6 +1692,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-nlinum-relative-mode 1) ; trying without to see if faster
 ;; (setq nlinum-relative-redisplay-delay 1)
 ;; (setq nlinum-relative-offset 0)
+
+(require 'git-gutter)
 
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
@@ -2069,8 +2098,21 @@ Enables jumping back to prior."
 ;; https://github.com/bbatsov/prelude/issues/106
 
 
+(defun my-buf-pivot-right ()
+  "Slide the buffer below to a full-height to the right."
+  (interactive)
+  (let ((next-move (if (window-in-direction 'up)
+                       (progn (windmove-up)
+                              'windmove-down)
+                     (windmove-down)
+                     'windmove-up)))
+    (split-window-balancedly)
+    (crux-switch-to-previous-buffer)
+    (funcall next-move)
+    (delete-window-balancedly)))
 
 (defun my-buf-move-right ()
+  "Slide the buffer below to the right."
   (interactive)
   (windmove-right)
   (split-window-vertically-balancedly)
@@ -2079,6 +2121,7 @@ Enables jumping back to prior."
   (windmove-left))
 
 (defun my-buf-move-left ()
+  "Slide the buffer below to the left."
   (interactive)
   (windmove-left)
   (split-window-vertically-balancedly)
@@ -2140,6 +2183,7 @@ Enables jumping back to prior."
 (defun my-next-line (arg)
   "Wrap `next-line' to save point mark."
   (interactive "P")
+  ;; (message arg)
   (when (and arg (< 4 arg)) (push-mark (point)))
   (next-line arg))
 
@@ -2210,11 +2254,30 @@ Enables jumping back to prior."
 (defun my-play-jump ()         (play-sound '(sound :file "~/Music/game-sounds/580309__colorscrimsontears__jump-platformer.wav" :volume 80)))
 ;; (defun my-play- () (play-sound '(sound :file "~/Music/game-sounds/" :volume 80)))
 
-(add-hook 'magit-log-mode-hook #'my-play-long-game)
-(add-hook 'magit-post-stage-hook #'my-play-coins)
+;; Plaing these may interfere with other apps, and can cause emacs to crash, I think
+;; (add-hook 'magit-log-mode-hook     #'my-play-laser)
+;; (add-hook 'magit-post-stage-hook   #'my-play-coins)
+;; (add-hook 'magit-post-unstage-hook #'my-play-heal)
+;; (add-hook 'magit-post-commit-hook  #'my-play-long-game)
+
+;; (add-hook 'cider-test-report-mode-hook #'my-play-uhoh)
+;; (add-hook 'cider-stacktrace-mode-hook  #'my-play-fx5)
+;; (add-hook 'cider-connected-hook        #'my-play-accomplished)
+;; (add-hook 'cider-repl-mode-hook        #'my-play-long-game)
+;; (add-hook 'cider-disconnected-hook     #'my-play-suntemple)
+
+;; (add-hook 'flycheck-syntax-check-failed-hook #'my-play-uhoh)
 
 ;; https://stackoverflow.com/questions/20126575/how-to-make-emacs-not-highlight-trailing-whitespace-in-term
-(add-hook 'term-mode-hook (lambda() (setq show-trailing-whitespace nil)))
+(add-hook 'term-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+;; (add-hook 'magit-process-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+;; (add-hook 'magit-process-mode-hook (lambda () (setq-local show-trailing-whitespace nil)))
+;; (add-hook 'magit-process-mode-hook (lambda () (whitespace-mode 0)))
+;; https://emacs.stackexchange.com/a/38778/11025
+(defun prevent-whitespace-mode-for-magit ()
+  (not (derived-mode-p 'magit-mode)))
+(add-function :before-while whitespace-enable-predicate 'prevent-whitespace-mode-for-magit)
+
 
 (defun my-magit-status ()
   (interactive)
@@ -2621,7 +2684,7 @@ Enables jumping back to prior."
 
 ;;https://www.masteringemacs.org/article/re-builder-interactive-regexp-builder
 (require 're-builder)
-(setq reb-re-syntax 'string)
+(setq reb-re-syntax 'read)
 
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
@@ -2637,12 +2700,17 @@ Enables jumping back to prior."
 ;; (face-spec-set 'sfdc-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 ;; (face-spec-set 'sql-field '((t :foreground "#ff00ff" :underline t :slant normal)))
 (font-lock-add-keywords 'clojure-mode '((";;;.*" 0 'special-comment t)))
-(font-lock-add-keywords 'clojure-mode '(("\btrue\b" 0 'boolean-true t)))
-(font-lock-add-keywords 'clojure-mode '(("\bfalse\b" 0 'boolean-false t)))
+(font-lock-add-keywords 'clojure-mode '(("\\btrue\\b" 0 'boolean-true t)))
+(font-lock-add-keywords 'clojure-mode '(("\\bfalse\\b" 0 'boolean-false t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__c" 0 'sfdc-field t)))
 (font-lock-add-keywords 'clojure-mode '(("\\w[A-z0-9_]+__r" 0 'sfdc-record t)))
 (font-lock-add-keywords 'clojure-mode '(("\\\"/[-:a-z0-9/]+\\\"" 0 'route-path t)))
 (font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|DELETE\\|GROUP\\|ORDER\\|NOT\\|NOT IN\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
+
+(font-lock-add-keywords 'sql-mode '(("-- :doc .*" 0 'sfdc-record t)))
+(font-lock-add-keywords 'sql-mode '(("-- :name [^:]+" 0 'special-comment t)))
+(font-lock-add-keywords 'sql-mode '((" \\(:\\*\\|:!\\|:n\\|:\\?\\|:1\\)" 0 'boolean-true t)))
+(font-lock-add-keywords 'sql-mode '((" :\\(v\\*:\\)?[-a-z0-9?]+"  0 'sql-field t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
 (defface my-backslash-escape-backslash-face
@@ -2696,6 +2764,9 @@ Enables jumping back to prior."
 ;; (require 'markdown-toc)
 ;; Enable syntax highlighting of code in blocks.
 (setq markdown-fontify-code-blocks-natively t)
+
+;; Seems to be best version markdownlint; see also mdl
+;; https://github.com/igorshubovych/markdownlint-cli
 
 
 ;; (require 'markdown-mode)
@@ -2768,7 +2839,7 @@ Enables jumping back to prior."
 ;; (require 'clojure-snippets) ; yas for clojure
 (require 'flycheck-clojure)
 (require 'kibit-helper)
-(require 'sotclojure)
+;; (require 'sotclojure)
 (speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
 
@@ -2822,7 +2893,11 @@ Enables jumping back to prior."
       (lambda (repl)
 	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
 
-(add-hook 'sql-mode-hook (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
+;; Add - for sql mode words
+;; (add-hook 'sql-mode-hook     (lambda () (modify-syntax-entry ?- "w" sql-mode-syntax-table)))  ; not working
+(add-hook 'sql-mode-hook (lambda ()
+                           (modify-syntax-entry ?- "w" sql-mode-syntax-table) ; add - for sql mode words
+                           (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
 ;; https://stackoverflow.com/questions/9818307/emacs-mode-specific-custom-key-bindings-local-set-key-vs-define-key
 ;; (eval-after-load "sql-mode" (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
 
@@ -2951,6 +3026,9 @@ Relies on consult (for project-root), cider."
        ;; FIXME
        ;; (setq-local completion-styles '(orderless cider))
        (setq-local completion-styles '(orderless))
+       (symbol-overlay-mode +1)
+       (setq completion-styles '(orderless basic))
+       (git-gutter-mode +1)
        )
 
 ;; (add-hook 'justl-mode-hook (lambda () (local-set-key (kbd "C-c C-j") 'justl)))
@@ -2968,8 +3046,7 @@ Relies on consult (for project-root), cider."
 
 ;; Remove : from word, no longer a constituent; for symbol-overlay
 (add-hook 'clojure-mode-hook (lambda () (modify-syntax-entry ?: ".")))
-;; Add - for sql mode words
-(add-hook 'sql-mode-hook     (lambda () (modify-syntax-entry ?- "w")))
+;; (add-hook 'clojure-mode-hook (lambda () (modify-syntax-entry ?/ "w")))
 ;; (modify-syntax-entry ?: "." clojure-mode-syntax-table)
 
 ;; https://github.com/clojure-emacs/squiggly-clojure
@@ -2990,6 +3067,8 @@ Relies on consult (for project-root), cider."
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-h") 'mark-paragraph)
+    (define-key map (kbd "C-M-@") 'mark-sexp-thing)
+    (define-key map (kbd "M-@") 'mark-word-thing)
     map)
   "Custom my-keys-minor-mode keymap.")
 (define-minor-mode my-keys-minor-mode
@@ -3227,6 +3306,84 @@ Relies on consult (for project-root), cider."
 
 ;;; Cider Customizations
 
+
+;; Taken from cider-completion.el
+
+(defun my-cider-annotate-completion-function (type ns )
+  "Get completion function based on TYPE and NS and DS."
+  (concat (when type (format "\t<%s>" type))
+          (when ns (format " (%s)" ns))
+          ;; ds
+          ))
+
+;; Used by customize
+;; Turned out this was just too slow to be usable.
+;; Locked up when scrolling down through completion list, and wasn't able to edit candidate
+(defun cider-annotate-symbol (symbol)
+  "Do cider usual stuff, plus add the docstring SYMBOL annotation."
+  (when cider-annotate-completion-candidates
+    ;; (message (type symbol))
+    (let* ((type (cider-completion--get-candidate-type symbol))
+           (ns (cider-completion--get-candidate-ns symbol))
+           ;; Get full newline-joined doc
+
+           ;; (docstring (lax-plist-get (cider-eldoc-info symbol) "docstring"))
+           ;; ;; Cut it at the first period
+           ;; (sentence1 (concat (car (split-string docstring "\\.")) "."))
+           ;; (maxlen (min (length sentence1) 100))
+           ;; (shorter (substring sentence1 0 maxlen))
+           ;; (docstring-final (s-replace-all '( ("\n" . "") ("  " . " ")) shorter))
+
+           ;; (tp (get-text-property 2 'type symbol))
+           ;; Ex: <f> (clojure.core)
+           (tiny-annots (funcall cider-annotate-completion-function type ns)))
+      ;; My addition to add docstring
+      ;; (funcall cider-annotate-completion-function type ns)
+      ;; (concat tiny-annots "\t" docstring-final) ; simple for just cider
+      tiny-annots
+      ;; (concat  ; or fancy for marginalia
+      ;;  (marginalia--fields
+      ;;   ;; (type :face 'marginalia-type)
+      ;;   ;; (ns :face 'marginalia-value :truncate 0.5)
+      ;;   (tiny-annots :face 'marginalia-value :truncate 0.8) ; 'my-cider-annotate-completion-function
+      ;;   ;; (or (cadr (assoc (get-text-property 0 'type symbol) cider-completion-annotations-alist))
+      ;;   ;;     (get-text-property 0 'type symbol))
+
+      ;;   (docstring-final :truncate 1.0 :face 'marginalia-documentation)
+        )))
+
+;; (defun marginalia-annotate-symbol (cand)
+;;   "Annotate function CAND with its documentation string."
+;;   (when-let (sym (intern-soft cand))
+;;     (when (fboundp sym)
+;;       (concat
+;;        ;; "Some stuff"
+;;        (marginalia-annotate-binding cand)
+;;        (marginalia--fields
+;;         ((marginalia--symbol-class sym) :face 'marginalia-type)
+;;         ((marginalia--function-args sym) :face 'marginalia-value
+;;          :truncate 0.5)
+;;         ((marginalia--function-doc sym) :truncate 1.0
+;;          :face 'marginalia-documentation))))))
+
+;; This is an "annotation-function". You're supposed to provide your own per package
+;; (defun marginalia-annotate-function (cand)
+(defun cider-complete-at-point ()
+  "Complete the symbol at point."
+  (when-let* ((bounds (bounds-of-thing-at-point 'symbol)))
+    (when (and (cider-connected-p)
+               (not (or (cider-in-string-p) (cider-in-comment-p))))
+      (list (car bounds) (cdr bounds)
+            (completion-table-dynamic #'cider-complete)
+            ;; This is what does all the work we care about
+            ;; :annotation-function #'say-foo
+            :annotation-function #'cider-annotate-symbol
+            ;; :annotation-function #'marginalia-annotate-symbol
+            :company-kind #'cider-company-symbol-kind
+            :company-doc-buffer #'cider-create-doc-buffer
+            :company-location #'cider-company-location
+            :company-docsig #'cider-company-docsig))))
+
 ;; SLOW maybe, test with disbursement-create
 (defun cider-company-docsig (thing)
   "Return signature for THING."
@@ -3434,6 +3591,28 @@ chord."
   This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
+
+(defun jump-to-penultimate-mark ()
+  "Jump to second-to-last mark, rotate last 3 marks."
+  (interactive)
+  ;; (set-mark-command 1)
+  (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+  (set-marker (mark-marker) (point))
+  (goto-char (marker-position (cadr mark-ring))))
+;; (global-set-key (kbd "C-x C-x") 'push-mark-no-activate)
+(global-set-key (kbd "C-S-x C-S-x") 'jump-to-penultimate-mark)
+
+;; Stolen, remove
+;; https://stackoverflow.com/a/14539202/326516
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring. Does nothing if mark ring is empty."
+  (interactive)
+      (when mark-ring
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+        (when (null (mark t)) (ding))
+        ;; (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))
 
 (defun exchange-point-and-mark-no-activate ()
   "Identical to \\[exchange-point-and-mark] but will not activate the region."
@@ -3726,13 +3905,13 @@ chord."
 
 ;; (setq completion-styles '(initials basic))
 
-;; https://github.com/karthink/consult-dir
-(use-package consult-dir
-  :ensure t
-  :bind (("C-x C-d" . consult-dir)
-         :map vertico-map
-         ("C-x C-d" . consult-dir)
-         ("C-x C-j" . consult-dir-jump-file)))
+;; ;; https://github.com/karthink/consult-dir
+;; (use-package consult-dir
+;;   :ensure t
+;;   :bind (("C-x C-d" . consult-dir)
+;;          :map vertico-map
+;;          ("C-x C-d" . consult-dir)
+;;          ("C-x C-j" . consult-dir-jump-file)))
 
 ;; (require 'consult-proj)
 
@@ -3795,13 +3974,18 @@ chord."
 ;; Display a documentation popup for completion candidate when using
 ;; Corfu. It can be regarded as company-quickhelp for Corfu.
 ;; https://github.com/galeo/corfu-doc
-(require 'corfu-doc)
+;; (require 'corfu-doc)
 ;; (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down) ;; corfu-next
 ;; (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up)  ;; corfu-previous
 (define-key corfu-map (kbd "M-n") #'corfu-next)
 (define-key corfu-map (kbd "M-p") #'corfu-previous)
-(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+;; (add-hook 'corfu-mode-hook #'corfu-doc-mode)
 
+(require 'corfu-popupinfo)
+(require 'corfu-terminal)
+(require 'corfu-doc-terminal)
+(corfu-doc-terminal-mode +1)
+;; (corfu-doc-mode +1)
 
 
 
@@ -4095,7 +4279,7 @@ This is way faster than 'C-s M-n C-a C-d'."
           help-mode
 	  cider-browse-ns-mode
 	  "\\*cider-ns-browser\\*"
-	  compilation-mode))
+          compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
 
@@ -4157,6 +4341,7 @@ into Emacs, rather than jump to a browser and see it on GH."
   :hook (flycheck-mode . flycheck-indicator-mode))
 
 
+;; (require 'mlscroll)
 ;; mlscroll: tiny purple scrollbar in mode-line
 ;; Might have to run manually: mlscroll-mode after starting
 ;; Ignore the :box warnings; seems to work fine/better with mode-line box
@@ -4293,11 +4478,14 @@ into Emacs, rather than jump to a browser and see it on GH."
 	;; ("Functions" "^(defn-? \\(?3:\\^:deprecated \\)?\\(?1:[a-z\\?<>!-]+\\)" 1)
 	("Functions :: Public"  "^(defn \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
 	("Functions :: Private" "^(defn- \\(?1:[a-z0-9\\?<>!-]+\\)" 1)
-        ("Vars"      "^(def \\(?3:\\^:private \\)?\\(?1:[a-z0-9\\?<>!-]+\\)" 1)
+        ("Vars"      "^(def \\(?3:\\^:\\(?:private\\|impure\\) \\)?\\(?1:[a-z0-9\\?<>!-]+\\)" 1)
         ;; ("Sections" "^;;; \\(.+\\)" 1)
-        ("Sections" "^;;; \\(.+\\)" 1)
+        ("Sections" "^;;;;? \\(.+\\)" 1)
 	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
+
+;; What is 42?
+(require 'gpt)
 
 
 
@@ -4444,6 +4632,18 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 
 
+;; Corfu
+;; (completion-in-region 2335 2337  '("ccc" "ccd" "cdd"))
+
+(defvar my-d (lazy-completion-table my-d my-d) "my ht")
+(defun my-d ()
+  (let ((tab (make-hash-table :test #'equal :size 3)))
+    (puthash "aaa" nil tab )
+    (puthash "aab" nil tab )
+    (puthash "abb" nil tab )
+    tab))
+
+
 
 ;;; BQN
 
@@ -4577,7 +4777,6 @@ into Emacs, rather than jump to a browser and see it on GH."
 ;; '(neo-theme 'icons)
 ;; '(neo-window-position 'left)
 ;; '(neo-window-width 40)
-
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
