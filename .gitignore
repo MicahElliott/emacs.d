@@ -32,3 +32,8 @@ tmp
 projectile.cache
 smex-items
 transient/
+/src/
+/var/
+eln-cache/
+emojis/
+/projects

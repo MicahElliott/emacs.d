@@ -74,7 +74,6 @@
     consult-eglot
     conventional-changelog
     corfu
-    corfu-doc
     crux
     csv
     dash
@@ -98,6 +97,7 @@
     flycheck-indicator
     flycheck-inline
     flymd
+    git-gutter
     git-link
     git-timemachine
     github-browse-file
@@ -124,6 +124,7 @@
     marginalia
     mark-thing-at
     markdown-mode
+    monokai-theme
     move-text
     multi-vterm
     orderless
@@ -136,6 +137,7 @@
     perspective
     pickle
     popper
+    puni
     python
     quick-peek
     rainbow-delimiters
@@ -297,6 +299,8 @@
  '(inhibit-startup-screen nil)
  '(initial-buffer-choice t)
  '(justl-recipe-width 50)
+ '(key-chord-safety-interval-backward 0.0)
+ '(key-chord-safety-interval-forward 0.0)
  '(live-completions-columns 'single)
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
@@ -322,7 +326,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark key-seq aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(puni flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -2595,16 +2599,33 @@ Enables jumping back to prior."
 ;;   ("C-M-<left>" . sp-backward-slurp-sexp)
 
 
+;;; Paredit family
+(electric-pair-mode 1)
+(require 'puni)
+(puni-global-mode)
+;; (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+(define-key puni-mode-map (kbd "M-(") 'puni-wrap-round)
+(define-key puni-mode-map (kbd "M-s") 'puni-splice)
+(define-key puni-mode-map (kbd "M-r") 'puni-raise)
+(define-key puni-mode-map (kbd "M-X") 'puni-squeeze) ; XXX
+(define-key puni-mode-map (kbd "M-S") 'puni-split)
+;; https://github.com/AmaiKinono/puni/issues/52
+;; (define-key puni-mode-map (kbd "M""-S") 'puni-join)
+(define-key puni-mode-map (kbd "M-") 'puni-barf-forward)
+(define-key puni-mode-map (kbd "M-") 'puni-barf-backward)
+
+
+
 ;; TODO: why are these 3 set?
-(setq sp-base-key-bindings 'paredit)
-(setq sp-autoskip-closing-pair 'always)
-(setq sp-hybrid-kill-entire-symbol nil)
-(require 'smartparens)  ; better paredit, sp-*
-(require 'smartparens-config)
-(sp-use-paredit-bindings)
+;; (setq sp-base-key-bindings 'paredit)
+;; (setq sp-autoskip-closing-pair 'always)
+;; (setq sp-hybrid-kill-entire-symbol nil)
+;; (require 'smartparens)  ; better paredit, sp-*
+;; (require 'smartparens-config)
+;; (sp-use-paredit-bindings)
 ;; Enable all the goodies.
-(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-(smartparens-global-mode t)
+;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+;; (smartparens-global-mode t)
 
 ;; https://emacs.stackexchange.com/questions/7832/how-to-bind-c-for-real
 ;; (define-key input-decode-map (kbd "C-[") [control-bracketleft])
@@ -2840,7 +2861,7 @@ Enables jumping back to prior."
 (require 'flycheck-clojure)
 (require 'kibit-helper)
 ;; (require 'sotclojure)
-(speed-of-thought-mode)
+;; (speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
 
 ;; Disable syntax highlighting and line-numbering in repl
@@ -3913,8 +3934,6 @@ chord."
 ;;          ("C-x C-d" . consult-dir)
 ;;          ("C-x C-j" . consult-dir-jump-file)))
 
-;; (require 'consult-proj)
-
 
 (use-package embark
   :ensure t
@@ -3983,8 +4002,8 @@ chord."
 
 (require 'corfu-popupinfo)
 (require 'corfu-terminal)
-(require 'corfu-doc-terminal)
-(corfu-doc-terminal-mode +1)
+;; (require 'corfu-doc-terminal)
+;; (corfu-doc-terminal-mode +1)
 ;; (corfu-doc-mode +1)
 
 
