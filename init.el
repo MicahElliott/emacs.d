@@ -3527,26 +3527,6 @@ chord."
 ;; (define-key sh-mode-map [(control ?j)] 'sh-send-line-or-region)
 ;; (define-key sh-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 (define-key shell-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
-;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
-;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
-
-;; vterm meta/alt not recognized, so adding manually
-;; https://github.com/akermu/emacs-libvterm/issues/632
-(define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
-(define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
-(define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
-(define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
-(define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
-(define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
-(define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
-
-
-;; (require 'vterm) ; TEMPORARY
-;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
-;; (require 'vterm-toggle) ; TEMPORARY
-;; (global-set-key [f2] 'vterm-toggle)
-;; Not working
-(setq vterm-toggle-hide-method nil)
 
 (defun my-vterm-new ()
   (interactive)
@@ -3768,6 +3748,27 @@ chord."
 
 
 (require 'vterm)
+
+;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
+;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
+
+;; vterm meta/alt not recognized, so adding manually
+;; https://github.com/akermu/emacs-libvterm/issues/632
+(define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
+(define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
+(define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
+(define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
+(define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
+(define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
+(define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
+
+
+;; (require 'vterm) ; TEMPORARY
+;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
+;; (require 'vterm-toggle) ; TEMPORARY
+;; (global-set-key [f2] 'vterm-toggle)
+;; Not working
+(setq vterm-toggle-hide-method nil)
 
 (define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
 
