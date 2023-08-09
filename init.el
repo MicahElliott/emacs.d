@@ -412,9 +412,10 @@
 ;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
 ;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
-;; (set-face-attribute 'default nil :font "Fira Code"
-;;                     :height (if (eq system-type 'darwin) 100 62)
-;; 		    :background (if (eq system-type 'darwin) "gray16" "gray5"))
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :font "Fira Code"
+                      :height (if (eq system-type 'darwin) 100 )
+                      :background (if (eq system-type 'darwin) "gray16" "gray5")))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -929,7 +930,7 @@
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
 ;; (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
 (key-chord-define-global "XC" 'my-rg-xref)
-(key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
+;; (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
 (key-seq-define-global   "IO" 'delete-other-windows) ; Only One
 (key-seq-define-global   "OI" 'winner-undo)
 ;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
@@ -960,7 +961,8 @@
 (key-chord-define-global "GT" 'magit-status)
 (key-chord-define-global "XS" 'save-buffer)
 
-(key-chord-define-global "QA" 'toggle-parens)
+(key-chord-define-global "WA" 'cycle-pairs)
+(key-chord-define-global "{<" 'cycle-pairs)
 
 ;; TODO key seqs for opposited toggle
 (key-seq-define-global "PB" 'make-frame-command)
@@ -974,7 +976,8 @@
 ;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
 (key-chord-define-global "AA" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
-(key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
+;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
+(key-chord-define-global "VV" 'vterm-toggle)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
@@ -1138,28 +1141,24 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-'") 'toggle-quotes)
 
-;; TODO
-;; https://emacs.stackexchange.com/questions/64242/is-there-toggle-syntax-package-for-parens-brackets-brokets-braces
-(defun toggle-parens ()
+;; https://stackoverflow.com/a/76869891/326516
+(defun cycle-pairs ()
   "Toggle parens, braces, brackets."
   (interactive)
   (save-excursion
     (when (not (string-match-p (regexp-quote (char-to-string (char-after))) "([{<"))
-      (sp-backward-up-sexp)
+      (backward-up-list)
       (when (eq ?\" (char-after)) ; up again if inside string
-	(sp-backward-up-sexp)))
+        (backward-up-list)))
     (progn
-      (sp-wrap-with-pair
-       (cl-case (char-after)
-	 (?\( "[")
-	 (?\[ "{")
-         (?\{ "(")
-	 ;; smartparens can't wrap with <
-	 ;; (?\< "(")
-	 ))
+      (cl-case (char-after)
+        (?\( (puni-wrap-square))
+        (?\[ (puni-wrap-curly))
+        (?\{ (puni-wrap-round))
+        ;; (?\< "(")
+        )
       (forward-char)
-      (sp-splice-sexp))))
-(global-set-key (kbd "C-c S") 'toggle-parens)
+      (puni-splice))))
 
 ;; https://stackoverflow.com/a/21780995/326516
 (global-set-key (kbd "C-S-k") (lambda () (interactive) (delete-region (point) (line-end-position))))
@@ -1257,8 +1256,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
 ;; (global-set-key (kbd "C-\"") 'popup-imenu)
 ;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
-(global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
-(global-set-key (kbd "C-M-e") 'my-end-of-defun)
 (global-set-key (kbd "C-c c") 'my-copy-filename)
 (global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
 
@@ -1522,12 +1519,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; move-text-up, move-text-down
 (require 'move-text)
 
-(global-unset-key (kbd "C-x m"))
-(global-unset-key (kbd "C-M-@"))
-(global-unset-key (kbd "M-@"))
-;; https://github.com/plandes/mark-thing-at
-(require 'mark-thing-at)
-
 
 ;; Focus — Dim the font color of text in surrounding paragraphs
 ;; https://github.com/larstvei/Focus
@@ -1739,7 +1730,7 @@ Here 'words' are defined as characters separated by whitespace."
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
 
 ;; Seems the only way to have multiple vterms
-(when (eq system-type 'gnu/linux) (require 'multi-vterm))
+;; (when (eq system-type 'gnu/linux) (require 'multi-vterm))
 
 ;; One-time setup
 ;; https://github.com/CyberShadow/term-keys#kitty
@@ -2603,16 +2594,74 @@ Enables jumping back to prior."
 (electric-pair-mode 1)
 (require 'puni)
 (puni-global-mode)
+
+;; puni defines a few of its own and I don't like them
+;; https://stackoverflow.com/a/46868395
+(eval-after-load "puni"
+    '(progn
+       (define-key puni-mode-map (kbd "C-M-a") 'my-beginning-of-defun)
+       (define-key puni-mode-map (kbd "C-M-e") 'my-end-of-defun)))
+(global-set-key (kbd "C-M-a") 'my-beginning-of-defun)
+(global-set-key (kbd "C-M-e") 'my-end-of-defun)
 ;; (add-hook 'term-mode-hook #'puni-disable-puni-mode)
-(define-key puni-mode-map (kbd "M-(") 'puni-wrap-round)
+;; (define-key puni-mode-map (kbd "M-(") 'puni-wrap-round)
 (define-key puni-mode-map (kbd "M-s") 'puni-splice)
 (define-key puni-mode-map (kbd "M-r") 'puni-raise)
-(define-key puni-mode-map (kbd "M-X") 'puni-squeeze) ; XXX
+(global-unset-key (kbd "M-X"))
+(define-key puni-mode-map (kbd "M-X") 'puni-squeeze)
+(define-key puni-mode-map (kbd "C-S-K") 'puni-squeeze)
 (define-key puni-mode-map (kbd "M-S") 'puni-split)
 ;; https://github.com/AmaiKinono/puni/issues/52
 ;; (define-key puni-mode-map (kbd "M""-S") 'puni-join)
-(define-key puni-mode-map (kbd "M-") 'puni-barf-forward)
-(define-key puni-mode-map (kbd "M-") 'puni-barf-backward)
+(define-key puni-mode-map (kbd "C-S-}") 'puni-slurp-forward)
+(define-key puni-mode-map (kbd "C-S-)") 'puni-barf-forward)
+(define-key puni-mode-map (kbd "C-S-{") 'puni-slurp-backward)
+(define-key puni-mode-map (kbd "C-S-(") 'puni-barf-backward)
+
+(define-key puni-mode-map (kbd "C-M-n") 'puni-end-of-sexp)
+(define-key puni-mode-map (kbd "C-M-p") 'puni-beginning-of-sexp)
+;; (global-set-key (kbd "M-f") 'forward-word)
+
+;; Minor mode for personal overrides
+;; http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
+(global-unset-key (kbd "C-x m"))
+(global-unset-key (kbd "C-M-@"))
+(global-unset-key (kbd "M-@"))
+;; https://github.com/plandes/mark-thing-at
+(require 'mark-thing-at)
+
+(defun my-puni-wrap-round ()
+  "Go to beginning of word, then wrap-round."
+  (interactive)
+  (if current-prefix-arg
+      (progn
+        (message "here")
+        (puni-backward-sexp)
+        (let ((current-prefix-arg 4))
+          (call-interactively 'puni-wrap-round)))
+    (puni-backward-sexp)
+    (puni-wrap-round))
+  )
+(global-set-key (kbd "C-S-l") 'foo)
+
+(defvar my-keys-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-h") 'mark-paragraph)
+    (define-key map (kbd "C-M-@") 'mark-sexp-thing)
+    ;; (define-key my-keys-minor-mode-map (kbd "C-M-@") 'mark-sexp-thing)
+    (define-key map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
+    ;; (define-key my-keys-minor-mode-map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
+    (define-key map (kbd "M-@") 'mark-word-thing)
+    (define-key map (kbd "M-(") 'my-puni-wrap-round)
+    (define-key map (kbd "C-M-S-SPC") 'mark-line)
+    ;; (define-key my-keys-minor-mode-map (kbd "C-M-S-SPC") 'mark-line)
+    map)
+  "Custom my-keys-minor-mode keymap.")
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " my-keys")
+(my-keys-minor-mode 1)
 
 
 
@@ -2632,11 +2681,11 @@ Enables jumping back to prior."
 ;; (define-key smartparens-mode-map (kbd "C-]") 'sp-forward-barf-sexp)
 ;; (define-key smartparens-mode-map [control-bracketleft] 'sp-backward-barf-sexp)
 
-;; https://github.com/Fuco1/.emacs.d/blob/master/files/smartparens.el
-(define-key smartparens-mode-map (kbd "C-S-SPC") 'sp-forward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-S-_") 'sp-backward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
+;; ;; https://github.com/Fuco1/.emacs.d/blob/master/files/smartparens.el
+;; (define-key smartparens-mode-map (kbd "C-S-SPC") 'sp-forward-barf-sexp)
+;; (define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
+;; (define-key smartparens-mode-map (kbd "C-S-_") 'sp-backward-barf-sexp)
+;; (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
 
 ;; Remove unneeded bindings: https://emacs.stackexchange.com/a/54651/11025
 (define-key smartparens-mode-map (kbd "M-`") nil)
@@ -3038,7 +3087,7 @@ Relies on consult (for project-root), cider."
        (global-unset-key (kbd "C-c C-p"))
        (define-key clojure-mode-map (kbd "C-c C-p") 'cider-inspect)
        ;; (define-key (kbd "C-c r"))
-       (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
+       ;; (define-key clojure-mode-map (kbd "M-J") 'sp-join-sexp) ; maybe already done by smartparens
        ;; Make similar to wrapping with M-(
        ;; COMPAT: no go in termenal
        ;; (define-key clojure-mode-map (kbd "M-[") (lambda () (interactive) (sp-wrap-with-pair "[")))
@@ -3083,21 +3132,6 @@ Relies on consult (for project-root), cider."
 ;; https://github.com/maio/discover-clj-refactor.el
 ;; (require 'discover-clj-refactor) ; C-c j
 
-;; Minor mode for personal overrides
-;; http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
-(defvar my-keys-minor-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-h") 'mark-paragraph)
-    (define-key map (kbd "C-M-@") 'mark-sexp-thing)
-    (define-key map (kbd "M-@") 'mark-word-thing)
-    map)
-  "Custom my-keys-minor-mode keymap.")
-(define-minor-mode my-keys-minor-mode
-  "A minor mode so that my key settings override annoying major modes."
-  :init-value t
-  :lighter " my-keys")
-(my-keys-minor-mode 1)
-
 (defun my-minibuffer-setup-hook () "Foo bar."
        (my-keys-minor-mode 0))
 (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
@@ -3106,9 +3140,10 @@ Relies on consult (for project-root), cider."
   "Open a line above while inside a let's top line."
   (interactive)
   (beginning-of-line)
-  (sp-down-sexp)
-  (sp-down-sexp)
+  (down-list)
+  (down-list)
   (newline)
+  (indent-for-tab-command)
   ;; (company-indent-or-complete-common t)
   (forward-line -1)
   (end-of-line))
@@ -3747,39 +3782,43 @@ chord."
       (vterm-send-string buffer-content))))
 
 
-(require 'vterm)
+;; Can't get vterm to work on mac
+(when (eq system-type 'gnu/linux)
 
-;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
-;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
+  (require 'vterm)
 
-;; vterm meta/alt not recognized, so adding manually
-;; https://github.com/akermu/emacs-libvterm/issues/632
-(define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
-(define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
-(define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
-(define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
-(define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
-(define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
-(define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
+  ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
+  ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
 
-
-;; (require 'vterm) ; TEMPORARY
-;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
-;; (require 'vterm-toggle) ; TEMPORARY
-;; (global-set-key [f2] 'vterm-toggle)
-;; Not working
-(setq vterm-toggle-hide-method nil)
-
-(define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
-
-(define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
+  ;; vterm meta/alt not recognized, so adding manually
+  ;; https://github.com/akermu/emacs-libvterm/issues/632
+  (define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
+  (define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
+  (define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
+  (define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
+  (define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
+  (define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
+  (define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
 
 
-(add-hook 'vterm-mode-hook (lambda ()
-                             (setq show-trailing-whitespace nil)
-                             (setf truncate-lines nil)
-                             (setq-local show-paren-mode nil)
-                             (flycheck-mode -1)))
+  ;; (require 'vterm) ; TEMPORARY
+  ;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
+  ;; (require 'vterm-toggle) ; TEMPORARY
+  ;; (global-set-key [f2] 'vterm-toggle)
+  ;; Not working
+  (setq vterm-toggle-hide-method nil)
+
+  (define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
+
+  (define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
+
+
+  (add-hook 'vterm-mode-hook (lambda ()
+                               (setq show-trailing-whitespace nil)
+                               (setf truncate-lines nil)
+                               (setq-local show-paren-mode nil)
+                               (flycheck-mode -1)))
+  )
 
 (defun ff-new-win ()
   (find-file))
@@ -4667,9 +4706,9 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 ;;; BQN
 
-(add-to-list 'exec-path "~/src/CBQN")
-(add-to-list 'load-path "~/src/bqn-mode")
-(require 'bqn-mode)
+;; (add-to-list 'exec-path "~/src/CBQN")
+;; (add-to-list 'load-path "~/src/bqn-mode")
+;; (require 'bqn-mode)
 
 
 ;;; END (effectively)
