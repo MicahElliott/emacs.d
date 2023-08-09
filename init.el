@@ -132,7 +132,6 @@
     org-download
     org-preview-html
     page-break-lines
-    paredit
     paren-face
     perspective
     pickle
@@ -326,7 +325,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(puni flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip paredit windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(puni flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -4551,31 +4550,11 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 ;;; cljr piecemeal replacement
 
-
-;; FIXME replace all these paredit uses with puni
-(require 'paredit)
-
-(defun cljr--depth-at-point ()
-  "Returns the depth in s-expressions, or strings, at point."
-  (let ((depth (car (paredit-current-parse-state))))
-    (if (paredit-in-string-p)
-        (1+ depth)
-      depth)))
-
-
-(defun cljr--goto-toplevel ()
-  (paredit-backward-up (cljr--depth-at-point))
-  (when (looking-back "#" 1)
-    (backward-char)))
-
-
 (defun cljr--goto-ns ()
   "Go to the first namespace defining form in the buffer."
   (goto-char (point-min))
-  (if (re-search-forward
-       clojure-namespace-regexp ; defined in clojure-mode
-       nil t)
-      (cljr--goto-toplevel)
+  (if (re-search-forward clojure-namespace-regexp nil t) ; defined in clojure-mode
+      (beginning-of-buffer) ; simplistic but usually ok to assume first line is (ns ...)
     (error "No namespace declaration found")))
 
 (defun cljr--insert-in-ns (type)
