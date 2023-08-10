@@ -70,7 +70,6 @@
     clojure-mode
     comment-dwim-2
     consult
-    consult-flycheck
     consult-eglot
     conventional-changelog
     corfu
@@ -92,11 +91,8 @@
     embark-consult
     envrc
     exec-path-from-shell
-    flycheck-clj-kondo
-    flycheck-clojure
-    flycheck-indicator
-    flycheck-inline
     flymd
+    flymake-kondor
     git-gutter
     git-link
     git-timemachine
@@ -119,14 +115,13 @@
     key-chord
     key-seq
     keycast
-    kibit-helper
     magit
     marginalia
     mark-thing-at
     markdown-mode
     monokai-theme
-    move-text
     multi-vterm
+    move-text
     orderless
     org-bullets
     org-download
@@ -134,7 +129,6 @@
     page-break-lines
     paren-face
     perspective
-    pickle
     popper
     puni
     python
@@ -146,7 +140,7 @@
     ripgrep
     rg
     shrink-whitespace
-    smartparens
+    sml-modeline
     super-save
     symbol-overlay
     term-keys
@@ -161,11 +155,16 @@
     vterm-toggle
     which-key
     xclip
-    yascroll
     zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+    ;; consult-flycheck
+    ;; flycheck-clj-kondo
+    ;; flycheck-clojure
+    ;; flycheck-indicator
+    ;; flycheck-inline
 
 (setq load-prefer-newer t)
 ;; (package-initialize)
@@ -258,7 +257,6 @@
  '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
  '(global-whitespace-mode t)
- '(global-yascroll-bar-mode nil)
  '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
@@ -284,6 +282,8 @@
      ("TEMP" . "#d0bf8f")
      ("FIXME" . "#cc9393")
      ("XXXX*" . "#cc9393")
+     ("WARNING" . "orange")
+     ("UGLY" . "orange")
      ("SLOW" . "red")
      ("OPTIMIZE" . "red")
      ("BUG" . "red")
@@ -325,7 +325,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(puni flycheck-clojure cider mlscroll mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode cargo-transient transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize sr-speedbar bicycle dired-rainbow highlight yascroll edebug-inline-result pickle monokai-theme rich-minority moody keycast org-tree-slide simple-modeline zop-to-char restclient goggles corfu vertico dired-sidebar dirtree multi-vterm bash-completion highlight-escape-sequences hl-todo icomplete-vertical org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package consult-flycheck project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode flycheck-inline vterm-toggle vterm org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo smartparens shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit kibit-helper jump-char highlight-parentheses flymd flycheck-clj-kondo feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(sml-modeline flymake-kondor puni cider mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize bicycle dired-rainbow highlight edebug-inline-result monokai-theme rich-minority keycast org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -370,7 +370,7 @@
    '(face trailing tabs spaces lines-tail empty indentation::tab indentation))
  '(yascroll:delay-to-hide nil)
  '(yascroll:disabled-modes '(image-mode cider-repl-mode vterm-mode))
- '(yascroll:scroll-bar '(right-fringe left-fringe text-area)))
+ '(yascroll:scroll-bar '(text-area right-fringe left-fringe)))
 
 ;; DISABLED
 ;; rainbow-identifiers
@@ -411,10 +411,10 @@
 ;; '(org-code ((t (:foreground "#75715E" :family "Fantasque Sans Mono"))))
 ;; '(page-break-lines ((t (:slant normal :weight normal :height 180 :width condensed :family "Fantasque Sans Mono"))))
 
-(when (display-graphic-p)
-  (set-face-attribute 'default nil :font "Fira Code"
-                      :height (if (eq system-type 'darwin) 100 )
-                      :background (if (eq system-type 'darwin) "gray16" "gray5")))
+;; (when (display-graphic-p)
+;;   (set-face-attribute 'default nil :font "Fira Code"
+;;                       :height (if (eq system-type 'darwin) 100 )
+;;                       :background (if (eq system-type 'darwin) "gray16" "gray5")))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -440,6 +440,8 @@
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
  '(flycheck-indicator-success ((t (:inherit custom-state))))
+ '(flymake-error ((t (:foreground "red" :underline (:color foreground-color :style wave)))))
+ '(flymake-warning ((t (:foreground "brightyellow" :underline (:color foreground-color :style wave)))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
@@ -448,6 +450,7 @@
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(highlight ((t (:background "RoyalBlue4"))))
+ '(highlight-numbers-number ((t (:foreground "orangered" :weight extra-bold))))
  '(hl-line ((t (:extend t :background "#011a40" :box nil))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
@@ -643,7 +646,8 @@
 (key-seq-define-global "'c" 'avy-goto-symbol-1-below)
 ;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
 ;; (key-seq-define-global "'f" 'avy-goto-symbol-1-above)
-(key-seq-define-global "'f" (lambda () (interactive) (avy-goto-symbol-1-above 0 t)))
+;; (key-seq-define-global "'f" (lambda () (interactive) (avy-goto-symbol-1-above 0 t)))
+(key-seq-define-global "'f" 'avy-goto-symbol-1-above)
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
 ;; (key-seq-define-global "xc" 'avy-goto-word-0)
@@ -658,17 +662,14 @@
 ;; ;; (key-seq-define-global "qd" 'treemacs)
 
 ;; E — Errors
-(let ((my-flycheck-keymap (make-sparse-keymap)))
-  (define-key my-flycheck-keymap "e" 'flycheck-next-error) ; default
-  (define-key my-flycheck-keymap "c" 'flycheck-buffer) ; not working?
-  (define-key my-flycheck-keymap "E" 'flycheck-explain-error-at-point) ; not useful
-  (define-key my-flycheck-keymap "l" 'consult-flycheck)
-  (define-key my-flycheck-keymap "L" 'flycheck-list-errors)
-  (define-key my-flycheck-keymap "n" 'flycheck-next-error)
-  (define-key my-flycheck-keymap "p" 'flycheck-previous-error)
-  (define-key my-flycheck-keymap "C" 'flycheck-compile)
-  (key-seq-define-global "qe" my-flycheck-keymap)
-  (key-seq-define-global "'e" my-flycheck-keymap))
+(let ((my-flymake-keymap (make-sparse-keymap)))
+  (define-key my-flymake-keymap "e" ''flymake-goto-next-error) ; default
+  (define-key my-flymake-keymap "c" 'flymake-show-diagnostics-buffer)
+  (define-key my-flymake-keymap "l" 'consult-flymake)
+  (define-key my-flymake-keymap "n" 'flymake-goto-next-error)
+  (define-key my-flymake-keymap "p" 'flymake-goto-prev-error)
+  (define-key my-flymake-keymap "C" 'flymake-compile)
+  (key-seq-define-global "qe" my-flymake-keymap))
 
 ;; F - Find/search
 (let ((my-find-keymap (make-sparse-keymap)))
@@ -727,18 +728,21 @@
   ;; (define-key my-kill-keymap "p" 'projectile-kill-buffers)
   (key-seq-define-global "qk" my-kill-keymap))
 
-;; L — Line-numbering/viewing
+;; L — Line-numbering/viewing/UI
 (let ((my-lines-keymap (make-sparse-keymap)))
   (define-key my-lines-keymap "r" 'display-line-numbers-relative)
   (define-key my-lines-keymap "a" 'display-line-numbers-absolute)
+  (define-key my-lines-keymap "s" 'sml-modeline-mode)
   (define-key my-lines-keymap "l" 'display-line-numbers-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
-  (define-key my-lines-keymap "h" 'hl-line-flash)
+  (define-key my-lines-keymap "H" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
-  (define-key my-lines-keymap "C" 'crosshairs-mode)
-  (key-seq-define-global "ql" my-lines-keymap)
+  (define-key my-lines-keymap "x" 'crosshairs-mode)
+  (define-key my-lines-keymap "m" 'menu-bar-open)
+  (define-key my-lines-keymap "h" 'global-hl-line-mode)
   ;; (key-seq-define-global "'l" my-lines-keymap)
+  (key-seq-define-global "ql" my-lines-keymap)
   )
 
 ;; M — Mark
@@ -1273,9 +1277,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; UI / LOOK-N-FEEL
 
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (menu-bar-mode -1)
 
 ;; the blinking cursor is nothing, but an annoyance
@@ -1351,7 +1353,12 @@ Here 'words' are defined as characters separated by whitespace."
 (scroll-bar-mode -1)
 (setq scroll-bar-width 2)
 
-(require 'yascroll)
+;; SLOW in terminal!! Probably should just keep this uninstalled, though it's nice to have a scrollbar!
+;; (require 'yascroll)
+;; (global-yascroll-bar-mode 1)
+
+;; https://melpa.org/#/sml-modeline
+(require 'sml-modeline)
 
 ;; No splash screen
 (setq inhibit-startup-message nil)
@@ -1607,10 +1614,21 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; LINTERS
 
+;; (require 'flycheck)
+
+(require 'flymake)
+(add-hook 'prog-mode #'flymake-mode)
+(add-hook 'markdown-mode #'flymake-mode) ; FIXME should this be flymd?
+;; https://github.com/turbo-cafe/flymake-kondor
+(remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
+(use-package flymake-kondor :ensure t :hook (clojure-mode . flymake-kondor-setup))
+
+;; (require 'flymake-kondor)
+
 ;; (require 'flycheck-yamllint)
 
-(with-eval-after-load 'flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
+;; (with-eval-after-load 'flycheck
+;;   (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
 
 ;; FIXME This might be breaking my own clojure quickpeek for docs
 ;; Make inline message pretty with quick-peek
@@ -1688,6 +1706,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq nlinum-relative-offset 0)
 
 (require 'git-gutter)
+(git-gutter-mode +1)
 
 ;; (setq nlinum-relative-current-symbol "->")      ; or "" for display current line number
 
@@ -1869,7 +1888,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; DIRED
 
-(load "dired-x")
+;; (load "dired-x")
 
 (use-package dired-rainbow
   :config
@@ -2558,7 +2577,7 @@ Enables jumping back to prior."
 ;; Highlight matching parens
 ;; https://github.com/Fuco1/smartparens/wiki/Show-smartparens-mode
 ;; Can be SLOW with long lines!
-(show-smartparens-global-mode t)
+;; (show-smartparens-global-mode t)
 ;; More matching parens: colors block you're in red (SLOW?)
 ;; https://github.com/tsdh/highlight-parentheses.el
 ;; TODO testing if slow
@@ -2621,6 +2640,11 @@ Enables jumping back to prior."
 (define-key puni-mode-map (kbd "C-M-p") 'puni-beginning-of-sexp)
 ;; (global-set-key (kbd "M-f") 'forward-word)
 
+(define-key puni-mode-map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
+;; (define-key puni-mode-map (kbd "M-(") 'my-puni-wrap-round)
+(define-key puni-mode-map (kbd "M-(") 'puni-wrap-round)
+;; (define-key my-keys-minor-mode-map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
+
 ;; Minor mode for personal overrides
 ;; http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
 (global-unset-key (kbd "C-x m"))
@@ -2634,24 +2658,20 @@ Enables jumping back to prior."
   (interactive)
   (if current-prefix-arg
       (progn
-        (message "here")
-        (puni-backward-sexp)
+        (thing-at-point--beginning-of-symbol)
         (let ((current-prefix-arg 4))
           (call-interactively 'puni-wrap-round)))
-    (puni-backward-sexp)
+    (thing-at-point--beginning-of-symbol)
+    ;; (puni-backward-sexp)
     (puni-wrap-round))
   )
-(global-set-key (kbd "C-S-l") 'foo)
 
 (defvar my-keys-minor-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "M-h") 'mark-paragraph)
     (define-key map (kbd "C-M-@") 'mark-sexp-thing)
     ;; (define-key my-keys-minor-mode-map (kbd "C-M-@") 'mark-sexp-thing)
-    (define-key map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
-    ;; (define-key my-keys-minor-mode-map (kbd "C-M-SPC") 'puni-mark-sexp-at-point)
     (define-key map (kbd "M-@") 'mark-word-thing)
-    (define-key map (kbd "M-(") 'my-puni-wrap-round)
     (define-key map (kbd "C-M-S-SPC") 'mark-line)
     ;; (define-key my-keys-minor-mode-map (kbd "C-M-S-SPC") 'mark-line)
     map)
@@ -2906,14 +2926,15 @@ Enables jumping back to prior."
 ;; (require 'cider-eval-sexp-fu) ; breaks elpy
 ;; (require 'clj-refactor)
 ;; (require 'clojure-snippets) ; yas for clojure
-(require 'flycheck-clojure)
-(require 'kibit-helper)
+;; (require 'flycheck-clojure)
+;; (require 'kibit-helper)
 ;; (require 'sotclojure)
 ;; (speed-of-thought-mode)
 ;; (require 'clojure-mode-extra-font-locking)
 
 ;; Disable syntax highlighting and line-numbering in repl
 (add-hook 'cider-repl-mode-hook (lambda ()
+                                  (sml-modeline-mode 0)
 				  (font-lock-mode 0)))
 
 ;;; Nofitications
@@ -2931,9 +2952,9 @@ Enables jumping back to prior."
 
 
 ;; For kondo: https://github.com/borkdude/flycheck-clj-kondo#multiple-linters
-(require 'flycheck-clj-kondo)
-(dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
-  (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
+;; (require 'flycheck-clj-kondo)
+;; (dolist (checker '(clj-kondo-clj clj-kondo-cljs clj-kondo-cljc clj-kondo-edn))
+;;   (setq flycheck-checkers (cons checker (delq checker flycheck-checkers))))
 ;; (dolist (checkers '((clj-kondo-clj . clojure-joker)
 ;;                     (clj-kondo-cljs . clojurescript-joker)
 ;;                     (clj-kondo-cljc . clojure-joker)
@@ -3098,6 +3119,11 @@ Relies on consult (for project-root), cider."
        (symbol-overlay-mode +1)
        (setq completion-styles '(orderless basic))
        (git-gutter-mode +1)
+
+       ;; Magic order needed to enable kondo
+       (flymake-kondor-setup)
+       (flymake-mode-on)
+
        )
 
 ;; (add-hook 'justl-mode-hook (lambda () (local-set-key (kbd "C-c C-j") 'justl)))
@@ -3121,7 +3147,7 @@ Relies on consult (for project-root), cider."
 ;; https://github.com/clojure-emacs/squiggly-clojure
 ;; (eval-after-load 'flycheck '(flycheck-clojure-setup))
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; http://stackoverflow.com/questions/23766483/emacs-cider-clojure-auto-complete-how-to-get-the-docstring
 ;; (setq ac-delay 0.1)
@@ -3802,7 +3828,7 @@ chord."
 
   ;; (require 'vterm) ; TEMPORARY
   ;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
-  ;; (require 'vterm-toggle) ; TEMPORARY
+  (require 'vterm-toggle)
   ;; (global-set-key [f2] 'vterm-toggle)
   ;; Not working
   (setq vterm-toggle-hide-method nil)
@@ -3816,7 +3842,8 @@ chord."
                                (setq show-trailing-whitespace nil)
                                (setf truncate-lines nil)
                                (setq-local show-paren-mode nil)
-                               (flycheck-mode -1)))
+                               ;; (flycheck-mode -1)
+                               ))
   )
 
 (defun ff-new-win ()
@@ -4310,9 +4337,9 @@ This is way faster than 'C-s M-n C-a C-d'."
 ;; (require 'consult)
 
 ;; Optionally add the `consult-flycheck' command.
-(use-package consult-flycheck
-  :bind (:map flycheck-command-map
-	      ("!" . consult-flycheck)))
+;; (use-package consult-flycheck
+;;   :bind (:map flycheck-command-map
+;; 	      ("!" . consult-flycheck)))
 
 
 
@@ -4395,8 +4422,8 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 
 ;; https://github.com/gexplorer/flycheck-indicator
-(use-package flycheck-indicator
-  :hook (flycheck-mode . flycheck-indicator-mode))
+;; (use-package flycheck-indicator
+;;   :hook (flycheck-mode . flycheck-indicator-mode))
 
 
 ;; (require 'mlscroll)
@@ -4589,13 +4616,13 @@ into Emacs, rather than jump to a browser and see it on GH."
 (defvar demo-var-with-docstrinng 24 "some info on the demo")
 
 (defun cljns-add-require ()
-  "Add a require."
+  "Add a require ns, sort, re-eval ns.
+Can be called conveniently via `cider-transient'."
   (interactive)
   (save-excursion
-    (let* ((alias  (car (s-split "/" (thing-at-point 'symbol 'no-properties))))
-	   ;; (choice (completing-read "namespace:" cljns--fqnss))
-	   (fqns   (first (last (assoc alias cljns--mapping1)))))
-
+    (let* ((alias (car (s-split "/" (thing-at-point 'symbol 'no-properties))))
+           ;; (choice (completing-read "namespace:" cljns--fqnss))
+           (fqns   (first (last (assoc alias cljns--mapping1)))))
       (cljr--insert-in-ns ":require")
       (insert (format "[%s :as %s]" fqns alias))
       (clojure-sort-ns)
@@ -4610,6 +4637,7 @@ into Emacs, rather than jump to a browser and see it on GH."
 ;; https://with-emacs.com/posts/tutorials/customize-completion-at-point/
 ;; https://emacs.stackexchange.com/a/37446/11025
 (defun cljns-complete-ns ()
+  "Tab-completeable ns completer."
   (interactive)
   ;; Get word-at-point
   ;; Read all NSs into list
