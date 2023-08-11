@@ -50,7 +50,8 @@
                          ;;("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
-			 ("cselpa" . "https://elpa.thecybershadow.net/packages/")))
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+			 ("cselpa" . "https://elpa.thecybershadow.net/packages/")))  ; for term-keys
 
 (setq package-enable-at-startup nil)
 ;; (package-initialize)
@@ -83,7 +84,7 @@
     dotenv-mode
     dot-mode
     dumb-jump
-    edbi
+    eat
     edebug-inline-result
     edit-indirect
     eglot
@@ -120,7 +121,6 @@
     mark-thing-at
     markdown-mode
     monokai-theme
-    multi-vterm
     move-text
     orderless
     org-bullets
@@ -151,8 +151,6 @@
     use-package
     vertico
     visible-mark
-    vterm
-    vterm-toggle
     which-key
     xclip
     zop-to-char))
@@ -252,7 +250,7 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "mdl")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode t)
+ '(global-hl-line-mode nil)
  '(global-hl-line-sticky-flag t)
  '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
@@ -282,8 +280,6 @@
      ("TEMP" . "#d0bf8f")
      ("FIXME" . "#cc9393")
      ("XXXX*" . "#cc9393")
-     ("WARNING" . "orange")
-     ("UGLY" . "orange")
      ("SLOW" . "red")
      ("OPTIMIZE" . "red")
      ("BUG" . "red")
@@ -317,7 +313,6 @@
  '(mood-line-show-encoding-information nil)
  '(moody-mode-line-height 25)
  '(mouse-avoidance-mode 'exile nil (avoid))
- '(multi-vterm-dedicated-window-height 70)
  '(nrepl-sync-request-timeout 30)
  '(nyan-mode t)
  '(org-babel-clojure-backend 'cider)
@@ -325,7 +320,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(sml-modeline flymake-kondor puni cider mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot rust-mode transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize bicycle dired-rainbow highlight edebug-inline-result monokai-theme rich-minority keycast org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(eat sml-modeline flymake-kondor puni cider mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority keycast org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -367,10 +362,7 @@
  '(which-key-side-window-max-width 0.9)
  '(which-key-unicode-correction 30)
  '(whitespace-style
-   '(face trailing tabs spaces lines-tail empty indentation::tab indentation))
- '(yascroll:delay-to-hide nil)
- '(yascroll:disabled-modes '(image-mode cider-repl-mode vterm-mode))
- '(yascroll:scroll-bar '(text-area right-fringe left-fringe)))
+   '(face trailing tabs spaces lines-tail empty indentation::tab indentation)))
 
 ;; DISABLED
 ;; rainbow-identifiers
@@ -501,7 +493,10 @@
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
  '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold))))
- '(yascroll:thumb-fringe ((t (:background "#75715E" :foreground "orange red")))))
+ )
+
+ ;; '(eat-term-color-12 ((t (:foreground "dodgerblue" :weight extra-bold))))
+ ;; '(eat-term-color-4 ((t (:foreground "dodgerblue" :weight extra-bold))))
 
 ;; '(hl-line ((t (:extend t :background "gray12" :box (:line-width 1 :color "black")))))
 
@@ -835,14 +830,12 @@
   (define-key my-url-keymap "u" 'browse-url)
   (key-seq-define-global "'u" my-url-keymap))
 
-;; V — Vterm
+;; V — Vterm (BAD: we've)
 (let ((my-vterm-keymap (make-sparse-keymap)))
-  (define-key my-vterm-keymap "v" 'multi-vterm-dedicated-toggle)
-  ;; (define-key my-vterm-keymap "v" 'vterm-toggle)
-  ;; (define-key my-vterm-keymap "v" 'vterm-toggle-show)
-  (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
-  (define-key my-vterm-keymap "n" 'my-vterm-new)
-  (define-key my-vterm-keymap "o" 'my-vterm-other)
+  ;; (define-key my-vterm-keymap "v" 'multi-vterm-dedicated-toggle)
+  ;; (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
+  ;; (define-key my-vterm-keymap "n" 'my-vterm-new)
+  ;; (define-key my-vterm-keymap "o" 'my-vterm-other)
   ;; (key-seq-define-global "'v" my-vterm-keymap)
   )
 
@@ -980,7 +973,7 @@
 (key-chord-define-global "AA" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 ;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
-(key-chord-define-global "VV" 'vterm-toggle)
+;; (key-chord-define-global "VV" 'vterm-toggle)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
@@ -1994,17 +1987,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "M-9") 'winum-select-window-9)
 
 
-(defun my-vterm-push-goto ()
-  "Mark current window as recent and jump to vterm window.
-Enables jumping back to prior."
-  (interactive)
-  (if (s-starts-with? "*vterm" (buffer-name))
-      (aw-flip-window)
-    (aw--push-window (buffer-name))
-    (multi-vterm-dedicated-select)))
-;; (define-key cider-mode-map (kbd "C-c C-x") nil)
-(global-set-key (kbd "C-c C-x") 'my-vterm-push-goto)
-
 
 
 (defvar aw-dispatch-alist
@@ -2282,7 +2264,9 @@ Enables jumping back to prior."
 ;; (add-hook 'flycheck-syntax-check-failed-hook #'my-play-uhoh)
 
 ;; https://stackoverflow.com/questions/20126575/how-to-make-emacs-not-highlight-trailing-whitespace-in-term
-(add-hook 'term-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+(add-hook 'term-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
+(add-hook 'eat-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
+
 ;; (add-hook 'magit-process-mode-hook (lambda () (setq show-trailing-whitespace nil)))
 ;; (add-hook 'magit-process-mode-hook (lambda () (setq-local show-trailing-whitespace nil)))
 ;; (add-hook 'magit-process-mode-hook (lambda () (whitespace-mode 0)))
@@ -2707,7 +2691,7 @@ Enables jumping back to prior."
 ;; (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
 
 ;; Remove unneeded bindings: https://emacs.stackexchange.com/a/54651/11025
-(define-key smartparens-mode-map (kbd "M-`") nil)
+;; (define-key smartparens-mode-map (kbd "M-`") nil)
 ;; (define-key smartparens-mode-map [remap kill-line] 'my-homemade-kill-line)
 
 ;; (show-smartparens-global-mode +1)
@@ -3132,7 +3116,7 @@ Relies on consult (for project-root), cider."
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
 ;; (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'smartparens-mode)
+;; (add-hook 'eval-expression-minibuffer-setup-hook #'smartparens-mode)
 
 (eval-after-load "clojure-mode"
   '(progn
@@ -3534,7 +3518,9 @@ chord."
 
 
 
-;;; SLIME MISC
+;;; TERM, SHELL, SLIME MISC
+
+;; (require 'eat)
 
 (defun sh-send-line-or-region ()
   (interactive ())
@@ -3588,14 +3574,13 @@ chord."
 ;; (define-key sh-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 (define-key shell-mode-map [(control ?c) (control ?z)] 'sh-switch-to-process-buffer)
 
-(defun my-vterm-new ()
-  (interactive)
-  (split-window-balancedly)
-  (multi-vterm))
-
-(defun my-vterm-other ()
-  (interactive)
-  (select-window (get-buffer-window (vterm-toggle--recent-other-buffer))))
+;; (defun my-vterm-new ()
+;;   (interactive)
+;;   (split-window-balancedly)
+;;   (multi-vterm))
+;; (defun my-vterm-other ()
+;;   (interactive)
+;;   (select-window (get-buffer-window (vterm-toggle--recent-other-buffer))))
 
 
 (defun tws-region-to-process (arg beg end)
@@ -3790,61 +3775,38 @@ chord."
 
 
 
-(defun my-vterm-send-buffer ()
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (not (eobp))
-      (let ((current-line (thing-at-point 'line t)))
-	(with-current-buffer (get-buffer "vterm")
-	  (vterm-send-string current-line))
-        (forward-line)))))
-
-(defun my-vterm-send-buffer-2 ()
-  (interactive)
-  (let ((buffer-content (buffer-string)))
-    (with-current-buffer (get-buffer "vterm")
-      (vterm-send-string buffer-content))))
-
-
-;; Can't get vterm to work on mac
-(when (eq system-type 'gnu/linux)
-
-  (require 'vterm)
-
-  ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-flip-window)
-  ;; (define-key vterm-mode-map [(control ?c) (control ?z)] 'aw-)
-
-  ;; vterm meta/alt not recognized, so adding manually
-  ;; https://github.com/akermu/emacs-libvterm/issues/632
-  (define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
-  (define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
-  (define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
-  (define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
-  (define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
-  (define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
-  (define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
+;; (defun my-vterm-send-buffer ()
+;;   (interactive)
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     (while (not (eobp))
+;;       (let ((current-line (thing-at-point 'line t)))
+;; 	(with-current-buffer (get-buffer "vterm")
+;; 	  (vterm-send-string current-line))
+;;         (forward-line)))))
+;; (defun my-vterm-send-buffer-2 ()
+;;   (interactive)
+;;   (let ((buffer-content (buffer-string)))
+;;     (with-current-buffer (get-buffer "vterm")
+;;       (vterm-send-string buffer-content))))
 
 
-  ;; (require 'vterm) ; TEMPORARY
-  ;; (define-key vterm-mode-map (kbd "C-c C-z") (lambda () (interactive) (other-window -1)))
-  (require 'vterm-toggle)
-  ;; (global-set-key [f2] 'vterm-toggle)
-  ;; Not working
-  (setq vterm-toggle-hide-method nil)
-
-  (define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
-
-  (define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
-
-
-  (add-hook 'vterm-mode-hook (lambda ()
-                               (setq show-trailing-whitespace nil)
-                               (setf truncate-lines nil)
-                               (setq-local show-paren-mode nil)
-                               ;; (flycheck-mode -1)
-                               ))
-  )
+;; ;; Can't get vterm to work on mac
+;; (when (eq system-type 'gnu/linux)
+;;   (require 'vterm)
+;;   ;; vterm meta/alt not recognized, so adding manually
+;;   ;; https://github.com/akermu/emacs-libvterm/issues/632
+;;   (define-key vterm-mode-map (kbd "M-f") 'vterm-send-M-f)
+;;   (define-key vterm-mode-map (kbd "M-b") 'vterm-send-M-b)
+;;   (define-key vterm-mode-map (kbd "M-p") 'vterm-send-M-p)
+;;   (define-key vterm-mode-map (kbd "M-n") 'vterm-send-M-n)
+;;   (define-key vterm-mode-map (kbd "M-d") 'vterm-send-M-d)
+;;   (define-key vterm-mode-map (kbd "M-h") 'vterm-send-M-h)
+;;   (define-key vterm-mode-map (kbd "M-v") 'vterm-send-M-v)
+;;   (require 'vterm-toggle)
+;; (define-key vterm-mode-map (kbd "C-RET") #'my-vterm-send-buffer-2)
+;; (define-key vterm-mode-map (kbd "C-s") #'vterm-send-C-c)
+;; (add-hook 'vterm-mode-hook (lambda () (setq show-trailing-whitespace nil) (setf truncate-lines nil) (setq-local show-paren-mode nil))))
 
 (defun ff-new-win ()
   (find-file))
