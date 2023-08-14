@@ -62,7 +62,6 @@
     ag
     aggressive-indent
     alert
-    ample-theme
     auto-compile
     avy
     beacon
@@ -86,7 +85,6 @@
     dumb-jump
     eat
     edebug-inline-result
-    edit-indirect
     eglot
     embark
     embark-consult
@@ -99,7 +97,6 @@
     git-timemachine
     github-browse-file
     goggles
-    gpt
     helpful
     highlight
     highlight-escape-sequences
@@ -115,7 +112,6 @@
     justl
     key-chord
     key-seq
-    keycast
     magit
     marginalia
     mark-thing-at
@@ -237,6 +233,7 @@
  '(dynamic-completion-mode nil)
  '(ediff-split-window-function 'split-window-horizontally)
  '(eglot-connect-timeout 120)
+ '(electric-pair-pairs '((34 . 34) (8216 . 8217) (8220 . 8221) (96 . 96)))
  '(epresent-hide-properties nil)
  '(epresent-hide-tags nil)
  '(epresent-mode-line '(:eval (int-to-string epresent-page-number)))
@@ -320,7 +317,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(eat sml-modeline flymake-kondor puni cider mark-thing-at gpt jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority keycast org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text ample-theme beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell edit-indirect dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(string-inflection eat sml-modeline flymake-kondor puni cider mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -480,7 +477,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
- '(show-paren-match ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
+ '(show-paren-match ((t (:background "#272822" :foreground "color-47" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "MediumBlue"))))
  '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "black"))))
@@ -492,8 +489,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold))))
- )
+ '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold)))))
 
  ;; '(eat-term-color-12 ((t (:foreground "dodgerblue" :weight extra-bold))))
  ;; '(eat-term-color-4 ((t (:foreground "dodgerblue" :weight extra-bold))))
@@ -967,6 +963,8 @@
 
 (key-seq-define-global "JL" 'beacon-blink)
 (key-seq-define-global "LJ" 'hl-line-flash)
+(key-seq-define-global "UL" 'string-inflection-underscore)
+(key-seq-define-global "LU" 'string-inflection-kebab-case)
 ;; (key-chord-define-global "H<" 'lispy-describe-inline)
 (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
 ;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
@@ -1746,9 +1744,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; One-time setup
 ;; https://github.com/CyberShadow/term-keys#kitty
 ;; After generation, this file needs to be manually copied to ~/.config/kitty.conf
-;; (with-temp-buffer
-;;   (insert (term-keys/kitty-conf))
-;;   (write-region (point-min) (point-max) "~/kitty-for-term-keys.conf"))
+;; (with-temp-buffer (insert (term-keys/kitty-conf)) (write-region (point-min) (point-max) "~/kitty-for-term-keys.conf"))
+;; (require 'term-keys-xterm)
+;; (with-temp-buffer (insert (term-keys/xterm-script)) (write-region (point-min) (point-max) "~/launch-xterm-with-term-keys.sh"))
 
 (when (not (eq system-type 'darwin))
   ;; FIXME Might need to only do this when window-system
@@ -4481,6 +4479,7 @@ into Emacs, rather than jump to a browser and see it on GH."
 ;; https://github.com/tarsius/keycast
 ;; Enable keycast for demos to log all keys to separate buffer
 ;; (keycast-log-mode 1)
+;; (keycast-mode)
 
 
 
@@ -4530,9 +4529,6 @@ into Emacs, rather than jump to a browser and see it on GH."
         ("Sections" "^;;;;? \\(.+\\)" 1)
 	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
-
-;; What is 42?
-(require 'gpt)
 
 
 
