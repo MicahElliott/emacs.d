@@ -55,8 +55,8 @@
 
 (setq package-enable-at-startup nil)
 ;; (package-initialize)
-(when (not package-archive-contents)
-  (package-refresh-contents))
+;; (when (not package-archive-contents) (package-refresh-contents))
+(message "Run package-refresh-contents manually if it's been a while.")
 (defvar my-packages
   '(ace-window
     ag
@@ -317,14 +317,15 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(string-inflection eat sml-modeline flymake-kondor puni cider mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
  '(persp-mode-prefix-key nil)
  '(persp-sort 'access)
  '(persp-suppress-no-prefix-key-warning t)
- '(popper-window-height 20)
+ '(popper-display-function 'popper-display-popup-at-bottom)
+ '(popper-window-height 40)
  '(quick-peek-add-spacer nil)
  '(quick-peek-position 'above)
  '(recentf-auto-cleanup 300)
@@ -489,7 +490,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "gainsboro" :foreground "#757575" :weight bold)))))
+ '(whitespace-tab ((t (:background "color-239" :foreground "#757575" :weight bold)))))
 
  ;; '(eat-term-color-12 ((t (:foreground "dodgerblue" :weight extra-bold))))
  ;; '(eat-term-color-4 ((t (:foreground "dodgerblue" :weight extra-bold))))
@@ -972,6 +973,7 @@
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 ;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
 ;; (key-chord-define-global "VV" 'vterm-toggle)
+(key-chord-define-global "VV" 'eat)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
@@ -1307,6 +1309,10 @@ Here 'words' are defined as characters separated by whitespace."
                                                 (abbreviate-file-name (buffer-file-name))
                                               "%b"))))
 
+;; Remove scratch buffer junk, and start in text-mode, not lisp
+(setq initial-scratch-message "")
+(setq initial-major-mode 'text-mode) ; could change to markdown-mode
+
 
 ;;; THEME
 
@@ -1348,8 +1354,14 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'yascroll)
 ;; (global-yascroll-bar-mode 1)
 
+;; Scrollbar in modeline. Minimal and pretty.
 ;; https://melpa.org/#/sml-modeline
 (require 'sml-modeline)
+;; (add-hook 'prog-mode-hook 'sml-modeline-mode)
+;; (sml-modeline-mode 0)
+;; NOTE this is only available as a global mode, so just ignore that it's active in giant buffers
+(sml-modeline-mode t)
+
 
 ;; No splash screen
 (setq inhibit-startup-message nil)
@@ -2445,12 +2457,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (add-hook 'clojure-mode-hook 'hs-clojure-hide-namespace-and-folds)
 
 
-
-(add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'outline-toggle-children)))
+;; (add-hook 'clojure-mode-hook (lambda () (local-set-key (kbd "<backtab>") 'outline-toggle-children)))
 
 (setq outline-minor-mode 1)
 (outline-minor-mode)
-
 
 
 
@@ -2747,8 +2757,18 @@ Here 'words' are defined as characters separated by whitespace."
 ;;
 ;; M-TAB -- invoke dabbrev menu (also double-TAB), aka M-/
 ;; TAB -- company-complete manually
-;; M-/ -- dabbrev
+;; M-/ -- fixme
 
+;; Dabbrev works with Corfu
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion) ; same as hippie-expand but with menu
+         ("C-M-/" . dabbrev-expand)))
+;; Expand file names too!
+(global-set-key (kbd "C-M-?") 'hippie-expand) ; C-M-S-/
+
+;; Word abbreviation expansion: Type a word, then: C-x a i g
+;; Use `edit-abbrevs' to see/change
 
 
 ;;; COLORS / THEMES
@@ -2759,13 +2779,15 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
-(defface special-comment '((t (:foreground "#c4bf27" :weight ultra-bold))) "My Special Comment" :group 'clojure-mode)
-(defface boolean-true '((t (:foreground "green" :weight bold))) "Boolean true" :group 'clojure-mode)
-(defface boolean-false '((t (:foreground "red" :weight bold))) "Boolean true" :group 'clojure-mode)
-(defface sfdc-field      '((t (:foreground "#dF9522" :weight ultra-bold))) "My SFDC Field" :group 'clojure-mode)
-(defface sfdc-record '((t (:foreground "#dF9522" :weight normal))) "SFDC Record" :group 'clojure-mode)
-(defface route-path '((t (:foreground "#4287f5" :weight ultra-bold))) "URL Route" :group 'clojure-mode)
-(defface sql-field       '((t (:foreground "#528fd1" :weight ultra-bold))) "My SQL Field" :group 'clojure-mode)
+(defface special-comment  '((t (:foreground "#c4bf27"    :weight ultra-bold))) "My Special Comment" :group 'clojure-mode)
+(defface ns-global        '((t (:foreground "green"      :weight ultra-bold))) "NS indicator"       :group 'clojure-mode)
+(defface ns-global-bare   '((t (:foreground "orangered"  :slant italic)))      "NS indicator"       :group 'clojure-mode)
+(defface boolean-true     '((t (:foreground "green"      :weight bold)))       "Boolean true"       :group 'clojure-mode)
+(defface boolean-false    '((t (:foreground "red"        :weight bold)))       "Boolean true"       :group 'clojure-mode)
+(defface sfdc-field       '((t (:foreground "#dF9522"    :weight ultra-bold))) "My SFDC Field"      :group 'clojure-mode)
+(defface sfdc-record      '((t (:foreground "#dF9522"    :weight normal)))     "SFDC Record"        :group 'clojure-mode)
+(defface route-path       '((t (:foreground "#4287f5"    :weight ultra-bold))) "URL Route"          :group 'clojure-mode)
+(defface sql-field        '((t (:foreground "#528fd1"    :weight ultra-bold))) "My SQL Field"       :group 'clojure-mode)
 ;; Play with setting dynamically
 ;; (face-spec-set 'special-comment '((t :foreground "#ff00ff" :underline t :slant normal)))
 ;; (face-spec-set 'sfdc-field '((t :foreground "#ff00ff" :underline t :slant normal)))
@@ -2782,6 +2804,9 @@ Here 'words' are defined as characters separated by whitespace."
 (font-lock-add-keywords 'sql-mode '(("-- :name [^:]+" 0 'special-comment t)))
 (font-lock-add-keywords 'sql-mode '((" \\(:\\*\\|:!\\|:n\\|:\\?\\|:1\\)" 0 'boolean-true t)))
 (font-lock-add-keywords 'sql-mode '((" :\\(v\\*:\\)?[-a-z0-9?]+"  0 'sql-field t)))
+
+(font-lock-add-keywords 'clojure-mode '(("::[-.a-z0-9]+/" 0 'ns-global t)))
+(font-lock-add-keywords 'clojure-mode '(("::" 0 'ns-global-bare t)))
 
 ;; https://emacs.stackexchange.com/questions/2508/highlight-n-and-s-inside-strings
 (defface my-backslash-escape-backslash-face
@@ -4074,14 +4099,6 @@ chord."
 
 ;; (cider-nrepl-send-sync-request '("op" "find-used-publics"  "file" "/home/mde/work/cc/src/clj/crawlingchaos/process/changeorder/changes.clj" "used-ns" "crawlingchaos.process.changeorder.changes" ))
 
-;; Dabbrev works with Corfu
-(use-package dabbrev
-  ;; Swap M-/ and C-M-/
-  :bind (("M-/" . dabbrev-completion)
-         ("C-M-/" . dabbrev-expand)))
-;; Expand file names too!
-(global-set-key (kbd "C-M-?") 'hippie-expand) ; C-M-S-/
-
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 ;; savehist keeps track of some history
 (use-package savehist
@@ -4303,10 +4320,23 @@ This is way faster than 'C-s M-n C-a C-d'."
 
 
 
+
+
+;;; Popup Windows (popper)
+
+
+(defun my-eat-toggle ()
+  (interactive)
+  (aw--push-window (get-buffer-window))
+  (select-window (get-buffer-window "*eat*"))) ; push present window onto stack
+
 (defun my/popper-toggle-latest ()
   (interactive)
   (aw--push-window (get-buffer-window))
   (popper-toggle-latest))
+
+;; Popwin has window sizing issues
+;; (global-set-key (kbd "C-z") popwin:keymap)
 
 ;; https://github.com/karthink/popper
 (use-package popper
@@ -4321,7 +4351,9 @@ This is way faster than 'C-s M-n C-a C-d'."
         '("\\*Messages\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
+          magit-process-mode
           help-mode
+          helpful-mode
 	  cider-browse-ns-mode
 	  "\\*cider-ns-browser\\*"
           compilation-mode))
@@ -4544,6 +4576,7 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 (defun cljr--insert-in-ns (type)
   "Insert another clause into the TYPE clause of the ns statement."
+  ;; TODO check if already required
   (cljr--goto-ns)
   (if (search-forward (concat "(" type))
       (if (looking-at " *)")
@@ -4600,20 +4633,20 @@ Can be called conveniently via `cider-transient'."
   ;; Get word-at-point
   ;; Read all NSs into list
   (let* ((tap (bounds-of-thing-at-point 'word))
-	 (beg (car tap))
-	 (end (cdr tap))
-	 ;; (alist '(("str"  "clojure.string") ("csv"  "clojure.data.csv")))
-	 (annotf (lambda (str)
-		   (format " (%s)" (first (cdr (assoc str cljns--mapping2))))))
-	 (ans (completing-read "Candidates: "
-			       (lambda (str pred action)
-				 (if (eq action 'metadata)
-				     `(metadata
-				       (annotation-function . ,annotf)
-				       (cycle-sort-function . identity)
-				       (display-sort-function . identity))
-				   (complete-with-action action cljns--mapping2 str pred)))
-			       nil nil (word-at-point) )))
+         (beg (car tap))
+         (end (cdr tap))
+         ;; (alist '(("str"  "clojure.string") ("csv"  "clojure.data.csv")))
+         (annotf (lambda (str)
+                   (format " (%s)" (first (cdr (assoc str cljns--mapping2))))))
+         (ans (completing-read "Candidates: "
+                               (lambda (str pred action)
+                                 (if (eq action 'metadata)
+                                     `(metadata
+                                       (annotation-function . ,annotf)
+                                       (cycle-sort-function . identity)
+                                       (display-sort-function . identity))
+                                   (complete-with-action action cljns--mapping2 str pred)))
+                               nil nil (word-at-point) )))
     (message ans)
     (when beg (delete-region beg end))
     ;; (insert (concat ans "/"))
