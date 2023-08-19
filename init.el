@@ -4648,11 +4648,14 @@ into Emacs, rather than jump to a browser and see it on GH."
 
 ;;; CLJNS
 
-(setq cljns--pairs (butlast (s-split "\n" (f-read-text "~/.emacs.d/cljns-canon.tsv"))))
-(setq cljns--mapping1 (--map (s-split "\t" it) cljns--pairs))
-(setq cljns--mapping2 (--map (reverse (s-split "\t" it)) cljns--pairs))
-(setq cljns--fqnss (--map (last it) cljns--mapping1))
-(setq cljns--aliases (--map (car it) cljns--mapping1))
+(setq cljns-canon-file "~/.emacs.d/cljns-canon.tsv")
+(if (not (file-exists-p cljns-canon-file))
+    (message "Could not find cljns-canon-file")
+  (setq cljns--pairs (butlast (s-split "\n" (f-read-text cljns-canon-file))))
+  (setq cljns--mapping1 (--map (s-split "\t" it) cljns--pairs))
+  (setq cljns--mapping2 (--map (reverse (s-split "\t" it)) cljns--pairs))
+  (setq cljns--fqnss (--map (last it) cljns--mapping1))
+  (setq cljns--aliases (--map (car it) cljns--mapping1)))
 
 (defvar demo-var-with-docstrinng 24 "some info on the demo")
 
