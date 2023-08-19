@@ -118,6 +118,7 @@
     markdown-mode
     monokai-theme
     move-text
+    multiple-cursors
     orderless
     org-bullets
     org-download
@@ -194,6 +195,8 @@
  '(cider-annotate-completion-function 'my-cider-annotate-completion-function)
  '(cider-comment-prefix " ;=> ")
  '(cider-inspector-auto-select-buffer t)
+ '(cider-inspector-max-atom-length 300)
+ '(cider-inspector-max-coll-size 10)
  '(cider-inspector-page-size 50)
  '(cider-repl-history-file "~/.cider-repl-history")
  '(cider-repl-history-size 1000)
@@ -288,8 +291,6 @@
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(indent-tabs-mode nil)
- '(inhibit-startup-screen nil)
- '(initial-buffer-choice t)
  '(justl-recipe-width 50)
  '(key-chord-safety-interval-backward 0.0)
  '(key-chord-safety-interval-forward 0.0)
@@ -317,7 +318,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -415,6 +416,8 @@
  '(auto-dim-other-buffers-face ((t (:background "gray12"))))
  '(avy-lead-face-0 ((t (:background "RoyalBlue4" :foreground "white"))))
  '(aw-leading-char-face ((t (:foreground "red" :height 5.0))))
+ '(boolean-false ((t (:foreground "color-88" :weight bold))))
+ '(boolean-true ((t (:foreground "color-22" :weight bold))))
  '(bqn-function-face ((t (:foreground "#66D9EF"))))
  '(bqn-list-face ((t (:foreground "#AE81FF"))))
  '(bqn-one-modifier-face ((t (:foreground "dark red"))))
@@ -728,11 +731,12 @@
   (define-key my-lines-keymap "l" 'display-line-numbers-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
-  (define-key my-lines-keymap "H" 'hl-line-flash)
+  (define-key my-lines-keymap "f" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
   (define-key my-lines-keymap "x" 'crosshairs-mode)
   (define-key my-lines-keymap "m" 'menu-bar-open)
-  (define-key my-lines-keymap "h" 'global-hl-line-mode)
+  (define-key my-lines-keymap "h" 'hl-line-mode)
+  (define-key my-lines-keymap "H" 'global-hl-line-mode)
   ;; (key-seq-define-global "'l" my-lines-keymap)
   (key-seq-define-global "ql" my-lines-keymap)
   )
@@ -850,6 +854,7 @@
   (define-key my-typo-keymap "~" "“")
   (define-key my-typo-keymap "\"" "”")
   (define-key my-typo-keymap "-"  "—")
+  (define-key my-typo-keymap "."  "…")
   (define-key my-typo-keymap "="  "→")
   (define-key my-typo-keymap ">"  "»")
   (define-key my-typo-keymap "<"  "«")
@@ -921,6 +926,7 @@
 ;; (key-chord-define-global "XC" 'counsel-M-x)
 (key-chord-define-global "DV" 'cider-clojuredocs)
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
+(key-chord-define-global "H<" 'sfm-toggle)
 ;; (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
 (key-chord-define-global "XC" 'my-rg-xref)
 ;; (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
@@ -973,7 +979,7 @@
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 ;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
 ;; (key-chord-define-global "VV" 'vterm-toggle)
-(key-chord-define-global "VV" 'eat)
+(key-chord-define-global "VV" 'my-eat-toggle)
 
 ;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
@@ -1279,9 +1285,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
 
-;; disable startup screen
-(setq inhibit-startup-screen nil)
-
 ;; Stop cl deprecated warnings
 ;; https://github.com/kiwanami/emacs-epc/issues/35
 (setq byte-compile-warnings '(cl-functions))
@@ -1364,9 +1367,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;; No splash screen
-(setq inhibit-startup-message nil)
-(setq inhibit-startup-screen nil)
-(setq inhibit-splash-screen nil)
+(setq initial-buffer-choice nil)
+;; (setq initial-buffer-choice "~/.emacs.d/init.el")
+;; (setq inhibit-startup-message nil)
+;; (setq inhibit-startup-screen nil)
+;; (setq inhibit-splash-screen nil)
 
 ;; Newline at end of file
 (setq require-final-newline t)
@@ -1487,7 +1492,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;; Displaying of tab widith; like vim's tabstop
-(setq tab-width 20)
+(setq tab-width 50)
 
 ;; This was a widespread practice in the days of typewriters. I actually prefer
 ;; it when writing prose with monospace fonts, but it is obsolete otherwise.
@@ -1625,6 +1630,11 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/turbo-cafe/flymake-kondor
 (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
 (use-package flymake-kondor :ensure t :hook (clojure-mode . flymake-kondor-setup))
+
+;; Inline flymake messages
+(eval-after-load 'flymake
+  (require 'flymake-diagnostic-at-point)
+  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
 
 ;; (require 'flymake-kondor)
 
@@ -1817,7 +1827,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Zsh, hopefully
 (setq indent-tabs-mode t)
-(setq tab-width 2)
 
 
 ;;; EShell
@@ -2601,7 +2610,9 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;;; Paredit family
-(electric-pair-mode 1)
+
+(add-hook 'prog-mode-hook 'electric-pair-local-mode)
+;; (electric-pair-mode 1)
 (require 'puni)
 (puni-global-mode)
 
@@ -3893,6 +3904,33 @@ chord."
 
 
 
+;;; Multiple cursors family
+
+(require 'multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+;; (require 'iedit)
+
+;; Macrursors (multiple cursors)
+;; https://raw.githubusercontent.com/corytertel/macrursors/main/macrursors.el
+;; (require 'macrursors)
+;; (define-prefix-command 'macrursors-mark-map)
+;; (global-set-key (kbd "C-c SPC") #'macrursors-start)
+;; (global-set-key (kbd "C->") #'macrursors-mark-next-instance-of)
+;; (global-set-key (kbd "C-<") #'macrursors-mark-previous-instance-of)
+;; (global-set-key (kbd "C-;") 'macrursors-mark-map)
+;; (define-key macrursors-mark-map (kbd "C-;") #'macrursors-mark-all-lines-or-instances)
+;; (define-key macrursors-mark-map (kbd ";") #'macrursors-mark-all-lines-or-instances)
+;; (define-key macrursors-mark-map (kbd "l") #'macrursors-mark-all-lists)
+;; (define-key macrursors-mark-map (kbd "s") #'macrursors-mark-all-symbols)
+;; (define-key macrursors-mark-map (kbd "e") #'macrursors-mark-all-sexps)
+;; (define-key macrursors-mark-map (kbd "f") #'macrursors-mark-all-defuns)
+;; (define-key macrursors-mark-map (kbd "n") #'macrursors-mark-all-numbers)
+;; (define-key macrursors-mark-map (kbd ".") #'macrursors-mark-all-sentences)
+;; (define-key macrursors-mark-map (kbd "r") #'macrursors-mark-all-lines)
 
 
 
@@ -3990,7 +4028,7 @@ chord."
   :ensure t
   :bind
   (("C-," . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ;; ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
   ;; Optionally replace the key help with a completing-read interface
@@ -4325,10 +4363,20 @@ This is way faster than 'C-s M-n C-a C-d'."
 ;;; Popup Windows (popper)
 
 
+(defun my-eat-new-win ()
+  (interactive)
+  (get-buffer-window "*eat*")
+  (split-window-vertically-balancedly)
+  (eat))
+
 (defun my-eat-toggle ()
   (interactive)
-  (aw--push-window (get-buffer-window))
-  (select-window (get-buffer-window "*eat*"))) ; push present window onto stack
+  (let ((eat-buffer (get-buffer-window "*eat*")))
+    (if (not eat-buffer)
+        ;; (message "no eat buffer in view")
+        (my-eat-new-win)
+      (aw--push-window (get-buffer-window))
+      (select-window eat-buffer))))
 
 (defun my/popper-toggle-latest ()
   (interactive)
@@ -4349,6 +4397,7 @@ This is way faster than 'C-s M-n C-a C-d'."
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
+          "\\*Warnings\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
           magit-process-mode
@@ -4360,6 +4409,7 @@ This is way faster than 'C-s M-n C-a C-d'."
   (popper-mode +1)
   (popper-echo-mode +1))
 
+(global-set-key (kbd "C-S-q") 'popper-kill-latest-popup)
 
 (defun my-copy-namespace-function-lineno ()
   "Copy the NS, function, and line number to kill ring.
