@@ -57,6 +57,7 @@
 ;; (package-initialize)
 ;; (when (not package-archive-contents) (package-refresh-contents))
 (message "Run package-refresh-contents manually if it's been a while.")
+(message "If you see startup errors, run package-refresh-contents from above.")
 (defvar my-packages
   '(ace-window
     ag
@@ -119,6 +120,7 @@
     monokai-theme
     move-text
     multiple-cursors
+    nushell-mode
     orderless
     org-bullets
     org-download
@@ -291,6 +293,7 @@
  '(imenu-list-position 'left)
  '(imenu-list-size 0.1)
  '(indent-tabs-mode nil)
+ '(initial-buffer-choice nil)
  '(justl-recipe-width 50)
  '(key-chord-safety-interval-backward 0.0)
  '(key-chord-safety-interval-forward 0.0)
@@ -444,7 +447,7 @@
  '(font-lock-variable-name-face ((t (:foreground "green3"))))
  '(highlight ((t (:background "RoyalBlue4"))))
  '(highlight-numbers-number ((t (:foreground "orangered" :weight extra-bold))))
- '(hl-line ((t (:extend t :background "#011a40" :box nil))))
+ '(hl-line ((t (:extend t :background "color-18" :box nil))))
  '(markdown-code-face ((t (:inherit code-face))))
  '(markdown-header-delimiter-face ((t (:inherit markdown-markup-face))))
  '(markdown-header-face ((t (:family "Fira Sans"))))
@@ -475,15 +478,15 @@
  '(rainbow-delimiters-depth-1-face ((t (:foreground "chartreuse" :weight bold))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep sky blue" :weight bold))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow" :weight bold))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "chartreuse" :weight bold))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "deep sky blue" :weight bold))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "yellow" :weight bold))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "chartreuse" :weight bold))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "deep sky blue" :weight bold))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "orchid" :weight bold))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "chartreuse" :weight bold))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "deep sky blue" :weight bold))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "yellow" :weight bold))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "orchid" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
  '(show-paren-match ((t (:background "#272822" :foreground "color-47" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
- '(symbol-overlay-default-face ((t (:inherit nil :background "MediumBlue"))))
+ '(symbol-overlay-default-face ((t (:inherit nil :background "color-22"))))
  '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "black"))))
  '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
  '(symbol-overlay-face-6 ((t (:background "orange" :foreground "black"))))
@@ -866,16 +869,29 @@
   (define-key my-typo-keymap "a"  "★")
   (define-key my-typo-keymap "o"  "□")
   (define-key my-typo-keymap "r"  "⏎")
-  (define-key my-typo-keymap "l"  "λ")
+  (define-key my-typo-keymap "L"  "λ")
   (define-key my-typo-keymap "e"  "∴")
   (define-key my-typo-keymap "m"  "μ")
   (define-key my-typo-keymap "p"  "π")
   (define-key my-typo-keymap "n"  "♫")
-  (define-key my-typo-keymap "d"  "♢")
+  (define-key my-typo-keymap "d"  "♢") ; diamond
   (define-key my-typo-keymap "h"  "♡")
-  (define-key my-typo-keymap "s"  "♤")
-  (define-key my-typo-keymap "c"  "♧")
-  (define-key my-typo-keymap "b"  "₿")
+  (define-key my-typo-keymap "H"  "♤")
+  (define-key my-typo-keymap "c"  "♧") ; club
+  (define-key my-typo-keymap "D"  "⛁") ; db
+  (define-key my-typo-keymap "R"  "♻") ; recycle
+  (define-key my-typo-keymap "N"  "♮") ; natural
+  (define-key my-typo-keymap "F"  "♭") ; flat
+  (define-key my-typo-keymap "S"  "♯") ; sharp
+  (define-key my-typo-keymap "k"  "♔") ; king (chess)
+  (define-key my-typo-keymap "b"  "☣") ; biohazard
+  (define-key my-typo-keymap "A"  "☢") ; radioactive
+  (define-key my-typo-keymap "S"  "☠") ; skull
+  (define-key my-typo-keymap "M"  "☄") ; meteor
+  (define-key my-typo-keymap "u"  "☂") ; umbrella
+  (define-key my-typo-keymap "B"  "☀") ; sunshine
+  (define-key my-typo-keymap "l"  "◊") ; lozenge
+  (define-key my-typo-keymap "b"  "₿") ; bitcoin ⛁ ♻ ♮ ♭ ♯ ♔ ☣ ☢ ☠ ☄ ☃ ☂ ☀ ◊
   (define-key my-typo-keymap "t" 'typo-mode)
   (key-seq-define-global "qy" my-typo-keymap))
 (let ((my-typo-keymap (make-sparse-keymap)))
@@ -2506,6 +2522,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; .zsh file is shell script too
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
+
+(require 'nushell-mode)
 
 
 ;; AVY: https://github.com/abo-abo/avy/wiki/defcustom
@@ -4390,21 +4408,22 @@ This is way faster than 'C-s M-n C-a C-d'."
 (use-package popper
   :ensure t ; or :straight t
   :bind (;("C-`"   . popper-toggle-latest)
-	 ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
-	 ;; ("C-`"   . my/popper-toggle-latest)
+         ("C-`"   . (lambda () (interactive) (aw--push-window (get-buffer-window)) (popper-toggle-latest)))
+         ;; ("C-`"   . my/popper-toggle-latest)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "\\*Warnings\\*"
+          "\\*just\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
           magit-process-mode
           help-mode
           helpful-mode
-	  cider-browse-ns-mode
-	  "\\*cider-ns-browser\\*"
+          cider-browse-ns-mode
+          "\\*cider-ns-browser\\*"
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
@@ -4421,9 +4440,9 @@ into Emacs, rather than jump to a browser and see it on GH."
   (save-excursion
     (my-beginning-of-defun)
     (let* ((fn    (word-at-point))
-	   (ln    (number-to-string (line-number-at-pos)))
-	   (ns    (cider-current-ns))
-	   (combo (concat ns "/" fn ":" ln)))
+           (ln    (number-to-string (line-number-at-pos)))
+           (ns    (cider-current-ns))
+           (combo (concat ns "/" fn ":" ln)))
       (kill-new combo)
       (message "Copied location '%s' to the clipboard." combo)
       ;; (alert "Copied to kill ring" :severity 'low :title combo)
