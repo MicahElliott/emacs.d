@@ -93,6 +93,7 @@
     exec-path-from-shell
     flymd
     flymake-kondor
+    flymake-diagnostic-at-point
     git-gutter
     git-link
     git-timemachine
@@ -117,6 +118,7 @@
     marginalia
     mark-thing-at
     markdown-mode
+    markdown-toc
     monokai-theme
     move-text
     multiple-cursors
@@ -252,8 +254,8 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "mdl")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
- '(global-hl-line-mode nil)
- '(global-hl-line-sticky-flag t)
+ '(global-hl-line-mode t)
+ '(global-hl-line-sticky-flag nil)
  '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
  '(global-whitespace-mode t)
@@ -321,7 +323,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -602,12 +604,12 @@
 
 ;; A — All workspaces
 (let ((my-spaces-keymap (make-sparse-keymap)))
-  (define-key my-spaces-keymap "a" 'persp-switch)
+  (define-key my-spaces-keymap "m" 'persp-switch)
   (define-key my-spaces-keymap "r" 'persp-rename)
   (define-key my-spaces-keymap "K" 'persp-kill)
   (define-key my-spaces-keymap "S" 'persp-state-save)
   (define-key my-spaces-keymap "L" 'persp-state-load)
-  (key-seq-define-global "'a" my-spaces-keymap))
+  (key-seq-define-global "'m" my-spaces-keymap))
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
@@ -662,7 +664,7 @@
 ;; E — Errors
 (let ((my-flymake-keymap (make-sparse-keymap)))
   (define-key my-flymake-keymap "e" ''flymake-goto-next-error) ; default
-  (define-key my-flymake-keymap "c" 'flymake-show-diagnostics-buffer)
+  (define-key my-flymake-keymap "c" 'flymake-show-buffer-diagnostics)
   (define-key my-flymake-keymap "l" 'consult-flymake)
   (define-key my-flymake-keymap "n" 'flymake-goto-next-error)
   (define-key my-flymake-keymap "p" 'flymake-goto-prev-error)
@@ -679,7 +681,7 @@
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
   (define-key my-git-keymap "g" 'my-magit-status) ; default
-  (define-key my-git-keymap "B" 'git-link) ; browse
+  (define-key my-git-keymap "U" 'git-link) ; browse
   (define-key my-git-keymap "a" 'vc-annotate)
   (define-key my-git-keymap "b" 'magit-blame)
   (define-key my-git-keymap "B" 'my-copy-branch-name)
@@ -755,7 +757,7 @@
 (key-seq-define-global "QN" 'split-window-vertically-balancedly)
 
 ;; O — Open,Other
-(key-seq-define-global "qo" 'crux-smart-open-line)
+(key-seq-define-global "qa" 'crux-smart-open-line)
 ;; (key-seq-define-global "qo" (lambda () (interactive) (crux-smart-open-line nil) (crux-smart-open-line nil) (forward-line -1) (indent-for-tab-command)))
 (key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
@@ -844,8 +846,8 @@
   )
 
 ;; W — Windowing
-(key-seq-define-global "'w" 'ace-window)
-(key-chord-define-global "qw" 'ace-window)
+;; (key-seq-define-global "'w" 'ace-window)
+(key-chord-define-global "qx" 'ace-window)
 
 ;; X
 
@@ -928,9 +930,9 @@
 (key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
 (key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
-(key-chord-define-global "AR" (lambda () (interactive)  (windmove-left)))
+(key-chord-define-global "MR" (lambda () (interactive)  (windmove-left)))
 (key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
-(key-chord-define-global "WF" (lambda () (interactive)  (windmove-up)))
+(key-chord-define-global "XF" (lambda () (interactive)  (windmove-up)))
 (key-chord-define-global "GG" 'my-buf-pivot-right)
 (key-chord-define-global "TT" 'my-buf-move-right)
 (key-chord-define-global "FF" 'buf-move-up)
@@ -938,16 +940,16 @@
 
 (key-chord-define-global "RR" 'my-buf-move-left)
 (key-chord-define-global "RS" 'windmove-down)
-(key-chord-define-global "WF" 'windmove-up)
+(key-chord-define-global "XF" 'windmove-up)
 ;; (key-chord-define-global "XC" 'counsel-M-x)
-(key-chord-define-global "DV" 'cider-clojuredocs)
+(key-chord-define-global "DK" 'cider-clojuredocs)
 (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
 (key-chord-define-global "H<" 'sfm-toggle)
 ;; (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
-(key-chord-define-global "XC" 'my-rg-xref)
+(key-chord-define-global "LC" 'my-rg-xref)
 ;; (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
-(key-seq-define-global   "IO" 'delete-other-windows) ; Only One
-(key-seq-define-global   "OI" 'winner-undo)
+(key-seq-define-global   "IA" 'delete-other-windows) ; Only One
+(key-seq-define-global   "AI" 'winner-undo)
 ;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
 
 (key-seq-define-global   "H<" 'outline-show-entry)
@@ -968,30 +970,30 @@
 
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
-(key-chord-define-global "KH" 'kill-this-buffer)
-(key-chord-define-global "QW" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
+(key-chord-define-global "ZH" 'kill-this-buffer)
+(key-chord-define-global "KN" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
 ;; (key-chord-define-global "KH" 'kill-window-balancedly)
-(key-chord-define-global "ZX" 'delete-window-balancedly)
-;; (key-chord-define-global "ZR" 'kill-window-balancedly)
+(key-chord-define-global "WL" 'delete-window-balancedly)
+(key-chord-define-global "ZH" 'kill-window-balancedly)
 (key-chord-define-global "GT" 'magit-status)
 (key-chord-define-global "XS" 'save-buffer)
 
-(key-chord-define-global "WA" 'cycle-pairs)
+(key-chord-define-global "WN" 'cycle-pairs)
 (key-chord-define-global "{<" 'cycle-pairs)
 
 ;; TODO key seqs for opposited toggle
-(key-seq-define-global "PB" 'make-frame-command)
+(key-seq-define-global "V_" 'make-frame-command)
 ;; (key-seq-define-global "PB" (lambda () (interactive) (make-frame-command) (crux-switch-to-previous-buffer)))
-(key-seq-define-global "BP" 'delete-frame)
+(key-seq-define-global "_V" 'delete-frame)
 
-(key-seq-define-global "JL" 'beacon-blink)
-(key-seq-define-global "LJ" 'hl-line-flash)
+(key-seq-define-global "JY" 'beacon-blink)
+(key-seq-define-global "YJ" 'hl-line-flash)
 (key-seq-define-global "UL" 'string-inflection-underscore)
-(key-seq-define-global "LU" 'string-inflection-kebab-case)
+(key-seq-define-global "YO" 'string-inflection-kebab-case)
 ;; (key-chord-define-global "H<" 'lispy-describe-inline)
 (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
 ;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
-(key-chord-define-global "AA" 'persp-switch-last)
+(key-chord-define-global "MM" 'persp-switch-last)
 (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
 ;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
 ;; (key-chord-define-global "VV" 'vterm-toggle)
@@ -1096,7 +1098,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; TODO
 (global-set-key (kbd "C-S-a") 'embark-act)
 
-(global-set-key (kbd "M-o") 'scroll-up-stay)
+(global-set-key (kbd "M-a") 'scroll-up-stay)
 (global-set-key (kbd "M-'") 'scroll-down-stay)
 
 
@@ -1491,8 +1493,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Moved cider-transient to its own repo:
 ;;
 
-;; (key-chord-define-global "CC" 'cider-transient)
-(key-seq-define-global "xc" 'cider-transient)
+(key-chord-define-global "CC" 'cider-transient)
+;; (key-seq-define-global "xc" 'cider-transient)
 
 
 
@@ -2041,7 +2043,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
-(setq aw-keys '(?q ?w ?f ?p ?b ?j ?l ?u ?y ?n ?e ?i ?o))
+;; Reserved: x m c j n u e v b o
+(setq aw-keys '(?q ?x ?f ?v ?j ?p ?y ?r ?s ?t ?g ?e ?i ?a ?w ?l ?c ?b ?k ?z ?h))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2302,9 +2305,12 @@ Here 'words' are defined as characters separated by whitespace."
 (add-hook 'term-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
 (add-hook 'eat-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
 
+(add-hook 'magit-process-mode-hook (lambda () (page-break-lines-mode +1)))
+
 ;; (add-hook 'magit-process-mode-hook (lambda () (setq show-trailing-whitespace nil)))
 ;; (add-hook 'magit-process-mode-hook (lambda () (setq-local show-trailing-whitespace nil)))
 ;; (add-hook 'magit-process-mode-hook (lambda () (whitespace-mode 0)))
+
 ;; https://emacs.stackexchange.com/a/38778/11025
 (defun prevent-whitespace-mode-for-magit ()
   (not (derived-mode-p 'magit-mode)))
@@ -2340,7 +2346,8 @@ Here 'words' are defined as characters separated by whitespace."
     (insert (concat ctype ": (" scrum ") " t2))))
 ;; Run this inside proj buffer: (my-git-commit-setup)
 
-(add-hook 'git-commit-setup-hook 'my-git-commit-setup)
+;; Replaced by br2msg
+;; (add-hook 'git-commit-setup-hook 'my-git-commit-setup)
 
 
 
@@ -2536,7 +2543,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Use only easiest left and right keys
 ;; (setq avy-keys (string-to-list "asdfwerkluioghqtypvcxzj"))
 ;; (setq avy-keys (string-to-list "rstneioqwfpluyzxcdhbjgmva"))
-(setq avy-keys (string-to-list "qwfpluyarstneiozxcdhbjgmvk"))
+;; (setq avy-keys (string-to-list "qwfpluyarstneiozxcdhbjgmvk"))
+;; (setq avy-keys (string-to-list "wlfpjuynmrstneiavqcdhbgxkz"))
+;; (setq avy-keys (string-to-list "xfvpuymrstbneiawlcdhqjgkz"))
+(setq avy-keys (string-to-list "qxfvpuymrstbneiawlcdhqjgkz"))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -3162,6 +3172,11 @@ Relies on consult (for project-root), cider."
 
        )
 
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (set (make-local-variable 'compile-command)
+                 (concat "splint -o clj-kondo " buffer-file-name))))
+
 ;; (add-hook 'justl-mode-hook (lambda () (local-set-key (kbd "C-c C-j") 'justl)))
 
 
@@ -3382,6 +3397,7 @@ Relies on consult (for project-root), cider."
 (defun my-copy-branch-name ()
   "Copy current branch name to clipboard."
   (interactive)
+  ;; FIXME should maybe use new vc-mode-branchname since later munging vc-mode
   (kill-new (substring vc-mode 5))
   (message "Copied buffer branch name '%s' to the clipboard." vc-mode))
 
@@ -4423,6 +4439,8 @@ This is way faster than 'C-s M-n C-a C-d'."
           help-mode
           helpful-mode
           cider-browse-ns-mode
+          cider-repl-mode
+          flymake-diagnostics-buffer-mode
           "\\*cider-ns-browser\\*"
           compilation-mode))
   (popper-mode +1)
@@ -4536,6 +4554,8 @@ into Emacs, rather than jump to a browser and see it on GH."
 			   "my-keys"
 			   "envrc.*"
 			   "Goggles"
+                           "GitGutter"
+                           "Flymake"
 			   "SoT"
 			   "hs"
 			   "²"
@@ -4566,6 +4586,7 @@ into Emacs, rather than jump to a browser and see it on GH."
 		   ;; Git-mde/SCRUM-12345-foo-bar
                    "mde/SCRUM-\\([0-9]+\\)_.*"
                    "\\1" vc-mode)))
+      (setq vc-mode-branchname vc-mode)
       (setq vc-mode noback))))
 
 ;; https://emacs.stackexchange.com/questions/10222/make-the-mode-line-display-percentage-and-not-top-bottom-all
