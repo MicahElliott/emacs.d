@@ -489,9 +489,14 @@
  '(show-paren-match ((t (:background "#272822" :foreground "color-47" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "color-22"))))
- '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "black"))))
- '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "black"))))
- '(symbol-overlay-face-6 ((t (:background "orange" :foreground "black"))))
+ '(symbol-overlay-face-1 ((t (:background "dodger blue" :foreground "color-16"))))
+ '(symbol-overlay-face-2 ((t (:background "hot pink" :foreground "color-16" :weight normal))))
+ '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "color-16"))))
+ '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "color-16"))))
+ '(symbol-overlay-face-5 ((t (:background "red" :foreground "color-16"))))
+ '(symbol-overlay-face-6 ((t (:background "orange" :foreground "color-16"))))
+ '(symbol-overlay-face-7 ((t (:background "spring green" :foreground "color-16"))))
+ '(symbol-overlay-face-8 ((t (:background "turquoise" :foreground "color-16"))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(vertico-group-title ((t (:background "brightwhite" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
@@ -600,7 +605,7 @@
 (key-seq-define-global "Q+" 'text-scale-increase)
 (key-seq-define-global "Q_" 'text-scale-decrease)
 (key-seq-define-global "qq" 'aw-flip-window)
-(key-seq-define-global "''" 'aw-flip-window)
+;; (key-seq-define-global "''" 'aw-flip-window)
 
 ;; A — All workspaces
 (let ((my-spaces-keymap (make-sparse-keymap)))
@@ -609,7 +614,7 @@
   (define-key my-spaces-keymap "K" 'persp-kill)
   (define-key my-spaces-keymap "S" 'persp-state-save)
   (define-key my-spaces-keymap "L" 'persp-state-load)
-  (key-seq-define-global "'m" my-spaces-keymap))
+  (key-seq-define-global "qm" my-spaces-keymap))
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
@@ -638,21 +643,21 @@
   ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   ;; (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   ;; (define-key my-buffer-keymap "P" 'projectile-ibuffer)
-  (key-seq-define-global "'b" my-buffer-keymap))
+  (key-seq-define-global "qb" my-buffer-keymap))
 
 ;; C — Character goto (fast)
 ;; (key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
 ;; (key-seq-define-global "'c" 'avy-goto-char-2-below)
-(key-seq-define-global "'c" 'avy-goto-symbol-1-below)
+(key-seq-define-global "qc" 'avy-goto-symbol-1-below)
 ;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
 ;; (key-seq-define-global "'f" 'avy-goto-symbol-1-above)
 ;; (key-seq-define-global "'f" (lambda () (interactive) (avy-goto-symbol-1-above 0 t)))
-(key-seq-define-global "'f" 'avy-goto-symbol-1-above)
+(key-seq-define-global "qf" 'avy-goto-symbol-1-above)
 ;; (key-seq-define-global "'c" 'avy-goto-word-0)
 ;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
 ;; (key-seq-define-global "xc" 'avy-goto-word-0)
-(key-seq-define-global "qc" 'avy-goto-char-timer)
-(key-seq-define-global "\"C" 'beacon-blink) ; cursor
+;; (key-seq-define-global "qc" 'avy-goto-char-timer)
+;; (key-seq-define-global "\"C" 'beacon-blink) ; cursor
 
 ;; ;; D — Treemacs (Directory viewer)
 ;; (key-seq-define-global "'d" 'treemacs-select-window)
@@ -695,7 +700,7 @@
   (define-key my-git-keymap "r" 'diff-hl-revert-hunk)
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
   (define-key my-git-keymap "u" 'github-browse-file)
-  (key-seq-define-global "'g" my-git-keymap))
+  (key-seq-define-global "qg" my-git-keymap))
 
 ;; H — Help system
 ;; maybe
@@ -714,7 +719,7 @@
   (key-seq-define-global "qi" my-imenu-keymap))
 
 ;; J
-(key-seq-define-global "'j" 'jump-to-register)
+;; (key-seq-define-global "'j" 'jump-to-register)
 (key-seq-define-global "qj" 'jump-to-register)
 
 ;; K — Kill (and minimize)
@@ -747,13 +752,13 @@
   )
 
 ;; M — Mark
-(key-seq-define-global "qm" 'point-to-register)
+(key-seq-define-global "qz" 'point-to-register)
 ;; (key-seq-define-global "QM" 'counsel-bookmark)
 
 ;; N — New windows
-(key-seq-define-global "'n" 'split-window-balancedly)
+;; (key-seq-define-global "'n" 'split-window-balancedly)
 (key-seq-define-global "qn" 'split-window-balancedly)
-(key-seq-define-global "\"N" 'split-window-vertically-balancedly)
+;; (key-seq-define-global "\"N" 'split-window-vertically-balancedly)
 (key-seq-define-global "QN" 'split-window-vertically-balancedly)
 
 ;; O — Open,Other
@@ -795,7 +800,7 @@
   (define-key my-project-keymap "D" 'project-dired)
   ;; (define-key my-project-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-project-keymap "I" 'ivy-imenu-anywhere)
-  (key-seq-define-global "'p" my-project-keymap)
+  ;; (key-seq-define-global "'p" my-project-keymap)
   (key-seq-define-global "qp" my-project-keymap)
   )
 
@@ -834,7 +839,7 @@
   (define-key my-url-keymap "I" 'mardown-insert-link)
   (define-key my-url-keymap "t" 'org-toggle-link-display)
   (define-key my-url-keymap "u" 'browse-url)
-  (key-seq-define-global "'u" my-url-keymap))
+  (key-seq-define-global "QU" my-url-keymap))
 
 ;; V — Vterm (BAD: we've)
 (let ((my-vterm-keymap (make-sparse-keymap)))
@@ -846,8 +851,8 @@
   )
 
 ;; W — Windowing
-;; (key-seq-define-global "'w" 'ace-window)
-(key-chord-define-global "qx" 'ace-window)
+(key-seq-define-global "qv" 'ace-window)
+;; (key-chord-define-global "qv" 'ace-window)
 
 ;; X
 
@@ -924,10 +929,10 @@
   ;; Show docstrings only; file-level setting :(
   ;; (define-key my-hs-keymap "d" (lambda () (interactive) (set-selective-display 3)))
   ;; (define-key my-hs-keymap "D" (lambda () (interactive) (set-selective-display 0)))
-  (key-seq-define-global "'z" my-hs-keymap))
+  (key-seq-define-global "qz" my-hs-keymap))
 
 ;;; MASHINGS
-(key-chord-define-global "AR" 'windmove-left)  ; top-left ring+pinky
+(key-chord-define-global "MR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
 (key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
 (key-chord-define-global "MR" (lambda () (interactive)  (windmove-left)))
@@ -982,9 +987,9 @@
 (key-chord-define-global "{<" 'cycle-pairs)
 
 ;; TODO key seqs for opposited toggle
-(key-seq-define-global "V_" 'make-frame-command)
+(key-seq-define-global "VQ" 'make-frame-command)
 ;; (key-seq-define-global "PB" (lambda () (interactive) (make-frame-command) (crux-switch-to-previous-buffer)))
-(key-seq-define-global "_V" 'delete-frame)
+(key-seq-define-global "QV" 'delete-frame)
 
 (key-seq-define-global "JY" 'beacon-blink)
 (key-seq-define-global "YJ" 'hl-line-flash)
@@ -1003,7 +1008,7 @@
 (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
 (key-seq-define-global "TP" 'dired-sidebar-jump-to-sidebar)
 
-(key-chord-define-global "GV" 'set-variable)
+(key-chord-define-global "GV" 'set-variable) ; FIXME
 
 ;; (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
 ;; (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
@@ -1649,10 +1654,11 @@ Here 'words' are defined as characters separated by whitespace."
 (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
 (use-package flymake-kondor :ensure t :hook (clojure-mode . flymake-kondor-setup))
 
-;; Inline flymake messages
-(eval-after-load 'flymake
-  (require 'flymake-diagnostic-at-point)
-  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
+;; FIXME
+;; ;; Inline flymake messages
+;; (eval-after-load 'flymake
+;;   (do (require 'flymake-diagnostic-at-point)
+;;   (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode)))
 
 ;; (require 'flymake-kondor)
 
@@ -2546,7 +2552,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "qwfpluyarstneiozxcdhbjgmvk"))
 ;; (setq avy-keys (string-to-list "wlfpjuynmrstneiavqcdhbgxkz"))
 ;; (setq avy-keys (string-to-list "xfvpuymrstbneiawlcdhqjgkz"))
-(setq avy-keys (string-to-list "qxfvpuymrstbneiawlcdhqjgkz"))
+(setq avy-keys (string-to-list ",fvjpu'rsgbeawlcdkzh"))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -3134,7 +3140,7 @@ Relies on consult (for project-root), cider."
        (setq-local cider-repl-history-size 1000)
        (setq-local cider-repl-history-file "~/.cider-repl-history")
 
-       (key-chord-define clojure-mode-map "XC" 'my-rg-xref)
+       (key-chord-define clojure-mode-map "LC" 'my-rg-xref)
        ;; (key-chord-define sql-mode-map "XC" 'my-rg-xref)
 
        ;; (cider-auto-test-mode 1)
