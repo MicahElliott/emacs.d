@@ -752,7 +752,7 @@
   )
 
 ;; M — Mark
-(key-seq-define-global "qz" 'point-to-register)
+;; (key-seq-define-global "qz" 'point-to-register)
 ;; (key-seq-define-global "QM" 'counsel-bookmark)
 
 ;; N — New windows
@@ -851,10 +851,12 @@
   )
 
 ;; W — Windowing
-(key-seq-define-global "qv" 'ace-window)
+(key-seq-define-global "QJ" 'ace-window)
+;; (key-chord-define-global "Q:" 'ace-window)
 ;; (key-chord-define-global "qv" 'ace-window)
 
 ;; X
+(key-seq-define-global "qx" 'point-to-register)
 
 ;; Y — tYpography
 ;; —  ’ “ ‘ ‘ ’ “
@@ -935,9 +937,9 @@
 (key-chord-define-global "MR" 'windmove-left)  ; top-left ring+pinky
 ;; (key-chord-define-global "ST" 'windmove-right)
 (key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
-(key-chord-define-global "MR" (lambda () (interactive)  (windmove-left)))
+(key-chord-define-global "LR" (lambda () (interactive)  (windmove-left)))
 (key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
-(key-chord-define-global "XF" (lambda () (interactive)  (windmove-up)))
+(key-chord-define-global "JF" (lambda () (interactive)  (windmove-up)))
 (key-chord-define-global "GG" 'my-buf-pivot-right)
 (key-chord-define-global "TT" 'my-buf-move-right)
 (key-chord-define-global "FF" 'buf-move-up)
@@ -976,10 +978,10 @@
 ;; (key-chord-define-global "az" 'delete-window-balancedly)
 ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
 (key-chord-define-global "ZH" 'kill-this-buffer)
-(key-chord-define-global "KN" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
+(key-chord-define-global "DK" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
 ;; (key-chord-define-global "KH" 'kill-window-balancedly)
-(key-chord-define-global "WL" 'delete-window-balancedly)
-(key-chord-define-global "ZH" 'kill-window-balancedly)
+(key-chord-define-global "VX" 'delete-window-balancedly)
+;; (key-chord-define-global "ZH" 'kill-window-balancedly)
 (key-chord-define-global "GT" 'magit-status)
 (key-chord-define-global "XS" 'save-buffer)
 
@@ -2050,7 +2052,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
 ;; Reserved: x m c j n u e v b o
-(setq aw-keys '(?q ?x ?f ?v ?j ?p ?y ?r ?s ?t ?g ?e ?i ?a ?w ?l ?c ?b ?k ?z ?h))
+(setq aw-keys '(?q ?j ?p ?b ?y ?w ?o ?u ?l ?r ?s ?t ?g ?h ?e ?i ?a ?v ?x ?c ?d ?k ?z))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2552,7 +2554,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "qwfpluyarstneiozxcdhbjgmvk"))
 ;; (setq avy-keys (string-to-list "wlfpjuynmrstneiavqcdhbgxkz"))
 ;; (setq avy-keys (string-to-list "xfvpuymrstbneiawlcdhqjgkz"))
-(setq avy-keys (string-to-list ",fvjpu'rsgbeawlcdkzh"))
+;; (setq avy-keys (string-to-list ",fvjpu'rsgbeawlcdkzh"))
+;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
+(setq avy-keys (string-to-list "qjxfpbywou'lrstgheiavxcdkz;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
