@@ -323,7 +323,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -596,25 +596,17 @@
       key-chord-one-key-delay  .3) ; default is .2
 
 ;; Very special!
-(key-chord-define-global "q'" 'crux-smart-open-line-above)
+;; (key-chord-define-global "q'" 'crux-smart-open-line-above)
 ;; (key-chord-define-global "q'" (lambda () (interactive) (crux-smart-open-line-above) (crux-smart-open-line-above)))
 
-;; Also special (zoom font size)
-;; (key-seq-define-global "q-" 'default-text-scale-decrease)
-;; (key-seq-define-global "q+" 'default-text-scale-increase)
-(key-seq-define-global "Q+" 'text-scale-increase)
-(key-seq-define-global "Q_" 'text-scale-decrease)
-(key-seq-define-global "qq" 'aw-flip-window)
-;; (key-seq-define-global "''" 'aw-flip-window)
+;; ;; Also special (zoom font size)
+;; (key-seq-define-global "Q+" 'text-scale-increase)
+;; (key-seq-define-global "Q_" 'text-scale-decrease)
+;; (key-seq-define-global "qq" 'aw-flip-window)
 
-;; A — All workspaces
-(let ((my-spaces-keymap (make-sparse-keymap)))
-  (define-key my-spaces-keymap "m" 'persp-switch)
-  (define-key my-spaces-keymap "r" 'persp-rename)
-  (define-key my-spaces-keymap "K" 'persp-kill)
-  (define-key my-spaces-keymap "S" 'persp-state-save)
-  (define-key my-spaces-keymap "L" 'persp-state-load)
-  (key-seq-define-global "qm" my-spaces-keymap))
+;; A — All workspaces ; FIXME
+(global-set-key (kbd "C-c '") 'crux-smart-open-line-above)
+(global-set-key (kbd "C-c a") 'crux-smart-open-line)
 
 ;; B — Buffer/file
 (let ((my-buffer-keymap (make-sparse-keymap)))
@@ -632,9 +624,7 @@
   (define-key my-buffer-keymap "F" 'my-copy-buffername)
   (define-key my-buffer-keymap "N" 'my-copy-namespace-function-lineno)
   (define-key my-buffer-keymap "n" 'my-copy-namespace-name)
-  (define-key my-buffer-keymap "p" (lambda () (interactive)
-				     (my-ibuffer)
-				     (persp-ibuffer nil)))
+  (define-key my-buffer-keymap "p" (lambda () (interactive) (my-ibuffer) (persp-ibuffer nil)))
   ;; (define-key my-buffer-keymap "f" 'counsel-find-file) ; file
   ;; (define-key my-buffer-keymap "f" 'projectile-find-file-dwim) ; file
   ;; (define-key my-buffer-keymap "i" 'counsel-ibuffer) ; ibuffer
@@ -643,28 +633,61 @@
   ;; (define-key my-buffer-keymap "r" 'counsel-recentf) ; file
   ;; (define-key my-buffer-keymap "p" 'counsel-projectile-switch-to-buffer) ; project
   ;; (define-key my-buffer-keymap "P" 'projectile-ibuffer)
-  (key-seq-define-global "qb" my-buffer-keymap))
+  ;; (key-seq-define-global "qb" my-buffer-keymap)
+  ;; (global-set-key (kbd "C-c b") 'my-buffer-map)
+  )
+
+(defalias 'my-buffer-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "a" 'consult-buffer) ; all
+    (define-key map "A" 'my-ibuffer) ; all
+    (define-key map "b" 'crux-switch-to-previous-buffer) ; default
+    (define-key map "2" 'my-2back-buffers)
+    (define-key map "e" 'consult-recent-file)
+    (define-key map "F" 'my-copy-filename)
+    (define-key map "G" 'my-copy-buffername)
+    (define-key map "N" 'my-copy-namespace-function-lineno)
+    ;; (define-key map "n" 'my-copy-namespace-name)
+    (define-key map "p" (lambda () (interactive) (my-ibuffer) (persp-ibuffer nil))) ; FIXME
+    (define-key map "i" 'my-ibuffer) ; ibuffer
+    ;; Project
+    (define-key map "f" 'consult-project-buffer)
+    (define-key map "c" 'project-compile)
+    (define-key map "d" 'project-find-dir)
+    (define-key map "p" 'project-find-file)
+    (define-key map "F" 'project-find-regexp)
+    (define-key map "k" 'project-kill-buffers)
+    ;; (define-key map "i" (lambda () (interactive) (split-window-balancedly) (persp-ibuffer nil) (message "kill window to quit")))
+    (define-key map "r" 'project-query-replace-regexp)
+    (define-key map "R" 'persp-remove-buffer)
+    (define-key map "s" 'consult-ripgrep)
+    (define-key map "g" 'consult-grep)
+    (define-key map "t" 'tgt-toggle)
+    (define-key map "D" 'project-dired)
+    ;; (define-key map "E" 'projectile-edit-dir-locals)
+    map)
+  "Buffer- and project-related bindings.")
+;; (key-seq-define-global "qp" map)
+(global-set-key (kbd "C-c b") 'my-buffer-map)
+
+
+
+;; (global-set-key (kbd "C-c t") 'my-feature-map)
+;; (global-set-key (kbd "C-c g") 'my-git-map)
+
 
 ;; C — Character goto (fast)
-;; (key-seq-define-global "'c" 'avy-goto-char-timer) ; character, delay
-;; (key-seq-define-global "'c" 'avy-goto-char-2-below)
-(key-seq-define-global "qc" 'avy-goto-symbol-1-below)
-;; (key-seq-define-global "'f" 'avy-goto-char-2-above)
-;; (key-seq-define-global "'f" 'avy-goto-symbol-1-above)
-;; (key-seq-define-global "'f" (lambda () (interactive) (avy-goto-symbol-1-above 0 t)))
-(key-seq-define-global "qf" 'avy-goto-symbol-1-above)
-;; (key-seq-define-global "'c" 'avy-goto-word-0)
-;; (key-seq-define-global "'c" 'avy-goto-word-1-above)
-;; (key-seq-define-global "xc" 'avy-goto-word-0)
-;; (key-seq-define-global "qc" 'avy-goto-char-timer)
-;; (key-seq-define-global "\"C" 'beacon-blink) ; cursor
+;; (key-seq-define-global "qc" 'avy-goto-symbol-1-below)
+;; (key-seq-define-global "qs" 'avy-goto-symbol-1-above)
+(global-set-key (kbd "C-c c") 'cider-transient)
 
-;; ;; D — Treemacs (Directory viewer)
+;; ;; D — Directory viewer
 ;; (key-seq-define-global "'d" 'treemacs-select-window)
 ;; ;; (key-seq-define-global "\"D" 'treemacs-visit-node-in-most-recently-used-window)
 ;; (key-seq-define-global "\"D" 'treemacs-find-file)
 ;; ;; (key-seq-define-global "'d" 'treemacs)
 ;; ;; (key-seq-define-global "qd" 'treemacs)
+(global-set-key (kbd "C-c d") 'dired-sidebar-jump-to-sidebar)
 
 ;; E — Errors
 (let ((my-flymake-keymap (make-sparse-keymap)))
@@ -674,14 +697,26 @@
   (define-key my-flymake-keymap "n" 'flymake-goto-next-error)
   (define-key my-flymake-keymap "p" 'flymake-goto-prev-error)
   (define-key my-flymake-keymap "C" 'flymake-compile)
-  (key-seq-define-global "qe" my-flymake-keymap))
+  ;; (key-seq-define-global "qe" my-flymake-keymap)
+  )
+
+(defalias 'my-error-map
+  (let ((map (make-sparse-keymap)))
+   (define-key map "e" ''flymake-goto-next-error) ; default
+   (define-key map "c" 'flymake-show-buffer-diagnostics)
+   (define-key map "l" 'consult-flymake)
+   (define-key map "n" 'flymake-goto-next-error)
+   (define-key map "p" 'flymake-goto-prev-error)
+   (define-key map "C" 'flymake-compile)
+   map))
+(global-set-key (kbd "C-c e") 'my-error-map)
 
 ;; F - Find/search
-(let ((my-find-keymap (make-sparse-keymap)))
-  ;; (define-key my-find-keymap "f" 'swiper-isearch)
-  ;; (define-key my-find-keymap "o" 'ivy-occur)
-  ;; (key-seq-define-global "'f" my-find-keymap)
-  )
+(defalias 'my-find-map
+  (let ((map (make-sparse-keymap)))
+    ;; (define-key map "C" 'flymake-compile)
+    map))
+(global-set-key (kbd "C-c f") 'my-find-map)
 
 ;; G — maGit
 (let ((my-git-keymap (make-sparse-keymap)))
@@ -700,7 +735,29 @@
   (define-key my-git-keymap "r" 'diff-hl-revert-hunk)
   (define-key my-git-keymap "t" 'git-timemachine-toggle)
   (define-key my-git-keymap "u" 'github-browse-file)
-  (key-seq-define-global "qg" my-git-keymap))
+  ;; (key-seq-define-global "qg" my-git-keymap)
+  )
+
+(defalias 'my-git-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "g" 'my-magit-status) ; default
+    (define-key map "U" 'git-link) ; browse
+    (define-key map "a" 'vc-annotate)
+    (define-key map "b" 'magit-blame)
+    (define-key map "B" 'my-copy-branch-name)
+    (define-key map "f" 'magit-diff-buffer-file)
+    (define-key map "h" 'github-browse-file)
+    ;; (define-key map "i" 'git-messenger:popup-message)
+    (define-key map "l" 'magit-log-buffer-file)
+    (define-key map "m" 'diff-hl-mark-hunk)
+    (define-key map "n" 'diff-hl-next-hunk)
+    (define-key map "p" 'diff-hl-previous-hunk)
+    (define-key map "r" 'diff-hl-revert-hunk)
+    (define-key map "t" 'git-timemachine-toggle)
+    (define-key map "u" 'github-browse-file)
+    ;; (key-seq-define-global "qg" map)
+    map))
+(global-set-key (kbd "C-c g") 'my-git-map)
 
 ;; H — Help system
 ;; maybe
@@ -716,22 +773,42 @@
   ;; (define-key my-imenu-keymap "p" 'popup-imenu) ; popup
   ;; (define-key my-imenu-keymap "O" 'outshine-imenu) ; outline
   ;; (define-key my-imenu-keymap "o" 'outshine-navi) ; outline
-  (key-seq-define-global "qi" my-imenu-keymap))
+  ;; (key-seq-define-global "qi" my-imenu-keymap)
+  )
+
+(defalias 'my-imenu-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "i" 'consult-imenu) ; default
+    (define-key map "s" 'imenu-list-smart-toggle) ; sidebar
+    (define-key map "p" 'clojure-docs-peek-toggle)
+    (define-key map "d" 'cider-clojuredocs)
+    (define-key map "e" 'helpful-callable)
+    map))
+(global-set-key (kbd "C-c i") 'my-imenu-map)
 
 ;; J
-;; (key-seq-define-global "'j" 'jump-to-register)
-(key-seq-define-global "qj" 'jump-to-register)
+;; (key-seq-define-global "qj" 'jump-to-register)
+(global-set-key (kbd "C-c j") 'jump-to-register)
 
 ;; K — Kill (and minimize)
 (let ((my-kill-keymap (make-sparse-keymap)))
   (define-key my-kill-keymap "z" 'delete-window-balancedly) ; like backgrounding
   (define-key my-kill-keymap "Z" 'kill-window-balancedly)
-  ;; (define-key my-kill-keymap "k" 'delete-window-balancedly) ; confusing
   (define-key my-kill-keymap "K" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "x" 'kill-current-buffer)
-  ;; (define-key my-kill-keymap "X" 'kill-current-buffer)
   ;; (define-key my-kill-keymap "p" 'projectile-kill-buffers)
-  (key-seq-define-global "qk" my-kill-keymap))
+  ;; (key-seq-define-global "qk" my-kill-keymap)
+  )
+
+(defalias 'my-kill-map
+  (let ((map (make-sparse-keymap)))
+   (define-key map "v" 'delete-window-balancedly) ; like backgrounding
+   (define-key map "k" 'kill-window-balancedly)
+   (define-key map "K" 'kill-current-buffer)
+   ;; (define-key map "x" 'kill-current-buffer)
+   ;; (define-key map "p" 'projectile-kill-buffers)
+   map))
+(global-set-key (kbd "C-c k") 'my-kill-map)
 
 ;; L — Line-numbering/viewing/UI
 (let ((my-lines-keymap (make-sparse-keymap)))
@@ -741,6 +818,7 @@
   (define-key my-lines-keymap "l" 'display-line-numbers-mode)
   (define-key my-lines-keymap "t" 'toggle-truncate-lines)
   (define-key my-lines-keymap "c" 'crosshairs)
+  (define-key my-lines-keymap "d" 'crux-duplicate-current-line-or-region)
   (define-key my-lines-keymap "f" 'hl-line-flash)
   (define-key my-lines-keymap "b" 'beacon-blink)
   (define-key my-lines-keymap "x" 'crosshairs-mode)
@@ -748,23 +826,68 @@
   (define-key my-lines-keymap "h" 'hl-line-mode)
   (define-key my-lines-keymap "H" 'global-hl-line-mode)
   ;; (key-seq-define-global "'l" my-lines-keymap)
-  (key-seq-define-global "ql" my-lines-keymap)
+  ;; (key-seq-define-global "ql" my-lines-keymap)
   )
 
-;; M — Mark
+(defalias 'my-lines-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "r" 'display-line-numbers-relative)
+    (define-key map "a" 'display-line-numbers-absolute)
+    (define-key map "s" 'sml-modeline-mode)
+    (define-key map "l" 'display-line-numbers-mode)
+    (define-key map "t" 'toggle-truncate-lines)
+    (define-key map "c" 'crosshairs)
+    (define-key map "d" 'crux-duplicate-current-line-or-region)
+    (define-key map "f" 'hl-line-flash)
+    (define-key map "b" 'beacon-blink)
+    (define-key map "x" 'crosshairs-mode)
+    (define-key map "m" 'menu-bar-open)
+    (define-key map "h" 'hl-line-mode)
+    (define-key map "H" 'global-hl-line-mode)
+    ;; (key-seq-define-global "'l" map)
+    map))
+(global-set-key (kbd "C-c l") 'my-lines-map)
+
+;; M — Manage perspectives
 ;; (key-seq-define-global "qz" 'point-to-register)
 ;; (key-seq-define-global "QM" 'counsel-bookmark)
+(let ((my-spaces-keymap (make-sparse-keymap)))
+  (define-key my-spaces-keymap "m" 'persp-switch)
+  (define-key my-spaces-keymap "r" 'persp-rename)
+  (define-key my-spaces-keymap "K" 'persp-kill)
+  (define-key my-spaces-keymap "S" 'persp-state-save)
+  (define-key my-spaces-keymap "L" 'persp-state-load)
+  ;; (key-seq-define-global "qm" my-spaces-keymap)
+  )
+
+(defalias 'my-manage-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "s" 'persp-switch)
+    (define-key map "m" 'persp-switch-last)
+    (define-key map "r" 'persp-rename)
+    (define-key map "K" 'persp-kill)
+    (define-key map "S" 'persp-state-save)
+    (define-key map "L" 'persp-state-load)
+    map))
+(global-set-key (kbd "C-c m") 'my-manage-map)
 
 ;; N — New windows
 ;; (key-seq-define-global "'n" 'split-window-balancedly)
-(key-seq-define-global "qn" 'split-window-balancedly)
+;; (key-seq-define-global "qn" 'split-window-balancedly)
 ;; (key-seq-define-global "\"N" 'split-window-vertically-balancedly)
-(key-seq-define-global "QN" 'split-window-vertically-balancedly)
+;; (key-seq-define-global "QN" 'split-window-vertically-balancedly)
+
+(global-set-key (kbd "C-c n") 'split-window-balancedly)
+(global-set-key (kbd "C-c N") 'split-window-vertically-balancedly)
+
 
 ;; O — Open,Other
-(key-seq-define-global "qa" 'crux-smart-open-line)
+;; (key-seq-define-global "qa" 'crux-smart-open-line)
 ;; (key-seq-define-global "qo" (lambda () (interactive) (crux-smart-open-line nil) (crux-smart-open-line nil) (forward-line -1) (indent-for-tab-command)))
-(key-seq-define-global "Q\"" 'my-clj-open-above-let)
+;; (key-seq-define-global "Q\"" 'my-clj-open-above-let)
+
+(global-set-key (kbd "C-c o") 'delete-other-windows) ; Only One
+(global-set-key (kbd "C-c O") 'winner-undo)
 
 ;; P — Project
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
@@ -801,10 +924,13 @@
   ;; (define-key my-project-keymap "E" 'projectile-edit-dir-locals)
   ;; (define-key my-project-keymap "I" 'ivy-imenu-anywhere)
   ;; (key-seq-define-global "'p" my-project-keymap)
-  (key-seq-define-global "qp" my-project-keymap)
+  ;; (key-seq-define-global "qp" my-project-keymap)
   )
 
-;; Q — taken by q'
+(global-set-key (kbd "C-c p") 'aw-flip-window)
+
+;; Q —
+(global-set-key (kbd "C-c q") 'ace-window)
 
 ;; R — Refactoring
 ;; (key-chord-define-global "'r" 'makey-key-mode-popup-clj-refactor)
@@ -822,91 +948,76 @@
   ;; (key-seq-define-global "'r" my-cljr-keymap)
   )
 
-;; S — (BAD: possessives like Micah's)
+(global-set-key (kbd "C-c r") 'point-to-register)
 
-;; T — (BAD: contractions like can't) BUT, qt is ok
+;; S — (BAD: possessives like Micah's)
+(defalias 'my-search-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "s" 'consult-line)
+    map))
+;; (global-set-key (kbd "C-c s") 'my-search-map)
+(global-set-key (kbd "C-c s") 'consult-line)
+
+;; T — todos
 (let ((my-todo-keymap (make-sparse-keymap)))
   (define-key my-todo-keymap "n" 'hl-todo-next)
   (define-key my-todo-keymap "p" 'hl-todo-previous)
   (define-key my-todo-keymap "o" 'hl-todo-occur)
   (define-key my-todo-keymap "i" 'hl-todo-insert)
-  (key-seq-define-global "qt" my-todo-keymap))
+  ;; (key-seq-define-global "qt" my-todo-keymap)
+  )
 
-;; U — (BAD: qu combo, but 'u is kinda ok)
+(defalias 'my-todo-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "n" 'hl-todo-next)
+    (define-key map "p" 'hl-todo-previous)
+    (define-key map "o" 'hl-todo-occur)
+    map))
+(global-set-key (kbd "C-c t") 'my-todo-map)
+
+;; U — urls etc
 (let ((my-url-keymap (make-sparse-keymap)))
   (define-key my-url-keymap "e" 'org-toggle-emphasis)
   (define-key my-url-keymap "i" 'org-insert-link)
   (define-key my-url-keymap "I" 'mardown-insert-link)
   (define-key my-url-keymap "t" 'org-toggle-link-display)
   (define-key my-url-keymap "u" 'browse-url)
-  (key-seq-define-global "QU" my-url-keymap))
+  ;; (key-seq-define-global "QU" my-url-keymap)
+  )
 
-;; V — Vterm (BAD: we've)
+(defalias 'my-url-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "e" 'org-toggle-emphasis)
+    (define-key map "i" 'org-insert-link)
+    (define-key map "I" 'mardown-insert-link)
+    (define-key map "t" 'org-toggle-link-display)
+    (define-key map "u" 'browse-url)
+    map))
+(global-set-key (kbd "C-c u") 'my-url-map)
+
+;; V —
 (let ((my-vterm-keymap (make-sparse-keymap)))
   ;; (define-key my-vterm-keymap "v" 'multi-vterm-dedicated-toggle)
   ;; (define-key my-vterm-keymap "c" 'vterm-toggle-cd-show)
-  ;; (define-key my-vterm-keymap "n" 'my-vterm-new)
+  ;;: (define-key my-vterm-keymap "n" 'my-vterm-new)
   ;; (define-key my-vterm-keymap "o" 'my-vterm-other)
   ;; (key-seq-define-global "'v" my-vterm-keymap)
   )
 
+(global-set-key (kbd "C-c v") 'my-eat-toggle)
+
 ;; W — Windowing
-(key-seq-define-global "QJ" 'ace-window)
+;; (key-seq-define-global "JB" 'ace-window)
 ;; (key-chord-define-global "Q:" 'ace-window)
 ;; (key-chord-define-global "qv" 'ace-window)
 
-;; X
-(key-seq-define-global "qx" 'point-to-register)
+;; (global-set-key (kbd "C-c w") 'popper-kill-latest-popup)
 
-;; Y — tYpography
-;; —  ’ “ ‘ ‘ ’ “
-(let ((my-typo-keymap (make-sparse-keymap)))
-  (define-key my-typo-keymap "`" "‘")
-  (define-key my-typo-keymap "'" "’")
-  (define-key my-typo-keymap "~" "“")
-  (define-key my-typo-keymap "\"" "”")
-  (define-key my-typo-keymap "-"  "—")
-  (define-key my-typo-keymap "."  "…")
-  (define-key my-typo-keymap "="  "→")
-  (define-key my-typo-keymap ">"  "»")
-  (define-key my-typo-keymap "<"  "«")
-  (define-key my-typo-keymap "+"  "±")
-  (define-key my-typo-keymap "v"  "✓")
-  (define-key my-typo-keymap "x"  "✗")
-  (define-key my-typo-keymap "f"  "☞")
-  (define-key my-typo-keymap "t"  "†")
-  (define-key my-typo-keymap "a"  "★")
-  (define-key my-typo-keymap "o"  "□")
-  (define-key my-typo-keymap "r"  "⏎")
-  (define-key my-typo-keymap "L"  "λ")
-  (define-key my-typo-keymap "e"  "∴")
-  (define-key my-typo-keymap "m"  "μ")
-  (define-key my-typo-keymap "p"  "π")
-  (define-key my-typo-keymap "n"  "♫")
-  (define-key my-typo-keymap "d"  "♢") ; diamond
-  (define-key my-typo-keymap "h"  "♡")
-  (define-key my-typo-keymap "H"  "♤")
-  (define-key my-typo-keymap "c"  "♧") ; club
-  (define-key my-typo-keymap "D"  "⛁") ; db
-  (define-key my-typo-keymap "R"  "♻") ; recycle
-  (define-key my-typo-keymap "N"  "♮") ; natural
-  (define-key my-typo-keymap "F"  "♭") ; flat
-  (define-key my-typo-keymap "S"  "♯") ; sharp
-  (define-key my-typo-keymap "k"  "♔") ; king (chess)
-  (define-key my-typo-keymap "b"  "☣") ; biohazard
-  (define-key my-typo-keymap "A"  "☢") ; radioactive
-  (define-key my-typo-keymap "S"  "☠") ; skull
-  (define-key my-typo-keymap "M"  "☄") ; meteor
-  (define-key my-typo-keymap "u"  "☂") ; umbrella
-  (define-key my-typo-keymap "B"  "☀") ; sunshine
-  (define-key my-typo-keymap "l"  "◊") ; lozenge
-  (define-key my-typo-keymap "b"  "₿") ; bitcoin ⛁ ♻ ♮ ♭ ♯ ♔ ☣ ☢ ☠ ☄ ☃ ☂ ☀ ◊
-  (define-key my-typo-keymap "t" 'typo-mode)
-  (key-seq-define-global "qy" my-typo-keymap))
-(let ((my-typo-keymap (make-sparse-keymap)))
-  (define-key my-typo-keymap "'" "‘")
-  (define-key my-typo-keymap "\"" "“")
-  (key-seq-define-global "QY" my-typo-keymap))
+;; X
+;; (key-seq-define-global "qx" 'point-to-register)
+(global-set-key (kbd "C-c x") 'my-rg-xref)
+
+;; Y —
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -923,7 +1034,7 @@
   (define-key my-hs-keymap "G" 'hs-show-all)
   ;; (define-key my-hs-keymap "c" 'my-hs-toggle-function)
   ;; (define-key my-hs-keymap "l" 'hs-hide-level)
-  ;; (define-key my-hs-keymap "t" 'outline-show-all)
+  ;; (defiine-key my-hs-keymap "t" 'outline-show-all)
   (define-key my-hs-keymap "s" 'outline-toggle-children)
   (define-key my-hs-keymap "S" 'outline-toggle-children)
   (define-key my-hs-keymap "t" 'outline-hide-body) ; hide all
@@ -931,89 +1042,184 @@
   ;; Show docstrings only; file-level setting :(
   ;; (define-key my-hs-keymap "d" (lambda () (interactive) (set-selective-display 3)))
   ;; (define-key my-hs-keymap "D" (lambda () (interactive) (set-selective-display 0)))
-  (key-seq-define-global "qz" my-hs-keymap))
+  ;; (key-seq-define-global "qz" my-hs-keymap)
+  )
 
-;;; MASHINGS
-(key-chord-define-global "MR" 'windmove-left)  ; top-left ring+pinky
-;; (key-chord-define-global "ST" 'windmove-right)
-(key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
-(key-chord-define-global "LR" (lambda () (interactive)  (windmove-left)))
-(key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
-(key-chord-define-global "JF" (lambda () (interactive)  (windmove-up)))
-(key-chord-define-global "GG" 'my-buf-pivot-right)
-(key-chord-define-global "TT" 'my-buf-move-right)
-(key-chord-define-global "FF" 'buf-move-up)
-(key-chord-define-global "SS" 'buf-move-down)
+(defalias 'my-hideshow-map
+  (let ((map (make-sparse-keymap)))
+    ;; (define-key map "c" 'hs-hide-block)
+    (define-key map "c" 'hs-hide-all) ; hide for very Compact view
+    (define-key map "o" 'hs-show-block)
+    (define-key map "O" 'hs-show-all)
+    ;; (define-key map "z" 'hs-toggle-hiding)
+    (define-key map "g" 'my-hs-hide-functions-all)
+    (define-key map "G" 'hs-show-all)
+    ;; (define-key map "c" 'my-hs-toggle-function)
+    ;; (define-key map "l" 'hs-hide-level)
+    ;; (define-key map "t" 'outline-show-all)
+    (define-key map "s" 'outline-toggle-children)
+    (define-key map "S" 'outline-toggle-children)
+    (define-key map "t" 'outline-hide-body) ; hide all
+    (define-key map "T" 'outline-show-all)
+    ;; Show docstrings only; file-level setting :(
+    ;; (define-key map "d" (lambda () (interactive) (set-selective-display 3)))
+    ;; (define-key map "D" (lambda () (interactive) (set-selective-display 0)))
+    map))
+(global-set-key (kbd "C-c z") 'my-hideshow-map)
 
-(key-chord-define-global "RR" 'my-buf-move-left)
-(key-chord-define-global "RS" 'windmove-down)
-(key-chord-define-global "XF" 'windmove-up)
-;; (key-chord-define-global "XC" 'counsel-M-x)
-(key-chord-define-global "DK" 'cider-clojuredocs)
-(key-chord-define-global "CD" 'clojure-docs-peek-toggle)
-(key-chord-define-global "H<" 'sfm-toggle)
-;; (key-chord-define-global "XC" 'cider-xref-fn-refs-select)
-(key-chord-define-global "LC" 'my-rg-xref)
-;; (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
-(key-seq-define-global   "IA" 'delete-other-windows) ; Only One
-(key-seq-define-global   "AI" 'winner-undo)
-;; (key-chord-define-global "MN" 'winner-undo) ; MaNy
+;; Symbols
 
-(key-seq-define-global   "H<" 'outline-show-entry)
-;; (key-seq-define-global   "<H" (lambda () (interactive) (outline-hide-subtree) (recenter-top-bottom)))
-(key-seq-define-global   "HN" 'outline-show-all)
-(key-seq-define-global   "NH" 'outline-hide-sublevels)
-
-(key-seq-define-global   "FP" 'hs-show-block)
-(key-seq-define-global   "PF" 'my-hs-hide-block)
-(key-seq-define-global   "SF" 'my-hs-hide-functions-all)
-;; (key-seq-define-global   "SF" 'hs-show-all)
-(key-seq-define-global   "FS" (lambda () "Show all" (interactive) (hs-show-all) (recenter-top-bottom)))
-(key-seq-define-global   "BF" 'hs-hide-all)
-(key-seq-define-global   "FT" 'hs-hide-block) ; fully hide single block; for ns and vars
+(global-set-key (kbd "C-c `") 'popper-kill-latest-popup)
 
 
+;; —  ’ “ ‘ ‘ ’ “
+(defalias 'my-typo-map
+  (let ((map (make-sparse-keymap)))
+  (define-key map "`" "‘")
+  (define-key map "'" "’")
+  (define-key map "~" "“")
+  ;; (define-key map "\\\\" "”") ; doesn't work
+  (define-key map "\"" "”")
+  (define-key map "-"  "—")
+  (define-key map "."  "…")
+  (define-key map "="  "→")
+  (define-key map ">"  "»")
+  (define-key map "<"  "«")
+  (define-key map "+"  "±")
+  (define-key map "v"  "✓")
+  (define-key map "x"  "✗")
+  (define-key map "f"  "☞")
+  (define-key map "t"  "†")
+  (define-key map "a"  "★")
+  (define-key map "o"  "□")
+  (define-key map "r"  "⏎")
+  (define-key map "L"  "λ")
+  (define-key map "e"  "∴")
+  (define-key map "m"  "μ")
+  (define-key map "p"  "π")
+  (define-key map "n"  "♫")
+  (define-key map "d"  "♢") ; diamond
+  (define-key map "T"  "°") ; temperature
+  (define-key map "h"  "♡")
+  (define-key map "H"  "♤")
+  (define-key map "c"  "♧") ; club
+  (define-key map "D"  "⛁") ; db
+  (define-key map "R"  "♻") ; recycle
+  (define-key map "N"  "♮") ; natural
+  (define-key map "F"  "♭") ; flat
+  (define-key map "S"  "♯") ; sharp
+  (define-key map "k"  "♔") ; king (chess)
+  (define-key map "b"  "☣") ; biohazard
+  (define-key map "A"  "☢") ; radioactive
+  (define-key map "S"  "☠") ; skull
+  (define-key map "M"  "☄") ; meteor
+  (define-key map "u"  "☂") ; umbrella
+  (define-key map "B"  "☀") ; sunshine
+  (define-key map "l"  "◊") ; lozenge
+  (define-key map "b"  "₿") ; bitcoin ⛁ ♻ ♮ ♭ ♯ ♔ ☣ ☢ ☠ ☄ ☃ ☂ ☀ ◊
+  (define-key map "t" 'typo-mode)
+  map))
+(global-set-key (kbd "C-c /") 'my-typo-map)
 
 
-;; (key-chord-define-global "az" 'delete-window-balancedly)
-;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
-(key-chord-define-global "ZH" 'kill-this-buffer)
-(key-chord-define-global "DK" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
-;; (key-chord-define-global "KH" 'kill-window-balancedly)
-(key-chord-define-global "VX" 'delete-window-balancedly)
-;; (key-chord-define-global "ZH" 'kill-window-balancedly)
-(key-chord-define-global "GT" 'magit-status)
-(key-chord-define-global "XS" 'save-buffer)
+;;; Navigation
 
-(key-chord-define-global "WN" 'cycle-pairs)
-(key-chord-define-global "{<" 'cycle-pairs)
+(key-seq-define-global ";t" (lambda () (interactive)  (windmove-right)))
+(key-seq-define-global ";r" (lambda () (interactive)  (windmove-left)))
+(key-seq-define-global ";s" (lambda () (interactive)  (windmove-down)))
+(key-seq-define-global ";f" (lambda () (interactive)  (windmove-up)))
 
-;; TODO key seqs for opposited toggle
-(key-seq-define-global "VQ" 'make-frame-command)
-;; (key-seq-define-global "PB" (lambda () (interactive) (make-frame-command) (crux-switch-to-previous-buffer)))
-(key-seq-define-global "QV" 'delete-frame)
+(key-seq-define-global ";:" 'buf-move-up)
+(key-seq-define-global ";c" 'buf-move-down)
+(key-seq-define-global ";l" 'buf-move-left)
+(key-seq-define-global ";g" 'buf-move-right)
 
-(key-seq-define-global "JY" 'beacon-blink)
-(key-seq-define-global "YJ" 'hl-line-flash)
-(key-seq-define-global "UL" 'string-inflection-underscore)
-(key-seq-define-global "YO" 'string-inflection-kebab-case)
-;; (key-chord-define-global "H<" 'lispy-describe-inline)
-(key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
-;; (key-chord-define-global "XX" 'my-cider-eval-to-comment)
-(key-chord-define-global "MM" 'persp-switch-last)
-(key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
-;; (key-chord-define-global "VV" 'multi-vterm-dedicated-toggle)
-;; (key-chord-define-global "VV" 'vterm-toggle)
-(key-chord-define-global "VV" 'my-eat-toggle)
+(key-seq-define-global ";j" 'me/goto-top)
+(key-seq-define-global ";v" 'me/goto-bot)
 
-;; (key-chord-define-global "TP" 'dired-sidebar-toggle-sidebar)
-(key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
-(key-seq-define-global "TP" 'dired-sidebar-jump-to-sidebar)
+(key-seq-define-global ";x" 'avy-goto-symbol-1-below)
+(key-seq-define-global ";b" 'avy-goto-symbol-1-above)
 
-(key-chord-define-global "GV" 'set-variable) ; FIXME
+(key-seq-define-global ";q" 'move-text-up)
+(key-seq-define-global ";k" 'move-text-down)
 
-;; (key-chord-define-global "]]" 'my-forward-jump-to-line-break)
-;; (key-chord-define-global "[[" 'my-backward-jump-to-line-break)
+
+;; ;;; MASHINGS
+;; (key-chord-define-global "MR" 'windmove-left)  ; top-left ring+pinky
+;; ;; (key-chord-define-global "ST" 'windmove-right)
+;; (key-chord-define-global "ST" (lambda () (interactive)  (windmove-right)))
+;; (key-chord-define-global "LR" (lambda () (interactive)  (windmove-left)))
+;; (key-chord-define-global "RS" (lambda () (interactive)  (windmove-down)))
+;; (key-chord-define-global "BF" (lambda () (interactive)  (windmove-up)))
+
+(defun me/goto-top ()
+  (interactive)
+  (push-mark (point)) ; save place
+  (let ((current-prefix-arg 0)) (call-interactively 'move-to-window-line-top-bottom)))
+
+(defun me/goto-bot ()
+  (interactive)
+  (push-mark (point)) ; save place
+  (let ((current-prefix-arg '(-1))) (call-interactively 'move-to-window-line-top-bottom)))
+
+
+;; (key-chord-define-global "GG" 'my-buf-pivot-right)
+;; (key-chord-define-global "TT" 'my-buf-move-right)
+;; (key-chord-define-global "FF" 'buf-move-up)
+;; (key-chord-define-global "SS" 'buf-move-down)
+
+;; (key-chord-define-global "RR" 'my-buf-move-left)
+;; (key-chord-define-global "RS" 'windmove-down)
+;; (key-chord-define-global "XF" 'windmove-up)
+;; (key-chord-define-global "DC" 'cider-clojuredocs)
+;; (key-chord-define-global "CD" 'clojure-docs-peek-toggle)
+;; (key-chord-define-global "H<" 'sfm-toggle)
+;; (key-chord-define-global "LC" 'my-rg-xref)
+;; ;; (key-chord-define-global "BG" (lambda () (interactive) (cider-browse-ns (cider-current-ns))))
+
+;; (key-seq-define-global   "IA" 'delete-other-windows) ; Only One
+;; (key-seq-define-global   "AI" 'winner-undo)
+
+;; (key-seq-define-global   "H<" 'outline-show-entry)
+;; ;; (key-seq-define-global   "<H" (lambda () (interactive) (outline-hide-subtree) (recenter-top-bottom)))
+;; (key-seq-define-global   "HN" 'outline-show-all)
+;; (key-seq-define-global   "NH" 'outline-hide-sublevels)
+
+;; (key-seq-define-global   "FP" 'hs-show-block)
+;; (key-seq-define-global   "PF" 'my-hs-hide-block)
+;; (key-seq-define-global   "SF" 'my-hs-hide-functions-all)
+;; (key-seq-define-global   "FS" (lambda () "Show all" (interactive) (hs-show-all) (recenter-top-bottom)))
+;; (key-seq-define-global   "FT" 'hs-hide-block) ; fully hide single block; for ns and vars
+
+
+;; ;; (key-chord-define-global "az" 'delete-window-balancedly)
+;; ;; http://pragmaticemacs.com/emacs/dont-kill-buffer-kill-this-buffer-instead/
+;; (key-chord-define-global "ZH" 'kill-this-buffer)
+;; (key-chord-define-global "DK" (lambda () (interactive) (kill-this-buffer) (delete-window-balancedly)))
+;; (key-chord-define-global "VX" 'delete-window-balancedly)
+;; (key-chord-define-global "GT" 'magit-status)
+;; (key-chord-define-global "XS" 'save-buffer)
+
+;; (key-chord-define-global "WN" 'cycle-pairs)
+;; (key-chord-define-global "{<" 'cycle-pairs)
+
+;; ;; TODO key seqs for opposited toggle
+;; (key-seq-define-global "VQ" 'make-frame-command)
+;; (key-seq-define-global "QV" 'delete-frame)
+
+;; (key-seq-define-global "JY" 'beacon-blink)
+;; (key-seq-define-global "YJ" 'hl-line-flash)
+;; (key-seq-define-global "UL" 'string-inflection-underscore)
+;; (key-seq-define-global "YO" 'string-inflection-kebab-case)
+;; (key-chord-define-global "TD" 'my-cider-eval-and-test-fn)
+;; (key-chord-define-global "MM" 'persp-switch-last)
+;; (key-chord-define-global "BB" 'crux-switch-to-previous-buffer)
+;; (key-chord-define-global "VV" 'my-eat-toggle)
+
+;; (key-seq-define-global "PT" 'dired-sidebar-hide-sidebar)
+;; (key-seq-define-global "TP" 'dired-sidebar-jump-to-sidebar)
+
+;; (key-chord-define-global "GV" 'set-variable) ; FIXME
 
 
 (defun display-line-numbers-absolute ()
@@ -1111,8 +1317,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 
-(global-set-key (kbd "C-p") 'previous-line)
-
 ;; Zoom font size
 ;; (global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
 ;; (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
@@ -1129,14 +1333,12 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "M-o") 'crux-smart-open-line)
 ;; (global-set-key (kbd "M-O") 'crux-smart-open-line-above)
 ;; (global-set-key [(control shift return)] 'crux-smart-open-line-above)
-(global-set-key (kbd "C-c e") 'crux-eval-and-replace)
-(global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
-(global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
-(global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
-(global-set-key (kbd "C-c I") 'crux-find-user-init-file)
 
-(global-set-key [(meta shift up)] 'move-text-up)
-(global-set-key [(meta shift down)] 'move-text-down)
+;; (global-set-key (kbd "C-c e") 'crux-eval-and-replace)
+;; (global-set-key (kbd "C-c d") 'crux-duplicate-current-line-or-region)
+(global-set-key (kbd "C-c M-d") 'crux-duplicate-and-comment-current-line-or-region)
+;; (global-set-key (kbd "C-c t") 'crux-visit-term-buffer)
+(global-set-key (kbd "C-c I") 'crux-find-user-init-file)
 
 ;; (global-set-key (kbd "C-s") 'swiper-isearch)
 ;; (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -1152,21 +1354,19 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-c g") 'counsel-git)
 ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
 ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-(global-set-key (kbd "C-p") 'previous-line)
 (global-set-key (kbd "C-c T") 'typo-mode)
 
-;; Simpler attempt at typography.
-(global-set-key (kbd "C-c '") "’")
-(global-set-key (kbd "C-c `'") "‘")
-(global-set-key (kbd "C-c \"") "“")
-(global-set-key (kbd "C-c /") "”")
-(global-set-key (kbd "C-c -") "—")
+;; ;; Simpler attempt at typography.
+;; (global-set-key (kbd "C-c '") "’")
+;; (global-set-key (kbd "C-c `'") "‘")
+;; (global-set-key (kbd "C-c \"") "“")
+;; (global-set-key (kbd "C-c /") "”")
+;; (global-set-key (kbd "C-c -") "—")
 
 (global-set-key (kbd "C-'") 'toggle-quotes)
 ;; TEST: Can't "do" this.
 ;; (global-set-key (kbd "C-c C") 'hide/show-comments-toggle)
 
-(global-set-key (kbd "C-'") 'toggle-quotes)
 
 ;; https://stackoverflow.com/a/76869891/326516
 (defun cycle-pairs ()
@@ -1203,8 +1403,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Disable prompt for kill
 ;; http://superuser.com/questions/354849/emacs-kill-buffer-without-prompt
 ;; (global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "C-x k") 'kill-current-buffer)
-(global-set-key (kbd "C-c k") 'kill-current-buffer)
+;; (global-set-key (kbd "C-x k") 'kill-current-buffer)
+;; (global-set-key (kbd "C-c k") 'kill-current-buffer)
 
 (global-set-key [(control ?.)] (lambda () (interactive) (dot-mode 1)
                                        (message "Dot mode activated.")))
@@ -1212,7 +1412,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Prelude badly sets C-- to zoom out, so keep as negative argument
 (global-set-key (kbd "C--") 'negative-argument)
 
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
+;; (global-set-key (kbd "C-c q") 'auto-fill-mode)
 
 ;; http://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
 (global-set-key "\C-x2"
@@ -1258,13 +1458,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; smartparens overrides M-r, so changing default
 (global-set-key "\M-R" 'move-to-window-line-top-bottom)
 (global-set-key "\M-\C-R" 'jump-to-bottom)
-(global-set-key (kbd "C-S-t") (lambda () (interactive)
-				(push-mark (point)) ; save place
-                                (let ((current-prefix-arg 0))
-				  (call-interactively 'move-to-window-line-top-bottom))))
-(global-set-key (kbd "C-S-b") (lambda () (interactive)
-				(push-mark (point)) ; save place
-				(let ((current-prefix-arg '(-1))) (call-interactively 'move-to-window-line-top-bottom))))
+(global-set-key (kbd "C-S-t") 'me/goto-top)
+(global-set-key (kbd "C-S-b") 'me/goto-bot)
 
 (global-set-key (kbd "M-S-v") 'jump-to-top)
 ;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
@@ -1279,11 +1474,11 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "M-%") 'anzu-query-replace)
 ;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
-(global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
+;; (global-set-key (kbd "C-c '") 'imenu-list-smart-toggle)
 ;; (global-set-key (kbd "C-'") 'counsel-semantic-or-imenu)
 ;; (global-set-key (kbd "C-\"") 'popup-imenu)
 ;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
-(global-set-key (kbd "C-c c") 'my-copy-filename)
+;; (global-set-key (kbd "C-c c") 'my-copy-filename)
 (global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
 
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
@@ -1294,8 +1489,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-p") 'my-previous-line)
 
 
-(global-set-key (kbd "C-c j") 'justl)
-(global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
+(global-set-key (kbd "C-c J") 'justl)
+;; (global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
 
 
 
@@ -1500,8 +1695,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Moved cider-transient to its own repo:
 ;;
 
-(key-chord-define-global "CC" 'cider-transient)
-;; (key-seq-define-global "xc" 'cider-transient)
+;; (key-chord-define-global "CC" 'cider-transient)
 
 
 
@@ -1557,6 +1751,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; move line up/down (already enabled) -- M-S-up
 ;; move-text-up, move-text-down
 (require 'move-text)
+
 
 
 ;; Focus — Dim the font color of text in surrounding paragraphs
@@ -1716,10 +1911,10 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'hl-todo)
 (add-hook 'prog-mode-hook 'hl-todo-mode)
 (global-hl-todo-mode)
-(define-key hl-todo-mode-map (kbd "C-c p") 'hl-todo-previous)
-(define-key hl-todo-mode-map (kbd "C-c n") 'hl-todo-next)
-(define-key hl-todo-mode-map (kbd "C-c o") 'hl-todo-occur)
-(define-key hl-todo-mode-map (kbd "C-c i") 'hl-todo-insert)
+;; (define-key hl-todo-mode-map (kbd "C-c p") 'hl-todo-previous)
+;; (define-key hl-todo-mode-map (kbd "C-c n") 'hl-todo-next)
+;; (define-key hl-todo-mode-map (kbd "C-c o") 'hl-todo-occur)
+;; (define-key hl-todo-mode-map (kbd "C-c i") 'hl-todo-insert)
 
 
 ;; Wow, hide comments!! Just blanks them out.
@@ -2589,7 +2784,7 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 
-(global-set-key (kbd "C-c C-u") 'browse-url)
+;; (global-set-key (kbd "C-c C-u") 'browse-url)
 
 (setq browse-url-firefox-program (if (eq system-type 'darwin)
 				     "/Applications/Firefox.app/Contents/MacOS/firefox"
@@ -3144,7 +3339,7 @@ Relies on consult (for project-root), cider."
        (setq-local cider-repl-history-size 1000)
        (setq-local cider-repl-history-file "~/.cider-repl-history")
 
-       (key-chord-define clojure-mode-map "LC" 'my-rg-xref)
+       ;; (key-chord-define clojure-mode-map "XC" 'my-rg-xref)
        ;; (key-chord-define sql-mode-map "XC" 'my-rg-xref)
 
        ;; (cider-auto-test-mode 1)
@@ -4265,10 +4460,10 @@ This is way faster than 'C-s M-n C-a C-d'."
 (use-package consult
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
-	 ("C-c h" . consult-history)
-	 ("C-c m" . consult-mode-command)
-	 ("C-c b" . consult-bookmark)
-	 ("C-c k" . consult-kmacro)
+	 ;; ("C-c h" . consult-history)
+	 ;; ("C-c m" . consult-mode-command)
+	 ;; ("C-c b" . consult-bookmark)
+	 ;; ("C-c k" . consult-kmacro)
 	 ;; C-x bindings (ctl-x-map)
 	 ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complet-command
 	 ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
