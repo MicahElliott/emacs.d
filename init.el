@@ -2336,7 +2336,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
 ;; Reserved: x m c j n u e v b o
-(setq aw-keys '(?b ?f ?p ?x ?y ?w ?o ?u ?l ?r ?s ?t ?g ?h ?e ?i ?a ?q ?g ?k ?c ?d))
+(setq aw-keys '(?l ?r ?s ?t ?h ?e ?i ?a ?b ?f ?p ?x ?y ?w ?o ?u ?q ?g ?k ?c ?d))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -3253,8 +3253,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;;; Clojure
 
 ;; My first elisp package!
-(when (not (eq system-type 'darwin))
-  (require 'clojure-docs-peek))
+;; (when (not (eq system-type 'darwin)) (require 'clojure-docs-peek))
+(require 'clojure-docs-peek)
 
 ;; For controlling clj tests from CSV/TSV
 ;; TODO Turn into proper fns/lib
