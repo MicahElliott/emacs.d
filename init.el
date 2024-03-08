@@ -98,6 +98,7 @@
     git-link
     git-timemachine
     github-browse-file
+    god-mode
     goggles
     helpful
     highlight
@@ -3239,6 +3240,11 @@ Here 'words' are defined as characters separated by whitespace."
   :defer t
   :custom (edebug-inline-result-backend 'quick-peek)
   :hook (edebug-mode . edebug-inline-result-mode))
+
+
+;;; OCaml
+
+;; (add-to-list 'load-path "/home/mde/.opam/default/share/emacs/site-lisp")
 
 
 ;;; Clojure
