@@ -1,1 +1,1 @@
-/home/mde/proj/symbolic-clojure/symbolic-clojure.el
+../../proj/symbolic-clojure/symbolic-clojure.el

@@ -1,1 +1,1 @@
-/home/mde/proj/cider-transient/cider-transient.el
+../../proj/cider-transient/cider-transient.el

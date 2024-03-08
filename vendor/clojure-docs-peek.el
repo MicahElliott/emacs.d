@@ -1,1 +1,1 @@
-/home/mde/proj/clojure-docs-peek/clojure-docs-peek.el
+../../proj/clojure-docs-peek/clojure-docs-peek.el
