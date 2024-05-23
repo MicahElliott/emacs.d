@@ -198,6 +198,7 @@
  '(browse-url-browser-function 'browse-url-firefox)
  '(case-fold-search nil)
  '(cider-annotate-completion-function 'my-cider-annotate-completion-function)
+ '(cider-auto-select-error-buffer t)
  '(cider-comment-prefix " ;=> ")
  '(cider-inspector-auto-select-buffer t)
  '(cider-inspector-max-atom-length 300)
@@ -324,7 +325,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(easy-kill god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit cider string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -491,14 +492,14 @@
  '(show-paren-match ((t (:background "#272822" :foreground "#005f00" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "#005f00"))))
- '(symbol-overlay-face-1 ((t (:background "dodger blue" :foreground "#000000"))))
+ '(symbol-overlay-face-1 ((t (:background "dodger blue" :foreground "#000000" :weight normal))))
  '(symbol-overlay-face-2 ((t (:background "hot pink" :foreground "#000000" :weight normal))))
- '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "#000000"))))
- '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "#000000"))))
- '(symbol-overlay-face-5 ((t (:background "red" :foreground "#000000"))))
+ '(symbol-overlay-face-3 ((t (:background "sienna" :foreground "#000000" :weight normal))))
+ '(symbol-overlay-face-4 ((t (:background "dark orchid" :foreground "#000000" :weight normal))))
+ '(symbol-overlay-face-5 ((t (:background "red" :foreground "#000000" :weight normal))))
  '(symbol-overlay-face-6 ((t (:background "orange" :foreground "#000000"))))
- '(symbol-overlay-face-7 ((t (:background "spring green" :foreground "#000000"))))
- '(symbol-overlay-face-8 ((t (:background "turquoise" :foreground "#000000"))))
+ '(symbol-overlay-face-7 ((t (:background "spring green" :foreground "#000000" :weight normal))))
+ '(symbol-overlay-face-8 ((t (:background "turquoise" :foreground "#000000" :weight normal))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
  '(vertico-group-title ((t (:background "brightwhite" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
@@ -708,7 +709,7 @@
   (define-key my-flymake-keymap "l" 'consult-flymake)
   (define-key my-flymake-keymap "n" 'flymake-goto-next-error)
   (define-key my-flymake-keymap "p" 'flymake-goto-prev-error)
-  (define-key my-flymake-keymap "C" 'flymake-compile)
+  (define-key my-flymake-keymap "C" 'flymake-proc-compile)
   ;; (key-seq-define-global "qe" my-flymake-keymap)
   )
 
@@ -817,8 +818,8 @@
 (defalias 'my-kill-map
   (let ((map (make-sparse-keymap)))
    (define-key map "g" 'delete-window-balancedly) ; like backgrounding
-   (define-key map "k" 'kill-window-balancedly)
-   (define-key map "K" 'kill-current-buffer)
+   (define-key map "k" 'kill-current-buffer)
+   (define-key map "K" 'kill-window-balancedly)
    ;; (define-key map "x" 'kill-current-buffer)
    ;; (define-key map "p" 'projectile-kill-buffers)
    map))
@@ -1153,19 +1154,29 @@
 (key-seq-define-global ",s" (lambda () (interactive)  (windmove-down)))
 (key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
 
-(key-seq-define-global ",:" 'buf-move-up)
+(key-seq-define-global ",~" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",l" 'buf-move-left)
 (key-seq-define-global ",m" 'buf-move-right)
 
-(key-seq-define-global ",j" 'me/goto-top)
-(key-seq-define-global ",g" 'me/goto-bot)
+(key-seq-define-global ",p" 'me/goto-top)
+(key-seq-define-global ",d" 'me/goto-bot)
+
+;; (key-seq-define-global ",g" 'me/goto-bot) ; available
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
 (key-seq-define-global ",x" 'move-text-up) ; line up
-(key-seq-define-global ",v" 'move-text-down) ; line down
+(key-seq-define-global ",w" 'move-text-down) ; line down
+
+(defun me/recenter-jump (register)
+  (interactive (list (register-read-with-preview "Jump to register: ")))
+  (let ((val (get-register register)))
+    (register-val-jump-to val nil))
+  (recenter-top-bottom 1)
+  (let ((current-prefix-arg 4))
+    (call-interactively 'set-mark-command)))
 
 ;; Available
 ;; (key-seq-define-global ",p" 'xxx)
@@ -2336,7 +2347,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
 ;; Reserved: x m c j n u e v b o
-(setq aw-keys '(?l ?r ?s ?t ?h ?e ?i ?a ?b ?f ?p ?x ?y ?w ?o ?u ?q ?g ?k ?c ?d))
+(setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2840,7 +2851,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "xfvpuymrstbneiawlcdhqjgkz"))
 ;; (setq avy-keys (string-to-list ",fvjpu'rsgbeawlcdkzh"))
 ;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
-(setq avy-keys (string-to-list "bfpxywou'lrstmheiavqgkcd;/."))
+(setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
