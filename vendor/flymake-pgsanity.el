@@ -1,0 +1,1 @@
+../../proj/flymake-pgsanity/flymake-pgsanity.el
