@@ -72,6 +72,7 @@
     comment-dwim-2
     consult
     consult-eglot
+    consult-flyspell
     conventional-changelog
     corfu
     crux
@@ -94,10 +95,15 @@
     flymd
     flymake-kondor
     flymake-diagnostic-at-point
+    flymake-go
+    flyspell-correct
+    flyspell-correct-popup
     git-gutter
     git-link
     git-timemachine
     github-browse-file
+    go-eldoc
+    go-mode
     god-mode
     goggles
     helpful
@@ -200,7 +206,7 @@
  '(cider-annotate-completion-function 'my-cider-annotate-completion-function)
  '(cider-auto-select-error-buffer t)
  '(cider-comment-prefix " ;=> ")
- '(cider-inspector-auto-select-buffer t)
+ '(cider-inspector-auto-select-buffer nil)
  '(cider-inspector-max-atom-length 300)
  '(cider-inspector-max-coll-size 10)
  '(cider-inspector-page-size 50)
@@ -256,6 +262,8 @@
  '(flycheck-markdown-markdownlint-cli-executable "markdownlint")
  '(flycheck-markdown-mdl-executable "mdl")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
+ '(flymake-no-changes-timeout nil)
+ '(flymake-pgsanity-program "hugslint")
  '(global-hl-line-mode nil)
  '(global-hl-line-sticky-flag nil)
  '(global-prettify-symbols-mode nil)
@@ -325,7 +333,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(flymake-go go-eldoc go-mode flyspell-correct-popup consult-flyspell cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -340,6 +348,17 @@
  '(recentf-max-menu-items 100)
  '(recentf-max-saved-items 500)
  '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
+ '(safe-local-variable-values
+   '((eval and buffer-file-name
+           (not
+            (eq major-mode 'package-recipe-mode))
+           (or
+            (require 'package-recipe-mode nil t)
+            (let
+                ((load-path
+                  (cons "../package-build" load-path)))
+              (require 'package-recipe-mode nil t)))
+           (package-recipe-mode))))
  '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
@@ -704,7 +723,7 @@
 
 ;; E — Errors
 (let ((my-flymake-keymap (make-sparse-keymap)))
-  (define-key my-flymake-keymap "e" ''flymake-goto-next-error) ; default
+  (define-key my-flymake-keymap "e" 'flymake-goto-next-error) ; default
   (define-key my-flymake-keymap "c" 'flymake-show-buffer-diagnostics)
   (define-key my-flymake-keymap "l" 'consult-flymake)
   (define-key my-flymake-keymap "n" 'flymake-goto-next-error)
@@ -715,12 +734,17 @@
 
 (defalias 'my-error-map
   (let ((map (make-sparse-keymap)))
-   (define-key map "e" ''flymake-goto-next-error) ; default
+   (define-key map "e" 'flymake-goto-next-error) ; default
    (define-key map "c" 'flymake-show-buffer-diagnostics)
    (define-key map "l" 'consult-flymake)
    (define-key map "n" 'flymake-goto-next-error)
    (define-key map "p" 'flymake-goto-prev-error)
    (define-key map "C" 'flymake-compile)
+   (define-key map "s" 'flyspell-goto-next-error)
+   (define-key map "r" 'flyspell-buffer)
+   (define-key map "W" 'consult-flyspell)
+   (define-key map "f" 'flyspell-correct-at-point)
+   (define-key map "P" 'flyspell-prog-mode)
    map))
 (global-set-key (kbd "C-c e") 'my-error-map)
 
@@ -1029,12 +1053,13 @@
 ;; (key-chord-define-global "qv" 'ace-window)
 
 
-(global-set-key (kbd "C-c x") 'my-rg-xref)
-;; (global-set-key (kbd "C-c w") 'popper-kill-latest-popup)
-
-;; X
+;; W
 ;; (key-seq-define-global "qx" 'point-to-register)
 (global-set-key (kbd "C-c w") 'ace-window)
+
+;; X
+(global-set-key (kbd "C-c x") 'my-rg-xref)
+;; (global-set-key (kbd "C-c w") 'popper-kill-latest-popup)
 
 ;; Z — folding/hide-show
 ;; Hide-Show custom prefix. This trick works for setting any key-chord prefix!
@@ -1162,13 +1187,14 @@
 (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",d" 'me/goto-bot)
 
-;; (key-seq-define-global ",g" 'me/goto-bot) ; available
+(key-seq-define-global ",x" 'me/goto-bot) ; available
+(key-seq-define-global ",w" 'ace-window)
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",x" 'move-text-up) ; line up
-(key-seq-define-global ",w" 'move-text-down) ; line down
+(key-seq-define-global ",q" 'move-text-up) ; line up
+(key-seq-define-global ",g" 'move-text-down) ; line down
 
 (defun me/recenter-jump (register)
   (interactive (list (register-read-with-preview "Jump to register: ")))
@@ -1945,17 +1971,26 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (require 'flycheck)
 
 (require 'flymake)
-(add-hook 'prog-mode #'flymake-mode)
-(add-hook 'markdown-mode #'flymake-mode) ; FIXME should this be flymd?
+(add-hook 'prog-mode-hook #'flymake-mode)
+(add-hook 'markdown-mode-hook #'flymake-mode)
+
+;; (add-hook 'markdown-mode-hook #'flymake-mode) ; FIXME
 ;; https://github.com/turbo-cafe/flymake-kondor
 (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
 (use-package flymake-kondor :ensure t :hook (clojure-mode . flymake-kondor-setup))
 
-;; FIXME
-;; ;; Inline flymake messages
-;; (eval-after-load 'flymake
-;;   (do (require 'flymake-diagnostic-at-point)
-;;   (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode)))
+;; Inline flymake messages
+(eval-after-load 'flymake
+  ;; https://github.com/meqif/flymake-diagnostic-at-point
+  (require 'flymake-diagnostic-at-point)
+  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
+
+
+;; (add-hook 'go-mode-hook #'flymake-mode)
+(eval-after-load "go-mode" '(require 'flymake-go))
+
+;; (add-hook 'go-mode-hook #'go-flymake)
+
 
 ;; (require 'flymake-kondor)
 
@@ -3200,13 +3235,12 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; Markdown
 
-(require 'flymd)
+;; Emacs on the fly markdown preview
+;; (require 'flymd)
+
 ;; (require 'markdown-toc)
 ;; Enable syntax highlighting of code in blocks.
 (setq markdown-fontify-code-blocks-natively t)
-
-;; Seems to be best version markdownlint; see also mdl
-;; https://github.com/igorshubovych/markdownlint-cli
 
 
 ;; (require 'markdown-mode)
@@ -3338,6 +3372,20 @@ Here 'words' are defined as characters separated by whitespace."
     (cider-map-repls :auto
       (lambda (repl)
 	(cider-request:load-file (cider--file-string dbpath) dbpath "core.db" repl nil)))))
+
+
+
+(add-hook 'sql-mode-hook 'flymake-mode)
+
+;; (require 'san-flymake-pkg)
+(require 'flymake-pgsanity)
+(add-hook 'sql-mode-hook 'flymake-pgsanity-setup)
+;; (pgsanity-setup-flymake-backend)
+;; (add-hook 'sql-mode-hook 'flymake-pgsanity-load)
+
+(require 'flymake-mdl)
+(add-hook 'markdown-mode-hook 'flymake-mdl-setup)
+
 
 ;; Add - for sql mode words
 ;; (add-hook 'sql-mode-hook     (lambda () (modify-syntax-entry ?- "w" sql-mode-syntax-table)))  ; not working
