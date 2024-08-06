@@ -87,7 +87,6 @@
     dumb-jump
     eat
     edebug-inline-result
-    eglot
     embark
     embark-consult
     envrc
@@ -102,8 +101,8 @@
     git-link
     git-timemachine
     github-browse-file
-    go-eldoc
     go-mode
+    gotest
     god-mode
     goggles
     helpful
@@ -153,6 +152,7 @@
     symbol-overlay
     term-keys
     toggle-test
+    toml
     typo
     unfill
     unicode-fonts
@@ -269,6 +269,7 @@
  '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
  '(global-whitespace-mode t)
+ '(go-ts-mode-indent-offset 4)
  '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
@@ -333,7 +334,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(flymake-go go-eldoc go-mode flyspell-correct-popup consult-flyspell cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -370,6 +371,7 @@
  '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
    '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
+ '(tgt-open-in-new-window nil)
  '(tldr-enabled-categories '("common"))
  '(tramp-default-method "ssh")
  '(uniquify-min-dir-content 1)
@@ -525,7 +527,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "#4e4e4e" :foreground "#757575" :weight bold)))))
+ '(whitespace-tab ((t (:background "#111111" :foreground "#4e4e4e" :weight bold)))))
 
 ;; Color conversion chart from color-N to hex:
 ;; https://stackoverflow.com/a/69141482/326516
@@ -1548,8 +1550,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-\"") 'popup-imenu)
 ;; (global-set-key (kbd "C-M-a") 'beginning-of-defun) ; replaced
 ;; (global-set-key (kbd "C-c c") 'my-copy-filename)
+;; (global-set-key (kbd "C-x C-]") 'my-forward-jump-to-line-break) ; this is bad since means ESC
 (global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
-
+;; (global-set-key (kbd "C-x C-[") 'my-backward-jump-to-line-break) ; this is bad since means ESC
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 ;; (global-set-key (kbd "M-`") 'jump-to-mark)
@@ -1913,7 +1916,6 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'ripgrep)
 
 
-;;; Try out Emacs' new project mode
 (require 'project)
 
 ;; Replace projectile-toggle-between-implementation-and-test
@@ -1979,15 +1981,54 @@ Here 'words' are defined as characters separated by whitespace."
 (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
 (use-package flymake-kondor :ensure t :hook (clojure-mode . flymake-kondor-setup))
 
+;; FIXME This is causing emacs to not start.
 ;; Inline flymake messages
-(eval-after-load 'flymake
+;; (eval-after-load 'flymake
   ;; https://github.com/meqif/flymake-diagnostic-at-point
-  (require 'flymake-diagnostic-at-point)
-  (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
+  ;; (require 'flymake-diagnostic-at-point)
+  ;; (add-hook 'flymake-mode-hook #'flymake-diagnostic-at-point-mode))
 
 
 ;; (add-hook 'go-mode-hook #'flymake-mode)
-(eval-after-load "go-mode" '(require 'flymake-go))
+;; (eval-after-load "go-mode" '(require 'flymake-go))
+
+
+;;; Golang
+
+;; ;; https://cs.opensource.google/go/x/tools/+/refs/tags/gopls/v0.15.3:gopls/doc/emacs.md
+;; (defun project-find-go-module (dir)
+;;   (when-let ((root (locate-dominating-file dir "go.mod")))
+;;     (cons 'go-module root)))
+;; ;; (cl-defmethod project-root ((project (head go-module)))
+;; ;;   (cdr project))
+;; (add-hook 'project-find-functions #'project-find-go-module)
+
+(require 'go-mode)
+(require 'eglot)
+(add-hook 'go-mode-hook 'eglot-ensure)
+
+(add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
+
+(add-to-list 'auto-mode-alist '("\\.mod\\'" . go-mode))
+
+
+;; Optional: install eglot-format-buffer as a save hook.
+;; The depth of -10 places this before eglot's willSave notification,
+;; so that that notification reports the actual contents that will be saved.
+(defun eglot-format-buffer-on-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
+
+;; (setq-default eglot-workspace-configuration
+;;     '((:gopls . ((staticcheck . t) (matcher . "CaseSensitive")))))
+
+;; (add-hook 'before-save-hook
+;;     (lambda () (call-interactively 'eglot-code-action-organize-imports))
+;;     nil t)
+
+;; (require 'gotest)
+
+(require 'toml-mode)
 
 ;; (add-hook 'go-mode-hook #'go-flymake)
 
@@ -4259,11 +4300,11 @@ chord."
        [?\C-\M-d ?\C-\M-f ?\C-f ?\C-\M-  ?\C-w ?\C-\M-f ?\C-\M-b ?\C-\M-d ?\C-\M-f ?  ?\C-y return ?\C-\M-u ?\M-r ?\C-\M-  tab]
        0 "%d"))
 
-(fset 'clj-sort-ns
-      (kmacro-lambda-form [?\M-\{ ?\C-n ?\M-f return
-				  ?\C-\M-u ?\C-\M-  tab ?\C-b return
-				  ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?s return
-				  ?\C-\M-n ?\C-\M-e ?\C-x ?\C-e] 0 "%d"))
+;; (fset 'clj-sort-ns
+      ;; (kmacro-lambda-form [?\M-\{ ?\C-n ?\M-f return
+				  ;; ?\C-\M-u ?\C-\M-  tab ?\C-b return
+				  ;; ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?s return
+				  ;; ?\C-\M-n ?\C-\M-e ?\C-f ?\C-e] 0 "%d"))
 
 (fset 'clj-sort-ns-2
       (kmacro-lambda-form [?\M-\} ?\C-\M-f ?\C-b ?\C-b return ?\C-p ?\C-e ?\C-  ?\C-\M-u ?\C-n ?\C-a ?\C-a ?\M-x ?s ?o ?r ?t ?- ?l ?i ?n ?e ?d backspace ?s return ?\C-\M-n] 0 "%d"))
