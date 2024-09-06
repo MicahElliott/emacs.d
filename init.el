@@ -364,6 +364,7 @@
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
+ '(trailing-whitespace ((t (:background "#ae33ff"))))
  '(size-indication-mode t)
  '(split-height-threshold 100)
  '(split-width-threshold 30)
@@ -932,7 +933,7 @@
 (global-set-key (kbd "C-c o") 'delete-other-windows) ; Only One
 (global-set-key (kbd "C-c O") 'winner-undo)
 
-;; P — Project
+;; P — Project - Available!
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
 (let ((my-project-keymap (make-sparse-keymap)))
   ;; (define-key my-project-keymap "a" 'projectile-add-known-project)
@@ -970,7 +971,8 @@
   ;; (key-seq-define-global "qp" my-project-keymap)
   )
 
-(global-set-key (kbd "C-c p") 'aw-flip-window)
+;; Available!
+;; (global-set-key (kbd "C-c p") 'aw-flip-window)
 
 ;; Q —
 (global-set-key (kbd "C-c q") 'ace-window)
@@ -1176,26 +1178,29 @@
 
 ;;; Navigation
 
-(key-seq-define-global ",t" (lambda () (interactive)  (windmove-right)))
-(key-seq-define-global ",r" (lambda () (interactive)  (windmove-left)))
-(key-seq-define-global ",s" (lambda () (interactive)  (windmove-down)))
-(key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",n" (lambda () (interactive)  (windmove-right)))
+(key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
+(key-seq-define-global ",l" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
 
 (key-seq-define-global ",~" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
-(key-seq-define-global ",l" 'buf-move-left)
+(key-seq-define-global ",s" 'buf-move-left)
 (key-seq-define-global ",m" 'buf-move-right)
 
-(key-seq-define-global ",p" 'me/goto-top)
+;; (key-seq-define-global ",p" 'me/goto-top)
+(key-seq-define-global ",p" 'aw-flip-window)
 (key-seq-define-global ",d" 'me/goto-bot)
 
-(key-seq-define-global ",x" 'me/goto-bot) ; available
+;; (key-seq-define-global ",x" 'me/goto-bot) ; available
+;; (key-seq-define-global ",m" 'me/goto-bot) ; available
+
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",b" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",f" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",q" 'move-text-up) ; line up
+(key-seq-define-global ",b" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
 (defun me/recenter-jump (register)
@@ -1651,8 +1656,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; THEME
 
-(require 'monokai-theme)
-(enable-theme 'monokai)
+;; (require 'monokai-theme)
+;; (enable-theme 'monokai)
 
 ;; (require 'ample-theme)
 ;; (load-theme 'ample t t)
@@ -2206,7 +2211,10 @@ Here 'words' are defined as characters separated by whitespace."
 (setq whitespace-style '(face tabs empty trailing lines-tail))
 
 ;; Automatically remove all trailing whitespace.
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace) ; but only want this in prog-modes
+;; https://stackoverflow.com/a/19183546
+(defun nuke-trailing-ws () (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+(add-hook 'prog-mode-hook #'nuke-trailing-ws)
 
 ;; Inverse of Emacs' fill-paragraph and fill-region
 ;; https://github.com/purcell/unfill
@@ -2423,7 +2431,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Colemak
 ;; (setq aw-keys '(?a ?r ?s ?t ?g ?m ?n ?e ?i ?o))
 ;; Reserved: x m c j n u e v b o
-(setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
+;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
+;; ace-window
+(setq aw-keys '(?s ?t ?r ?n ?h ?e ?i ?a ?b ?f ?l ?p ?x ?y ?o ?u ?g ?k ?c ?d ?w))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2927,7 +2937,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "xfvpuymrstbneiawlcdhqjgkz"))
 ;; (setq avy-keys (string-to-list ",fvjpu'rsgbeawlcdkzh"))
 ;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
-(setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
+;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
+;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
+(setq avy-keys (string-to-list "bflpxyou'strnmheiagkcdw;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
