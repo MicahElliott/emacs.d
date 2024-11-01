@@ -153,6 +153,7 @@
     term-keys
     toggle-test
     toml
+    toml-mode
     typo
     unfill
     unicode-fonts
@@ -364,7 +365,6 @@
  '(scroll-bar-mode nil)
  '(search-whitespace-regexp "\"[ \\t\\r\\n]+\"")
  '(show-trailing-whitespace t)
- '(trailing-whitespace ((t (:background "#ae33ff"))))
  '(size-indication-mode t)
  '(split-height-threshold 100)
  '(split-width-threshold 30)
@@ -374,6 +374,7 @@
    '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
  '(tgt-open-in-new-window nil)
  '(tldr-enabled-categories '("common"))
+ '(trailing-whitespace ((t (:background "#ae33ff"))))
  '(tramp-default-method "ssh")
  '(uniquify-min-dir-content 1)
  '(uniquify-trailing-separator-p t)
@@ -511,7 +512,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "yellow" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "orchid" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
- '(show-paren-match ((t (:background "#272822" :foreground "#005f00" :inverse-video t :weight normal))))
+ '(show-paren-match ((t (:background "#272822" :foreground "brightcyan" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "#005f00"))))
  '(symbol-overlay-face-1 ((t (:background "dodger blue" :foreground "#000000" :weight normal))))
@@ -930,8 +931,8 @@
 ;; (key-seq-define-global "qo" (lambda () (interactive) (crux-smart-open-line nil) (crux-smart-open-line nil) (forward-line -1) (indent-for-tab-command)))
 ;; (key-seq-define-global "Q\"" 'my-clj-open-above-let)
 
-(global-set-key (kbd "C-c o") 'delete-other-windows) ; Only One
-(global-set-key (kbd "C-c O") 'winner-undo)
+(global-set-key (kbd "C-c O") 'delete-other-windows) ; Only One
+(global-set-key (kbd "C-c o") 'winner-undo)
 
 ;; P — Project - Available!
 ;; [s]earch and [g]rep are the search keys for ag, ripgrep, projectile variants
@@ -1183,24 +1184,25 @@
 (key-seq-define-global ",l" (lambda () (interactive)  (windmove-up)))
 (key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
 
-(key-seq-define-global ",~" 'buf-move-up)
+(key-seq-define-global ",x" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
-(key-seq-define-global ",m" 'buf-move-right)
+(key-seq-define-global ",f" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
-(key-seq-define-global ",p" 'aw-flip-window)
-(key-seq-define-global ",d" 'me/goto-bot)
+(key-seq-define-global ",p" 'aw-flip-window) ; "Prev" win
+(key-seq-define-global ",b" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",d" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
 ;; (key-seq-define-global ",m" 'me/goto-bot) ; available
 
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",f" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",k" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",v" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",y" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",b" 'move-text-up) ; line up
+(key-seq-define-global ",;" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
 (defun me/recenter-jump (register)
@@ -1211,6 +1213,21 @@
   (let ((current-prefix-arg 4))
     (call-interactively 'set-mark-command)))
 
+(defun me/clear-register (reg)
+  (interactive (list (register-read-with-preview "Clear register: ")))
+  (let ((val (get-register reg)))
+    (set-register reg nil)))
+
+(defun me/clear-all-registers () (interactive) (setq register-alist nil))
+
+;; https://emacs.stackexchange.com/questions/52289/is-there-a-way-to-delete-or-clear-a-register
+  ;; (setq register-alist
+  ;;       (append '((?a) (?b) (?c) (?d) (?e) (?f) (?g) (?h) (?i) (?j) (?k) (?l) (?m)
+  ;;                 (?n) (?o) (?p) (?q) (?r) (?s) (?t) (?u) (?v) (?w) (?x) (?y) (?z))
+  ;;               register-alist))
+
+
+;; (require 'bm)
 ;; Available
 ;; (key-seq-define-global ",p" 'xxx)
 ;; (key-seq-define-global ",d" 'xxx)
@@ -1559,7 +1576,7 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-x ]") 'my-forward-jump-to-line-break)
 ;; (global-set-key (kbd "C-x C-[") 'my-backward-jump-to-line-break) ; this is bad since means ESC
 (global-set-key (kbd "C-x [") 'my-backward-jump-to-line-break)
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
+;; (global-set-key (kbd "C-`") 'push-mark-no-activate)
 ;; (global-set-key (kbd "M-`") 'jump-to-mark)
 
 (global-set-key (kbd "C-n") 'my-next-line)
@@ -1656,8 +1673,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;;; THEME
 
-;; (require 'monokai-theme)
-;; (enable-theme 'monokai)
+(require 'monokai-theme)
+(enable-theme 'monokai)
 
 ;; (require 'ample-theme)
 ;; (load-theme 'ample t t)
@@ -2161,6 +2178,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; FIXME should instead go to vterm window without toggle so leaving doesn't trigger a savee
 ;; (add-to-list 'super-save-triggers 'vterm-toggle)
 (add-to-list 'super-save-hook-triggers 'find-file-hook)
+(add-to-list 'super-save-hook-triggers 'focus-out-hook)
+
 
 ;; Seems the only way to have multiple vterms
 ;; (when (eq system-type 'gnu/linux) (require 'multi-vterm))
@@ -2433,7 +2452,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?r ?n ?h ?e ?i ?a ?b ?f ?l ?p ?x ?y ?o ?u ?g ?k ?c ?d ?w))
+(setq aw-keys '(?s ?t ?r ?n ?e ?i ?a ?b ?f ?l ?p ?v ?h ?o ?u ?k ?g ?w ?c ?d ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2939,7 +2958,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
-(setq avy-keys (string-to-list "bflpxyou'strnmheiagkcdw;/."))
+(setq avy-keys (string-to-list "bflpvhou'strnmeiagwcdy;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -4139,12 +4158,14 @@ chord."
         ;; (setq mark-ring (nbutlast mark-ring))
         (goto-char (marker-position (car (last mark-ring))))))
 
+;; https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+;; But this seems terrible, to be unable to exchange!
 (defun exchange-point-and-mark-no-activate ()
   "Identical to \\[exchange-point-and-mark] but will not activate the region."
   (interactive)
   (exchange-point-and-mark)
   (deactivate-mark nil))
-(define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
+;; (define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
 
 (defun increment-number-at-point ()
   (interactive)
@@ -5063,6 +5084,12 @@ into Emacs, rather than jump to a browser and see it on GH."
 	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
 
+
+(setq hugs-imenu-generic-expression
+      '(("SELECTS" "^-- :name \\([-a-z0-9?!]+\\) .*:\\?" 1)
+        ("EXECS"   "^-- :name \\([-a-z0-9?!]+\\) .*:!" 1)
+        ("INSERTS" "^-- :name \\([-a-z0-9?!]+\\) .*:i!" 1)))
+(add-hook 'sql-mode-hook (lambda ()  (setq imenu-generic-expression hugs-imenu-generic-expression)))
 
 
 
