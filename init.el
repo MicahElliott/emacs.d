@@ -264,7 +264,7 @@
  '(flycheck-markdown-mdl-executable "mdl")
  '(flycheck-pycheckers-checkers '(pylint pep8 pyflakes bandit))
  '(flymake-no-changes-timeout nil)
- '(flymake-pgsanity-program "hugslint")
+ '(flymake-pgsanity-program "huglint")
  '(global-hl-line-mode nil)
  '(global-hl-line-sticky-flag nil)
  '(global-prettify-symbols-mode nil)
@@ -512,7 +512,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "yellow" :weight bold))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "orchid" :weight bold))))
  '(region ((t (:inherit highlight :extend t :background "purple4"))))
- '(show-paren-match ((t (:background "#272822" :foreground "brightcyan" :inverse-video t :weight normal))))
+ '(show-paren-match ((t (:background "black" :foreground "cyan1" :inverse-video t :weight normal))))
  '(sp-show-pair-match-face ((t (:background "#272822" :foreground "green" :inverse-video t :weight normal))))
  '(symbol-overlay-default-face ((t (:inherit nil :background "#005f00"))))
  '(symbol-overlay-face-1 ((t (:background "dodger blue" :foreground "#000000" :weight normal))))
@@ -529,7 +529,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "#111111" :foreground "#4e4e4e" :weight bold)))))
+ '(whitespace-tab ((t (:background "#555555" :foreground "#4e4e4e" :weight bold)))))
 
 ;; Color conversion chart from color-N to hex:
 ;; https://stackoverflow.com/a/69141482/326516
@@ -1191,7 +1191,7 @@
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",p" 'aw-flip-window) ; "Prev" win
-(key-seq-define-global ",b" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",=" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",d" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
@@ -1199,8 +1199,8 @@
 
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",v" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",y" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",b" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",v" 'avy-goto-symbol-1-below)
 
 (key-seq-define-global ",;" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
