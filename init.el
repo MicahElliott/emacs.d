@@ -1184,14 +1184,14 @@
 (key-seq-define-global ",l" (lambda () (interactive)  (windmove-up)))
 (key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
 
-(key-seq-define-global ",x" 'buf-move-up)
+(key-seq-define-global ",=" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
 (key-seq-define-global ",f" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
-(key-seq-define-global ",p" 'aw-flip-window) ; "Prev" win
-(key-seq-define-global ",=" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
+(key-seq-define-global ",p" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",d" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
@@ -1202,7 +1202,7 @@
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",v" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",;" 'move-text-up) ; line up
+(key-seq-define-global ",q" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
 (defun me/recenter-jump (register)
@@ -2452,7 +2452,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?r ?n ?e ?i ?a ?b ?f ?l ?p ?v ?h ?o ?u ?k ?g ?w ?c ?d ?y))
+(setq aw-keys '(?s ?t ?r ?n ?e ?i ?a ?q ?b ?f ?l ?p ?x ?k ?g ?v ?c ?d ?w ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2958,7 +2958,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
-(setq avy-keys (string-to-list "bflpvhou'strnmeiagwcdy;/."))
+(setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -4908,7 +4908,7 @@ into Emacs, rather than jump to a browser and see it on GH."
 (define-key cider-mode-map (kbd "C-c C-n c") 'my-copy-namespace-name)
 
 
-;; Line breaks (C-l, ^L) are shown as pretty horizontal lines
+;; Line breaks (C-l, ^L, form-feed) are shown as pretty horizontal lines
 ;; Maybe needs to be at end of file
 ;; Navigate: C-x ] and C-x [
 ;; https://stackoverflow.com/a/7577628/326516
