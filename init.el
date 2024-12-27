@@ -1784,8 +1784,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Highlight symbols with keymap-enabled overlays (search, find)
 ;; https://github.com/wolray/symbol-overlay/
 (require 'symbol-overlay)
-;; FIXME not taking effect
-(symbol-overlay-mode +1)
+;; Minor mode for auto-highlighting symbol at point
+(symbol-overlay-mode +1) ; FIXME not taking effect
+(add-hook 'prog-mode-hook 'symbol-overlay-mode) ; maybe will work??
+
 
 ;; Highlight word matching point without doing anything
 ;; https://github.com/nonsequitur/idle-highlight-mode/blob/master/idle-highlight-mode.el
@@ -2251,6 +2253,12 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; Zsh, hopefully
 (setq indent-tabs-mode t)
+
+(setq sh-indent-offset 5)
+(defun sh-custom-settings () (setq tab-width 5))
+(add-hook 'sh-mode-hook 'sh-custom-settings)
+(setq sh-indentation 5)
+
 
 
 ;;; EShell
