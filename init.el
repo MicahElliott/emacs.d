@@ -82,6 +82,8 @@
     dired-rainbow
     dired-sidebar
     direnv
+    dockerfile-mode
+    docker
     dotenv-mode
     dot-mode
     dumb-jump
@@ -115,6 +117,7 @@
     ibuffer-vc
     imenu-list
     jet
+    jinx
     jump-char
     just-mode
     justl
@@ -207,7 +210,7 @@
  '(cider-annotate-completion-function 'my-cider-annotate-completion-function)
  '(cider-auto-select-error-buffer t)
  '(cider-comment-prefix " ;=> ")
- '(cider-inspector-auto-select-buffer nil)
+ '(cider-inspector-auto-select-buffer t)
  '(cider-inspector-max-atom-length 300)
  '(cider-inspector-max-coll-size 10)
  '(cider-inspector-page-size 50)
@@ -744,10 +747,11 @@
    (define-key map "n" 'flymake-goto-next-error)
    (define-key map "p" 'flymake-goto-prev-error)
    (define-key map "C" 'flymake-compile)
-   (define-key map "s" 'flyspell-goto-next-error)
-   (define-key map "r" 'flyspell-buffer)
+   ;; (define-key map "s" 'flyspell-goto-next-error)
+   (define-key map "s" 'jinx-next)
+   (define-key map "r" 'jinx-mode)
+   (define-key map "f" 'jinx-correct)
    (define-key map "W" 'consult-flyspell)
-   (define-key map "f" 'flyspell-correct-at-point)
    (define-key map "P" 'flyspell-prog-mode)
    map))
 (global-set-key (kbd "C-c e") 'my-error-map)
@@ -1181,18 +1185,18 @@
 
 (key-seq-define-global ",n" (lambda () (interactive)  (windmove-right)))
 (key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
-(key-seq-define-global ",l" (lambda () (interactive)  (windmove-up)))
-(key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
+(key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",d" (lambda () (interactive)  (windmove-down)))
 
 (key-seq-define-global ",=" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
-(key-seq-define-global ",f" 'buf-move-right)
+(key-seq-define-global ",l" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
 (key-seq-define-global ",p" 'me/goto-top) ; "Back" to top
-(key-seq-define-global ",d" 'me/goto-bot) ; "Down" to bottom
+(key-seq-define-global ",r" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
 ;; (key-seq-define-global ",m" 'me/goto-bot) ; available
@@ -1200,10 +1204,12 @@
 (key-seq-define-global ",w" 'ace-window)
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",v" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",q" 'move-text-up) ; line up
+(key-seq-define-global ",v" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
+
+;; (key-seq-define-global ",v" 'TODO)
 
 (defun me/recenter-jump (register)
   (interactive (list (register-read-with-preview "Jump to register: ")))
@@ -2460,7 +2466,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?r ?n ?e ?i ?a ?q ?b ?f ?l ?p ?x ?k ?g ?v ?c ?d ?w ?h ?o ?u ?y))
+(setq aw-keys '(?s ?t ?d ?n ?l ?e ?i ?a ?v ?b ?f ?p ?x ?g ?k ?c ?r ?w ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2966,7 +2972,8 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "vxfbqjpou'mrsgtg;heiawlcdkzh/."))
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
-(setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
+;; (setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
+(setq avy-keys (string-to-list "vbfpdxhoustdnmeiakgcrwy;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
