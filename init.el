@@ -1185,13 +1185,13 @@
 
 (key-seq-define-global ",n" (lambda () (interactive)  (windmove-right)))
 (key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
-(key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",d" (lambda () (interactive)  (windmove-up)))
 (key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
 
 (key-seq-define-global ",=" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
-(key-seq-define-global ",v" 'buf-move-right)
+(key-seq-define-global ",f" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
@@ -1203,11 +1203,11 @@
 
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",d" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",g" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",b" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
 (key-seq-define-global ",;" 'move-text-up) ; line up
-(key-seq-define-global ",b" 'move-text-down) ; line down
+(key-seq-define-global ",g" 'move-text-down) ; line down
 
 ;; (key-seq-define-global ",v" 'TODO)
 
@@ -1562,7 +1562,6 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "M-S-v") 'jump-to-top)
 ;; Since already holding M-S-R, enable recenter (usually C-l) to also be M-S
-(global-set-key (kbd "M-L") 'recenter-top-bottom)
 (global-set-key (kbd "M-;") 'comment-dwim-2)
 
 (global-set-key [(meta m)] 'jump-char-forward)
@@ -1591,6 +1590,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 (global-set-key (kbd "C-c J") 'justl)
 ;; (global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
+
+(global-set-key (kbd "C-r") 'recenter-top-bottom)
+(global-set-key (kbd "C-l") 'ctrlf-backward-default)
+;; (bind-key* "C-l" 'ctrlf-backward-default)
+;; (bind-key* "C-r" 'recenter-top-bottom)
 
 
 
@@ -1829,7 +1833,7 @@ Here 'words' are defined as characters separated by whitespace."
   (define-key map (kbd "d") #'symbol-overlay-jump-to-definition)
   ;; (define-key map (kbd "s") #'symbol-overlay-isearch-literally)
   (define-key map (kbd "q") #'symbol-overlay-query-replace)
-  (define-key map (kbd "r") #'symbol-overlay-rename)
+  (define-key map (kbd "R") #'symbol-overlay-rename)
   (setq symbol-overlay-map map))
 
 ;; Nice transient example
@@ -2466,7 +2470,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?r ?n ?v ?e ?i ?a ?d ?f ?p ?x ?k ?b ?g ?c ?l ?w ?h ?o ?u ?y))
+setq (aw-keys '(?s ?t ?r ?n ?f ?e ?i ?a ?b ?d ?p ?x ?k ?v ?g ?c ?l ?w ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2973,7 +2977,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
 ;; (setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
-(setq avy-keys (string-to-list "dfpxhoustrnvmeiakbgcrwy;/."))
+(setq avy-keys (string-to-list "bdpxhoustrnfmeiavgkclwy;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
