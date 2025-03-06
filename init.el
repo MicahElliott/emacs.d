@@ -1185,13 +1185,13 @@
 
 (key-seq-define-global ",n" (lambda () (interactive)  (windmove-right)))
 (key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
-(key-seq-define-global ",d" (lambda () (interactive)  (windmove-up)))
-(key-seq-define-global ",r" (lambda () (interactive)  (windmove-down)))
+(key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",d" (lambda () (interactive)  (windmove-down)))
 
 (key-seq-define-global ",=" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
-(key-seq-define-global ",f" 'buf-move-right)
+(key-seq-define-global ",r" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
@@ -1201,10 +1201,10 @@
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
 ;; (key-seq-define-global ",m" 'me/goto-bot) ; available
 
-(key-seq-define-global ",w" 'ace-window)
+(key-seq-define-global ",k" 'ace-window)
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",k" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",w" 'avy-goto-symbol-1-below)
 
 (key-seq-define-global ",;" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
@@ -1419,12 +1419,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (global-set-key (kbd "C-M-_") 'default-text-scale-decrease)
 ;; (global-set-key (kbd "C-M-+") 'default-text-scale-increase)
 
-(global-set-key (kbd "M-i") 'symbol-overlay-put)
-(global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
-(global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
-(global-set-key (kbd "<f7>") 'symbol-overlay-mode)
-(global-set-key (kbd "<f8>") 'symbol-overlay-remove-all)
-
 ;; mimic popular IDEs binding, note that it doesn't work in a terminal session
 (global-set-key (kbd "C-a") 'crux-move-beginning-of-line)
 (global-set-key [(shift return)] 'crux-smart-open-line)
@@ -1591,8 +1585,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-c J") 'justl)
 ;; (global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
 
-(global-set-key (kbd "C-r") 'recenter-top-bottom)
-(global-set-key (kbd "C-l") 'ctrlf-backward-default)
+;; (global-set-key (kbd "C-r") 'recenter-top-bottom)
+;; (global-set-key (kbd "C-l") 'ctrlf-backward-default)
 ;; (bind-key* "C-l" 'ctrlf-backward-default)
 ;; (bind-key* "C-r" 'recenter-top-bottom)
 
@@ -1821,8 +1815,14 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Try to hack to reset the boundaries
 (define-key symbol-overlay-map (kbd "s") (lambda () (interactive) (ctrlf-forward-symbol-at-point) (message "hit RET to remove boundaries")))
 
+(global-set-key (kbd "M-i") 'symbol-overlay-put)
+(global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
+(global-set-key (kbd "M-p") 'symbol-overlay-switch-backward)
+(global-set-key (kbd "<f7>") 'symbol-overlay-mode)
+(global-set-key (kbd "<f8>") 'symbol-overlay-remove-all)
+
 (let ((map (make-sparse-keymap)))
-  (define-key map (kbd "i") #'symbol-overlay-put)
+  (define-key map (kbd "e") #'symbol-overlay-put)
   (define-key map (kbd "h") #'symbol-overlay-map-help)
   (define-key map (kbd "b") #'symbol-overlay-jump-prev)
   (define-key map (kbd "f") #'symbol-overlay-jump-next)
@@ -2470,7 +2470,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-setq (aw-keys '(?s ?t ?r ?n ?f ?e ?i ?a ?b ?d ?p ?x ?k ?v ?g ?c ?l ?w ?h ?o ?u ?y))
+(setq aw-keys '(?s ?t ?d ?n ?r ?e ?i ?a ?b ?f ?p ?x ?v ?g ?w ?c ?l ?k ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2977,7 +2977,7 @@ setq (aw-keys '(?s ?t ?r ?n ?f ?e ?i ?a ?b ?d ?p ?x ?k ?v ?g ?c ?l ?w ?h ?o ?u ?
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
 ;; (setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
-(setq avy-keys (string-to-list "bdpxhoustrnfmeiavgkclwy;/."))
+(setq avy-keys (string-to-list "bfpxhoustdnrmeiavgwclky;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
