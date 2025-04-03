@@ -66,6 +66,7 @@
     auto-compile
     avy
     beacon
+    bm
     buffer-move
     cider
     clojure-mode
@@ -203,6 +204,7 @@
  '(beacon-blink-when-point-moves-vertically 5)
  '(beacon-color "red")
  '(beacon-push-mark nil)
+ '(bm-highlight-style 'bm-highlight-line-and-fringe)
  '(bqn-key-prefix 92)
  '(bqn-mode-map-prefix "C-M-")
  '(browse-url-browser-function 'browse-url-firefox)
@@ -338,7 +340,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(jinx docker dockerfile-mode bm toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
