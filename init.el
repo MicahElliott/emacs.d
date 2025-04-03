@@ -1201,15 +1201,15 @@
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
 ;; (key-seq-define-global ",m" 'me/goto-bot) ; available
 
-(key-seq-define-global ",k" 'ace-window)
+(key-seq-define-global ",w" 'ace-window)
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",w" 'avy-goto-symbol-1-below)
+(key-seq-define-global ",v" 'avy-goto-symbol-1-below)
+;; (key-seq-define-global ",k" 'TODO)
 
 (key-seq-define-global ",;" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
-;; (key-seq-define-global ",v" 'TODO)
 
 (defun me/recenter-jump (register)
   (interactive (list (register-read-with-preview "Jump to register: ")))
@@ -2470,7 +2470,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?d ?n ?r ?e ?i ?a ?b ?f ?p ?x ?v ?g ?w ?c ?l ?k ?h ?o ?u ?y))
+(setq aw-keys '(?s ?t ?d ?n ?r ?e ?i ?a ?b ?f ?p ?x ?w ?g ?v ?c ?l ?k ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2977,7 +2977,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
 ;; (setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
-(setq avy-keys (string-to-list "bfpxhoustdnrmeiavgwclky;/."))
+(setq avy-keys (string-to-list "bfpxhoustdnrmeiawgvclky;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
@@ -4039,26 +4039,13 @@ chord."
 
 ;; (require 'eat)
 
-(defun sh-send-line-or-region ()
-  (interactive ())
-  (process-send-string (get-process "vterm") "ls -l\n"))
-;; (define-key shell-script-mode (kbd "C-c C-c") 'sh-send-line-or-region)
-(global-set-key (kbd "C-c Q") 'sh-send-line-or-region)
-(add-hook 'shell-script-mode (lambda () (local-set-key (kbd "C-c C-c") 'sh-send-line-or-region)))
-
-
 ;; Slime-like for shell/zsh (C-u C-x M-m)
 ;; http://stackoverflow.com/questions/6286579/
+;; Must have zsh-autopair not enabled
 (defun sh-send-line-or-region (&optional step)
   (interactive ())
-  ;; (let ((proc (get-process "shell"))
-  (let ((proc (get-process "vterm"))
+  (let ((proc (get-process "*eat*"))
         pbuf min max command)
-    ;; (unless proc
-    ;;   (let ((currbuff (current-buffer)))
-    ;;     (vterm)
-    ;;     (switch-to-buffer currbuff)
-    ;;     (setq proc (get-process "vterm"))))
     (setq pbuff (process-buffer proc))
     (if (use-region-p)
         (setq min (region-beginning)
@@ -4066,23 +4053,34 @@ chord."
       (setq min (point-at-bol)
             max (point-at-eol)))
     (setq command (concat (buffer-substring min max) "\n"))
-    ;; (with-current-buffer pbuff
-    ;;   (goto-char (process-mark proc))
-    ;;   (insert command)
-    ;;   (move-marker (process-mark proc) (point))
-    ;;   ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
-    (process-send-string proc command)
-    ;; (display-buffer (process-buffer proc) t)
-    ;; (when step
-    ;;   (goto-char max)
-    ;;   (forward-line))
+    (with-current-buffer pbuff
+      (goto-char (process-mark proc))
+      (insert command)
+      (move-marker (process-mark proc) (point))
+      ) ;;pop-to-buffer does not work with save-current-buffer -- bug?
+    (process-send-string  proc command)
+    (display-buffer (process-buffer proc) t)
+    (when step
+      (goto-char max)
+      (next-line))
     ))
+
 (defun sh-send-line-or-region-and-step ()
   (interactive)
   (sh-send-line-or-region t))
-;; (defun sh-switch-to-process-buffer ()
-;;   (interactive)
-;;   (pop-to-buffer (process-buffer (get-process "vterm")) t))
+(defun sh-switch-to-process-buffer ()
+  (interactive)
+  (pop-to-buffer (process-buffer (get-process "*eat*")) t))
+
+;; Testing example
+;; (defun sh-send-line-or-region ()
+;;   (interactive ())
+;;   (process-send-string (get-process "vterm") "ls -l\n"))
+
+;; (define-key shell-script-mode (kbd "C-c C-c") 'sh-send-line-or-region)
+(global-set-key (kbd "C-c Q") 'sh-send-line-or-region)
+(add-hook 'shell-script-mode (lambda () (local-set-key (kbd "C-c C-c") 'sh-send-line-or-region)))
+
 
 ;; (setq comint-scroll-to-bottom-on-output t)
 
