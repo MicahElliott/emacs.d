@@ -1185,19 +1185,19 @@
 
 ;;; Navigation
 
-(key-seq-define-global ",n" (lambda () (interactive)  (windmove-right)))
+(key-seq-define-global ",r" (lambda () (interactive)  (windmove-right)))
 (key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
-(key-seq-define-global ",f" (lambda () (interactive)  (windmove-up)))
-(key-seq-define-global ",d" (lambda () (interactive)  (windmove-down)))
+(key-seq-define-global ",p" (lambda () (interactive)  (windmove-up)))
+(key-seq-define-global ",n" (lambda () (interactive)  (windmove-down)))
 
 (key-seq-define-global ",=" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
-(key-seq-define-global ",r" 'buf-move-right)
+(key-seq-define-global ",f" 'buf-move-right)
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
-(key-seq-define-global ",p" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",d" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",l" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
@@ -2043,7 +2043,10 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'eglot)
 (add-hook 'go-mode-hook 'eglot-ensure)
 
-(add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
+(add-hook 'go-mode-hook
+          (lambda ()
+            (setq tab-width 4)
+            (set-face-attribute 'whitespace-tab nil :background "#111")))
 
 (add-to-list 'auto-mode-alist '("\\.mod\\'" . go-mode))
 
@@ -2053,7 +2056,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; so that that notification reports the actual contents that will be saved.
 (defun eglot-format-buffer-on-save ()
   (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
-(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
+;; (add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
 
 ;; (setq-default eglot-workspace-configuration
 ;;     '((:gopls . ((staticcheck . t) (matcher . "CaseSensitive")))))
@@ -2472,7 +2475,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Reserved: x m c j n u e v b o
 ;; (setq aw-keys '(?l ?r ?s ?t ?n ?e ?i ?a ?b ?f ?p ?x ?y ?o ?u ?v ?g ?k ?c ?d ?w ?h))
 ;; ace-window
-(setq aw-keys '(?s ?t ?d ?n ?r ?e ?i ?a ?b ?f ?p ?x ?w ?g ?v ?c ?l ?k ?h ?o ?u ?y))
+(setq aw-keys '(?s ?t ?n ?r ?f ?e ?i ?a ?b ?p ?d ?x ?w ?g ?v ?c ?l ?k ?h ?o ?u ?y))
 (setq aw-dispatch-always t)
 (setq aw-scope 'frame) ; or 'global
 
@@ -2979,7 +2982,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; (setq avy-keys (string-to-list "bfpxyou'lrstmneiavgkcdw;/."))
 ;; (setq avy-keys (string-to-list "bvlpxyou'nrstdeiagfkcmw;/."))
 ;; (setq avy-keys (string-to-list "bflpvhoustrnmeiakgvcdy;/."))
-(setq avy-keys (string-to-list "bfpxhoustdnrmeiawgvclky;/."))
+(setq avy-keys (string-to-list "bpdxhoustnrfmeiawgvclky;/."))
 ;; (setq avy-keys (number-sequence ?a ?z))
 ;; (setq avy-keys (string-to-list "arstgmneiowfpluy"))
 ;; (setq avy-keys (string-to-list "arstneio"))
