@@ -76,6 +76,7 @@
     consult-flyspell
     conventional-changelog
     corfu
+    corfu-terminal
     crux
     csv
     dash
@@ -288,8 +289,18 @@
      ("THEM" . "#dc8cc3")
      ("PROG" . "#7cb8bb")
      ("OKAY" . "#7cb8bb")
+     ("GOAL" . "#7cb8bb")
+     ("MEETING" . "#7cb8bb")
+     ("BLOCKED" . "#7cb8bb")
+     ("IMPACT" . "#7cb8bb")
+     ("PRODUCTIVITY" . "#7cb8bb")
+     ("SUMMARY" . "#7cb8bb")
+     ("IDEA" . "#7cb8bb")
+     ("WIN" . "#7cb8bb")
+     ("CAREER" . "#7cb8bb")
      ("TESTING" . "#5f7f5f")
      ("DONT" . "#5f7f5f")
+     ("TIL" . "#5f7f5f")
      ("FAIL" . "#8c5353")
      ("DONE" . "#afd8af")
      ("NOTE" . "#d0bf8f")
@@ -340,7 +351,7 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(jinx docker dockerfile-mode bm toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider god-mode markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-seq key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(go-playground jinx docker dockerfile-mode bm toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
@@ -467,6 +478,7 @@
  '(ctrlf-highlight-line ((t (:background "red4"))))
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
+ '(eglot-highlight-symbol-face ((t (:inherit bold))))
  '(flycheck-indicator-success ((t (:inherit custom-state))))
  '(flymake-error ((t (:foreground "red" :underline (:color foreground-color :style wave)))))
  '(flymake-warning ((t (:foreground "brightyellow" :underline (:color foreground-color :style wave)))))
@@ -530,7 +542,7 @@
  '(symbol-overlay-face-8 ((t (:background "turquoise" :foreground "#000000" :weight normal))))
  '(tooltip ((t (:background "red" :foreground "green"))))
  '(variable-pitch ((t (:height 1.0 :family "Fira Sans"))))
- '(vertico-group-title ((t (:background "brightwhite" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
+ '(vertico-group-title ((t (:background "#3e05d9" :foreground "gray40" :slant italic :height 1.6 :family "Fira Sans"))))
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
@@ -1197,7 +1209,7 @@
 
 ;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
-(key-seq-define-global ",d" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",b" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",l" 'me/goto-bot) ; "Down" to bottom
 
 ;; (key-seq-define-global ",x" 'me/goto-bot) ; available
@@ -1205,11 +1217,11 @@
 
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",b" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",d" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",v" 'avy-goto-symbol-1-below)
 ;; (key-seq-define-global ",k" 'TODO)
 
-(key-seq-define-global ",;" 'move-text-up) ; line up
+(key-seq-define-global ",j" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
 
