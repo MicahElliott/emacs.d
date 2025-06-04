@@ -228,10 +228,8 @@
  '(column-number-mode t)
  '(completion-show-help nil)
  '(consult-mode-histories
-   '((eshell-mode . eshell-history-ring)
-     (comint-mode . comint-input-ring)
-     (term-mode . term-input-ring)
-     (clojure-mode . clojure-input-ring)
+   '((eshell-mode . eshell-history-ring) (comint-mode . comint-input-ring)
+     (term-mode . term-input-ring) (clojure-mode . clojure-input-ring)
      (elisp-mode . elisp-input-ring)))
  '(consult-preview-max-count 5)
  '(consult-preview-max-size 104857)
@@ -241,10 +239,18 @@
  '(ctrlf-auto-recenter nil)
  '(ctrlf-show-match-count-at-eol t)
  '(custom-safe-themes
-   '("207431eaa6aa655a252d3807578bac8187fc0d87ccd2ace5538b1a3c048a5bf8" "a5944520983c5467f163f68d256ff869a338c88acbd3610ffde4ba259c51dc61" "3d38054b096d264c5e8bcf46820b31853989404dc41d3a43b6a071c54b32f7ad" "7d5007882734456bc3df171bb8b0a83962841e2a8a5e9b861fbe2f24b1265ffd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default))
+   '("207431eaa6aa655a252d3807578bac8187fc0d87ccd2ace5538b1a3c048a5bf8"
+     "a5944520983c5467f163f68d256ff869a338c88acbd3610ffde4ba259c51dc61"
+     "3d38054b096d264c5e8bcf46820b31853989404dc41d3a43b6a071c54b32f7ad"
+     "7d5007882734456bc3df171bb8b0a83962841e2a8a5e9b861fbe2f24b1265ffd"
+     "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223"
+     "39b0c917e910f32f43f7849d07b36a2578370a2d101988ea91292f9087f28470"
+     "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa"
+     default))
  '(dired-sidebar-icon-scale 1)
  '(dired-sidebar-mode-line-format
-   '("%e" mode-line-front-space mode-line-buffer-identification " " mode-line-end-spaces))
+   '("%e" mode-line-front-space mode-line-buffer-identification " "
+     mode-line-end-spaces))
  '(dired-sidebar-should-follow-file t)
  '(dired-sidebar-subtree-line-prefix "——")
  '(dired-sidebar-theme 'nerd)
@@ -283,39 +289,18 @@
  '(highlight-parentheses-highlight-adjacent t)
  '(hl-line-flash-show-period 2.0)
  '(hl-todo-keyword-faces
-   '(("HOLD" . "#d0bf8f")
-     ("TODO" . "#cc9393")
-     ("NEXT" . "#dca3a3")
-     ("THEM" . "#dc8cc3")
-     ("PROG" . "#7cb8bb")
-     ("OKAY" . "#7cb8bb")
-     ("GOAL" . "#7cb8bb")
-     ("MEETING" . "#7cb8bb")
-     ("BLOCKED" . "#7cb8bb")
-     ("IMPACT" . "#7cb8bb")
-     ("PRODUCTIVITY" . "#7cb8bb")
-     ("SUMMARY" . "#7cb8bb")
-     ("IDEA" . "#7cb8bb")
-     ("WIN" . "#7cb8bb")
-     ("CAREER" . "#7cb8bb")
-     ("TESTING" . "#5f7f5f")
-     ("DONT" . "#5f7f5f")
-     ("TIL" . "#5f7f5f")
-     ("FAIL" . "#8c5353")
-     ("DONE" . "#afd8af")
-     ("NOTE" . "#d0bf8f")
-     ("KLUDGE" . "#d0bf8f")
-     ("HACK" . "#d0bf8f")
-     ("REVIEW" . "#d0bf8f")
-     ("REFACTOR" . "#d0bf8f")
-     ("FUTURE" . "#d0bf8f")
-     ("TEMP" . "#d0bf8f")
-     ("FIXME" . "#cc9393")
-     ("XXXX*" . "#cc9393")
-     ("SLOW" . "red")
-     ("OPTIMIZE" . "red")
-     ("BUG" . "red")
-     ("HELP" . "red")))
+   '(("HOLD" . "#d0bf8f") ("TODO" . "#cc9393") ("NEXT" . "#dca3a3")
+     ("THEM" . "#dc8cc3") ("PROG" . "#7cb8bb") ("OKAY" . "#7cb8bb")
+     ("GOAL" . "#7cb8bb") ("MEETING" . "#7cb8bb") ("BLOCKED" . "#7cb8bb")
+     ("IMPACT" . "#7cb8bb") ("PRODUCTIVITY" . "#7cb8bb")
+     ("SUMMARY" . "#7cb8bb") ("IDEA" . "#7cb8bb") ("WIN" . "#7cb8bb")
+     ("CAREER" . "#7cb8bb") ("TESTING" . "#5f7f5f") ("DONT" . "#5f7f5f")
+     ("TIL" . "#5f7f5f") ("FAIL" . "#8c5353") ("DONE" . "#afd8af")
+     ("NOTE" . "#d0bf8f") ("KLUDGE" . "#d0bf8f") ("HACK" . "#d0bf8f")
+     ("REVIEW" . "#d0bf8f") ("REFACTOR" . "#d0bf8f") ("FUTURE" . "#d0bf8f")
+     ("TEMP" . "#d0bf8f") ("FIXME" . "#cc9393") ("XXXX*" . "#cc9393")
+     (":xxx" . "#cc9393") ("SLOW" . "red") ("OPTIMIZE" . "red")
+     ("BUG" . "red") ("HELP" . "red")))
  '(hs-hide-comments-when-hiding-all nil)
  '(icomplete-prospects-height 70)
  '(imenu-list-auto-resize t)
@@ -351,10 +336,36 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(go-playground jinx docker dockerfile-mode bm toml-mode gotest flymake-go go-mode flyspell-correct-popup consult-flyspell flymake-easy cider markdown-toc nushell-mode flymake-diagnostic-at-point multiple-cursors iedit string-inflection eat sml-modeline flymake-kondor puni mark-thing-at jet justl just-mode hy-mode consult-eglot eglot transient-dwim conventional-changelog term-keys restclient-jq jq-mode xclip windresize dired-rainbow highlight edebug-inline-result monokai-theme rich-minority org-tree-slide zop-to-char restclient corfu vertico dired-sidebar dirtree highlight-escape-sequences hl-todo org-download epresent super-save unicode-fonts orderless winum auto-package-update use-package project-explorer highlight-numbers alert sonic-pi quick-peek rg consult marginalia embark aggressive-indent dotenv-mode org-bullets org-preview-html github-browse-file envrc direnv perspective helpful popwin git-link imenu-list ibuffer-vc symbol-overlay csv-mode diminish which-key diff-hl git-timemachine qjakey-chord visible-mark move-text beacon unfill popper toggle-test key-chord embark-consult csv highlight-indentation consult-dir auto-compile goggles git-gutter typo shrink-whitespace ripgrep rainbow-delimiters paren-face page-break-lines markdown-mode magit jump-char highlight-parentheses flymd feature-mode exec-path-from-shell dumb-jump dot-mode crux comment-dwim-2 buffer-move ag ace-window))
+   '(ace-window ag aggressive-indent aidermacs alert auto-compile
+                auto-package-update beacon bm buffer-move cider comment-dwim-2
+                consult consult-dir consult-eglot consult-flyspell
+                conventional-changelog corfu crux csv csv-mode diff-hl
+                diminish dired-rainbow dired-sidebar direnv dirtree docker
+                dockerfile-mode dot-mode dotenv-mode dumb-jump eat
+                edebug-inline-result eglot embark embark-consult envrc
+                epresent exec-path-from-shell feature-mode
+                flymake-diagnostic-at-point flymake-easy flymake-go
+                flymake-kondor flymd flyspell-correct-popup git-gutter
+                git-link git-timemachine github-browse-file go-mode
+                go-playground goggles gotest helpful highlight
+                highlight-escape-sequences highlight-indentation
+                highlight-numbers highlight-parentheses hl-todo hy-mode
+                ibuffer-vc iedit imenu-list jet jinx jq-mode jump-char
+                just-mode justl key-chord key-seq magit marginalia
+                mark-thing-at markdown-mode markdown-toc monokai-theme
+                move-text multiple-cursors nushell-mode orderless org-bullets
+                org-download org-preview-html org-tree-slide page-break-lines
+                paren-face perspective popper popwin project-explorer puni
+                quick-peek rainbow-delimiters restclient restclient-jq rg
+                rich-minority ripgrep shrink-whitespace sml-modeline sonic-pi
+                string-inflection super-save symbol-overlay term-keys
+                toggle-test toml-mode transient-dwim typo unfill unicode-fonts
+                use-package vertico visible-mark which-key windresize winum
+                xclip zop-to-char))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
-   '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode help-mode clojure-mode))
+   '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode
+                     help-mode clojure-mode))
  '(persp-mode-prefix-key nil)
  '(persp-sort 'access)
  '(persp-suppress-no-prefix-key-warning t)
@@ -367,15 +378,10 @@
  '(recentf-max-saved-items 500)
  '(ripgrep-arguments '("--smart-case" "--glob=!*.xml"))
  '(safe-local-variable-values
-   '((eval and buffer-file-name
-           (not
-            (eq major-mode 'package-recipe-mode))
-           (or
-            (require 'package-recipe-mode nil t)
-            (let
-                ((load-path
-                  (cons "../package-build" load-path)))
-              (require 'package-recipe-mode nil t)))
+   '((eval and buffer-file-name (not (eq major-mode 'package-recipe-mode))
+           (or (require 'package-recipe-mode nil t)
+               (let ((load-path (cons "../package-build" load-path)))
+                 (require 'package-recipe-mode nil t)))
            (package-recipe-mode))))
  '(save-completions-retention-time 700)
  '(scroll-bar-mode nil)
@@ -387,7 +393,10 @@
  '(standard-indent 2)
  '(symbol-overlay-displayed-window nil)
  '(symbol-overlay-faces
-   '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3 symbol-overlay-face-4 symbol-overlay-face-5 symbol-overlay-face-6 symbol-overlay-face-7 symbol-overlay-face-8))
+   '(symbol-overlay-face-1 symbol-overlay-face-2 symbol-overlay-face-3
+                           symbol-overlay-face-4 symbol-overlay-face-5
+                           symbol-overlay-face-6 symbol-overlay-face-7
+                           symbol-overlay-face-8))
  '(tgt-open-in-new-window nil)
  '(tldr-enabled-categories '("common"))
  '(trailing-whitespace ((t (:background "#ae33ff"))))
@@ -1192,10 +1201,17 @@
 (global-set-key (kbd "C-o C-z") 'my-typo-map)
 (global-set-key (kbd "C-. C-/") 'my-typo-map)
 
-
+;; (key-seq-define-local ",r" (lambda () (interactive)  (windmove-right)) )
+;; (key-chord-mode 1)
+;; (key-seq-define-global "qd" 'dired)
+;; (define-key (current-global-map) (vector 'key-chord ?, ?r) 'windmove-right)
 
 
 ;;; Navigation
+
+;; NOTE Have to do a key-chord-define-global before any key-seq-define-global to get them working!!
+(key-chord-define-global ",q" (lambda () (interactive)  (windmove-right))) ; junk
+;; (key-chord-define-global ",t" 'windmove-left)
 
 (key-seq-define-global ",r" (lambda () (interactive)  (windmove-right)))
 (key-seq-define-global ",t" (lambda () (interactive)  (windmove-left)))
@@ -1207,19 +1223,14 @@
 (key-seq-define-global ",s" 'buf-move-left)
 (key-seq-define-global ",f" 'buf-move-right)
 
-;; (key-seq-define-global ",p" 'me/goto-top)
 (key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
-(key-seq-define-global ",b" 'me/goto-top) ; "Back" to top
+(key-seq-define-global ",d" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",l" 'me/goto-bot) ; "Down" to bottom
-
-;; (key-seq-define-global ",x" 'me/goto-bot) ; available
-;; (key-seq-define-global ",m" 'me/goto-bot) ; available
 
 (key-seq-define-global ",w" 'ace-window)
 
-(key-seq-define-global ",d" 'avy-goto-symbol-1-above)
-(key-seq-define-global ",v" 'avy-goto-symbol-1-below)
-;; (key-seq-define-global ",k" 'TODO)
+(key-seq-define-global ",b" 'avy-goto-symbol-1-above)
+(key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
 (key-seq-define-global ",j" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
@@ -1553,10 +1564,11 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key "\C-xO"    (lambda () (interactive) (delete-blank-lines)))
 
 
-(global-set-key (kbd "C-S-<up>")     'buf-move-up)
-(global-set-key (kbd "C-S-<left>")   'buf-move-left)
-(global-set-key (kbd "C-S-<down>")   'buf-move-down)
-(global-set-key (kbd "C-S-<right>")  'buf-move-right)
+;; (global-set-key (kbd "C-S-<up>")     'buf-move-up)
+;; (global-set-key (kbd "C-S-<left>")   'buf-move-left)
+;; (global-set-key (kbd "C-S-<down>")   'buf-move-down)
+;; (global-set-key (kbd "C-S-<right>")  'buf-move-right)
+
 ;; (global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
 ;; (global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
 ;; (global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
@@ -4031,21 +4043,21 @@ arglists.  ELDOC-INFO is a p-list containing the eldoc information."
   (backward-char)
   (recenter-top-bottom 50))
 
-;; https://github.com/kai2nenobu/guide-key/blob/master/guide-key.el#L578
-;; key-chord hack
-(defadvice this-command-keys (after key-chord-hack disable)
-  "Add key chord to the key sequence returned by `this-command-keys'.
-Original `this-command-keys' returns \"[key-chord]\" when you
-type any of key chords, so it is difficult to know which key
-chord is pressed.  This advice enables to distinguish pressed key
-chord."
-  (condition-case nil
-      (if (equal ad-return-value [key-chord])
-          (let ((rkeys (recent-keys)))
-            (setq ad-return-value
-                  (vector 'key-chord (aref rkeys (- (length rkeys) 2))
-                          (aref rkeys (- (length rkeys) 1))))))
-    (error "")))
+;; ;; https://github.com/kai2nenobu/guide-key/blob/master/guide-key.el#L578
+;; ;; key-chord hack
+;; (defadvice this-command-keys (after key-chord-hack disable)
+;;   "Add key chord to the key sequence returned by `this-command-keys'.
+;; Original `this-command-keys' returns \"[key-chord]\" when you
+;; type any of key chords, so it is difficult to know which key
+;; chord is pressed.  This advice enables to distinguish pressed key
+;; chord."
+;;   (condition-case nil
+;;       (if (equal ad-return-value [key-chord])
+;;           (let ((rkeys (recent-keys)))
+;;             (setq ad-return-value
+;;                   (vector 'key-chord (aref rkeys (- (length rkeys) 2))
+;;                           (aref rkeys (- (length rkeys) 1))))))
+;;     (error "")))
 
 ;; (autoload 'bash-completion-dynamic-complete "bash-completion" "BASH completion hook")
 ;; (add-hook 'shell-dynamic-complete-functions 'bash-completion-dynamic-complete)
