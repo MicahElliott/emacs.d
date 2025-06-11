@@ -68,6 +68,7 @@
     beacon
     bm
     buffer-move
+    chatgpt-shell
     cider
     clojure-mode
     comment-dwim-2
@@ -91,6 +92,7 @@
     dumb-jump
     eat
     edebug-inline-result
+    ellama
     embark
     embark-consult
     envrc
@@ -125,7 +127,9 @@
     justl
     key-chord
     key-seq
+    llm
     magit
+    magit-gptcommit
     marginalia
     mark-thing-at
     markdown-mode
@@ -162,6 +166,7 @@
     typo
     unfill
     unicode-fonts
+    urgrep
     use-package
     vertico
     visible-mark
@@ -337,13 +342,13 @@
  '(org-return-follows-link t)
  '(package-selected-packages
    '(ace-window ag aggressive-indent aidermacs alert auto-compile
-                auto-package-update beacon bm buffer-move cider comment-dwim-2
-                consult consult-dir consult-eglot consult-flyspell
-                conventional-changelog corfu crux csv csv-mode diff-hl
-                diminish dired-rainbow dired-sidebar direnv dirtree docker
-                dockerfile-mode dot-mode dotenv-mode dumb-jump eat
-                edebug-inline-result eglot embark embark-consult envrc
-                epresent exec-path-from-shell feature-mode
+                auto-package-update beacon bm buffer-move chatgpt-shell cider
+                comment-dwim-2 consult consult-dir consult-eglot
+                consult-flyspell conventional-changelog corfu crux csv
+                csv-mode diff-hl diminish dired-rainbow dired-sidebar direnv
+                dirtree docker dockerfile-mode dot-mode dotenv-mode dumb-jump
+                eat edebug-inline-result eglot ellama embark embark-consult
+                envrc epresent exec-path-from-shell feature-mode
                 flymake-diagnostic-at-point flymake-easy flymake-go
                 flymake-kondor flymd flyspell-correct-popup git-gutter
                 git-link git-timemachine github-browse-file go-mode
@@ -351,17 +356,18 @@
                 highlight-escape-sequences highlight-indentation
                 highlight-numbers highlight-parentheses hl-todo hy-mode
                 ibuffer-vc iedit imenu-list jet jinx jq-mode jump-char
-                just-mode justl key-chord key-seq magit marginalia
-                mark-thing-at markdown-mode markdown-toc monokai-theme
-                move-text multiple-cursors nushell-mode orderless org-bullets
-                org-download org-preview-html org-tree-slide page-break-lines
-                paren-face perspective popper popwin project-explorer puni
-                quick-peek rainbow-delimiters restclient restclient-jq rg
-                rich-minority ripgrep shrink-whitespace sml-modeline sonic-pi
-                string-inflection super-save symbol-overlay term-keys
-                toggle-test toml-mode transient-dwim typo unfill unicode-fonts
-                use-package vertico visible-mark which-key windresize winum
-                xclip zop-to-char))
+                just-mode justl key-chord key-seq llm magit magit-gptcommit
+                marginalia mark-thing-at markdown-mode markdown-toc
+                monokai-theme move-text multiple-cursors nushell-mode
+                orderless org-bullets org-download org-preview-html
+                org-tree-slide page-break-lines paren-face perspective popper
+                popwin project-explorer puni quick-peek rainbow-delimiters
+                restclient restclient-jq rg rich-minority ripgrep
+                shrink-whitespace sml-modeline sonic-pi string-inflection
+                super-save symbol-overlay term-keys toggle-test toml-mode
+                transient-dwim typo unfill unicode-fonts urgrep use-package
+                vertico visible-mark which-key windresize winum xclip
+                zop-to-char))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode
@@ -478,7 +484,7 @@
  '(bqn-one-modifier-face ((t (:foreground "dark red"))))
  '(bqn-separator-face ((t (:foreground "#AE81FF"))))
  '(bqn-two-modifier-face ((t (:foreground "hot pink" :weight extra-bold))))
- '(cider-instrumented-face ((t (:foreground "#AE81FF" :background "brightmagenta"))))
+ '(cider-instrumented-face ((t (:background "brightmagenta" :foreground "#AE81FF" :box (:line-width (1 . -1) :color "#AF87FF") :slant italic))))
  '(cider-repl-result-face ((t (:foreground "cyan"))))
  '(cider-traced-face ((t (:slant italic :background "darkslategray"))))
  '(clojure-keyword-face ((t (:foreground "#ab75c3"))))
@@ -624,6 +630,28 @@
 ;; Stop Emacs from processing .Xresources/.Xdefaults
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Resources.html#Resources
 (setq inhibit-x-resources t)
+
+
+
+;;; LLM / GPT / AIDER
+
+(setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
+(setq chatgpt-shell-openai-key (getenv "ANTHROPIC_API_KEY"))
+(setq chatgpt-shell-openai-key (getenv "GEMINI_API_KEY"))
+(setq chatgpt-shell-openai-key (getenv "DEEPSEEK_API_KEY"))
+
+;; (setq llm-refactoring-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
+
+(require 'llm)
+(require 'llm-openai)
+;; (require 'llm-gemini)
+;; (require 'llm-claude)
+(setq magit-gptcommit-llm-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
+;; (setq magit-gptcommit-llm-provider (make-llm-gemini :key (getenv "GEMINI_API_KEY")))
+;; (setq magit-gptcommit-llm-provider (make-llm-claude :key (getenv "ANTHROPIC_API_KEY")))
+
+(require 'magit-gptcommit)
+(magit-gptcommit-status-buffer-setup)
 
 
 
@@ -1262,6 +1290,7 @@
 ;; Available
 ;; (key-seq-define-global ",p" 'xxx)
 ;; (key-seq-define-global ",d" 'xxx)
+
 
 
 ;; ;;; MASHINGS
@@ -2137,7 +2166,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://github.com/jorgenschaefer/typoel
 
 ;; Default to using typo mode for better/fancy typography
-(typo-global-mode 1)
+;; (typo-global-mode 1)
 ;; Turn off for markdown since ` is annoyingly changed
 ;; (add-hook 'text-mode-hook 'typo-mode)
 
@@ -4481,7 +4510,7 @@ arglists.  ELDOC-INFO is a p-list containing the eldoc information."
   ;; (setq vertico-cycle t)
   )
 (define-key vertico-map "?" #'minibuffer-completion-help)
-(define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
+(define-key vertico-map (kbd "M-q") #'minibuffer-force-complete-and-exit)
 (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
 (define-key vertico-map (kbd "C-n") #'next-line)
 (define-key vertico-map (kbd "C-p") #'previous-line)
