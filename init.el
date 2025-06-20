@@ -1640,8 +1640,8 @@ Here 'words' are defined as characters separated by whitespace."
 (global-set-key (kbd "C-c J") 'justl)
 ;; (global-set-key (kbd "C-c J") 'justl-exec-recipe-in-dir)
 
-;; (global-set-key (kbd "C-r") 'recenter-top-bottom)
-;; (global-set-key (kbd "C-l") 'ctrlf-backward-default)
+(global-set-key (kbd "C-r") 'recenter-top-bottom)
+(global-set-key (kbd "C-l") 'ctrlf-backward-default)
 ;; (bind-key* "C-l" 'ctrlf-backward-default)
 ;; (bind-key* "C-r" 'recenter-top-bottom)
 
