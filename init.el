@@ -524,7 +524,7 @@
  '(mood-line-status-info ((t (:foreground "purple4"))))
  '(mood-line-status-neutral ((t (:foreground "white"))))
  '(mood-line-unimportant ((t (:foreground "white"))))
- '(org-block ((t (:extend t :background "#3E3D31" :foreground "#F8F8F0" :family "Iosevka Term"))))
+ '(org-block ((t (:extend t :background "#5f0000" :foreground "#F8F8F0" :family "Iosevka Term"))))
  '(org-code ((t (:foreground "#75715E" :family "Fira Code"))))
  '(org-document-title ((t (:inherit (variable-pitch font-lock-constant-face) :weight bold :height 2.0))))
  '(org-level-1 ((t (:inherit (outline-1 variable-pitch) :extend t :foreground "#FD971F" :height 3.0))))
@@ -631,6 +631,11 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Resources.html#Resources
 (setq inhibit-x-resources t)
 
+;; GPG setup
+;; https://emacs.stackexchange.com/a/12231/11025
+(setq epa-file-cache-passphrase-for-symmetric-encryption t)
+;; https://vxlabs.com/2021/03/21/gnupg-pinentry-via-the-emacs-minibuffer/
+(setq epa-pinentry-mode 'loopback)
 
 
 ;;; LLM / GPT / AIDER
@@ -1251,16 +1256,16 @@
 (key-seq-define-global ",s" 'buf-move-left)
 (key-seq-define-global ",f" 'buf-move-right)
 
-(key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
 (key-seq-define-global ",d" 'me/goto-top) ; "Back" to top
 (key-seq-define-global ",l" 'me/goto-bot) ; "Down" to bottom
 
 (key-seq-define-global ",w" 'ace-window)
+(key-seq-define-global ",x" 'aw-flip-window) ; "Prev" win
 
 (key-seq-define-global ",b" 'avy-goto-symbol-1-above)
 (key-seq-define-global ",k" 'avy-goto-symbol-1-below)
 
-(key-seq-define-global ",j" 'move-text-up) ; line up
+(key-seq-define-global ",v" 'move-text-up) ; line up
 (key-seq-define-global ",g" 'move-text-down) ; line down
 
 
@@ -2092,8 +2097,9 @@ Here 'words' are defined as characters separated by whitespace."
 ;; ;;   (cdr project))
 ;; (add-hook 'project-find-functions #'project-find-go-module)
 
-(require 'go-mode)
 (require 'eglot)
+
+(require 'go-mode)
 (add-hook 'go-mode-hook 'eglot-ensure)
 
 (add-hook 'go-mode-hook
@@ -2160,7 +2166,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Better than poporg-edit?  Great for markdown.  Can even eval code.
 ;; Keys: C-c ' (start), C-c C-c (commit)
 (require 'typo) ; C-c T
-
 
 ;; Typo fancy typography/punctuation
 ;; https://github.com/jorgenschaefer/typoel
@@ -2788,6 +2793,40 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://stackoverflow.com/questions/20126575/how-to-make-emacs-not-highlight-trailing-whitespace-in-term
 (add-hook 'term-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
 (add-hook 'eat-mode-hook (lambda () (setq show-trailing-whitespace nil) (font-lock-mode 0)))
+;; (global-set-key (kbd "C-c j") 'eat-mode-map)
+
+;; https://www.reddit.com/r/emacs/comments/1gdp0fk/comment/lu5s9qd/
+;; eat: Emulate A Terminal (https://codeberg.org/akib/emacs-eat)
+(use-package eat
+    :preface
+    (defun my--eat-open (file)
+        "Helper function to open files from eat terminal."
+        (interactive)
+        (if (file-exists-p file)
+                (find-file-other-window file t)
+            (warn "File doesn't exist")))
+    :init
+    (add-to-list 'project-switch-commands '(eat-project "Eat terminal") t)
+    (add-to-list 'project-switch-commands '(eat-project-other-window "Eat terminal other window") t)
+    (add-to-list 'project-kill-buffer-conditions '(major-mode . eat-mode))
+    :config
+    (add-to-list 'eat-message-handler-alist (cons "open" 'my--eat-open))
+    (setq process-adaptive-read-buffering nil) ; makes EAT a lot quicker!
+    ;; (setq eat-term-name "xterm-256color") ; https://codeberg.org/akib/emacs-eat/issues/119"
+    (setq eat-kill-buffer-on-exit t)
+    (setq eat-shell-prompt-annotation-failure-margin-indicator "")
+    (setq eat-shell-prompt-annotation-running-margin-indicator "")
+    (setq eat-shell-prompt-annotation-success-margin-indicator "")
+    )
+
+(with-eval-after-load 'eat
+    ;; (global-set-key (kbd "C-c o t") 'eat)
+    ;; (global-set-key (kbd "C-c o T") 'eat-other-window)
+    ;; (define-key project-prefix-map (kbd "t") 'eat-project)
+  ;; (define-key project-prefix-map (kbd "T") 'eat-project-other-window)
+  (define-key eat-mode-map (kbd "C-z") 'eat-semi-char-mode))
+
+
 
 (add-hook 'magit-process-mode-hook (lambda () (page-break-lines-mode +1)))
 
@@ -2914,8 +2953,8 @@ Here 'words' are defined as characters separated by whitespace."
 
 
 ;;; REST CLIENTS
-(require 'restclient)
-(require 'restclient-jq)
+;; (require 'restclient)
+;; (require 'restclient-jq)
 ;; (require 'httprepl)
 
 
