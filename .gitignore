@@ -37,3 +37,4 @@ transient/
 eln-cache/
 emojis/
 /projects
+/.agent-shell/

@@ -61,6 +61,7 @@
 (defvar my-packages
   '(ace-window
     ag
+    agent-shell
     aggressive-indent
     alert
     auto-compile
@@ -68,22 +69,24 @@
     beacon
     bm
     buffer-move
-    chatgpt-shell
     cider
     clojure-mode
     comment-dwim-2
     consult
-    consult-eglot
+    ;; consult-eglot
     consult-flyspell
     conventional-changelog
     corfu
     corfu-terminal
     crux
     csv
+    csv-mode
+    dape
     dash
     diff-hl
     dired-rainbow
     dired-sidebar
+    dired-subtree
     direnv
     dockerfile-mode
     docker
@@ -92,7 +95,7 @@
     dumb-jump
     eat
     edebug-inline-result
-    ellama
+    eglot-signature-eldoc-talkative
     embark
     embark-consult
     envrc
@@ -127,9 +130,8 @@
     justl
     key-chord
     key-seq
-    llm
     magit
-    magit-gptcommit
+    ;; magit-gptcommit
     marginalia
     mark-thing-at
     markdown-mode
@@ -159,6 +161,7 @@
     sml-modeline
     super-save
     symbol-overlay
+    templ-ts-mode
     term-keys
     toggle-test
     toml
@@ -168,10 +171,12 @@
     unicode-fonts
     urgrep
     use-package
+    v-mode
     vertico
     visible-mark
     which-key
     xclip
+    zig-mode
     zop-to-char))
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -197,6 +202,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ace-window-display-mode t)
+ '(age-program "rage")
  '(auto-dim-other-buffers-mode nil)
  '(auto-revert-interval 2)
  '(avy-orders-alist nil)
@@ -286,13 +292,13 @@
  '(global-hl-line-sticky-flag nil)
  '(global-prettify-symbols-mode nil)
  '(global-superword-mode t)
- '(global-whitespace-mode t)
+ '(global-whitespace-mode nil)
  '(go-ts-mode-indent-offset 4)
  '(highlight-nonselected-windows t)
  '(highlight-parentheses-colors '("red" "IndianRed1"))
  '(highlight-parentheses-delay 0.3)
  '(highlight-parentheses-highlight-adjacent t)
- '(hl-line-flash-show-period 2.0)
+ '(hl-line-flash-show-period 0.1)
  '(hl-todo-keyword-faces
    '(("HOLD" . "#d0bf8f") ("TODO" . "#cc9393") ("NEXT" . "#dca3a3")
      ("THEM" . "#dc8cc3") ("PROG" . "#7cb8bb") ("OKAY" . "#7cb8bb")
@@ -315,8 +321,6 @@
  '(indent-tabs-mode nil)
  '(initial-buffer-choice nil)
  '(justl-recipe-width 50)
- '(key-chord-safety-interval-backward 0.0)
- '(key-chord-safety-interval-forward 0.0)
  '(live-completions-columns 'single)
  '(live-completions-mode t)
  '(live-completions-sort-order 'cycle)
@@ -341,33 +345,31 @@
  '(org-confirm-babel-evaluate nil)
  '(org-return-follows-link t)
  '(package-selected-packages
-   '(ace-window ag aggressive-indent aidermacs alert auto-compile
-                auto-package-update beacon bm buffer-move chatgpt-shell cider
-                comment-dwim-2 consult consult-dir consult-eglot
-                consult-flyspell conventional-changelog corfu crux csv
-                csv-mode diff-hl diminish dired-rainbow dired-sidebar direnv
-                dirtree docker dockerfile-mode dot-mode dotenv-mode dumb-jump
-                eat edebug-inline-result eglot ellama embark embark-consult
-                envrc epresent exec-path-from-shell feature-mode
+   '(ace-window ag agent-shell aggressive-indent alert auto-compile beacon
+                bind-key bm buffer-move cider  comment-dwim-2
+                consult-dir consult-flyspell conventional-changelog
+                corfu-terminal coterm crux csv csv-mode dape diff-hl
+                dired-rainbow dired-sidebar direnv dirtree docker
+                dockerfile-mode dot-mode dotenv-mode dumb-jump eat
+                edebug-inline-result eglot-signature-eldoc-talkative eldoc-box
+                embark-consult envrc epresent exec-path-from-shell
                 flymake-diagnostic-at-point flymake-easy flymake-go
                 flymake-kondor flymd flyspell-correct-popup git-gutter
-                git-link git-timemachine github-browse-file go-mode
-                go-playground goggles gotest helpful highlight
-                highlight-escape-sequences highlight-indentation
-                highlight-numbers highlight-parentheses hl-todo hy-mode
-                ibuffer-vc iedit imenu-list jet jinx jq-mode jump-char
-                just-mode justl key-chord key-seq llm magit magit-gptcommit
-                marginalia mark-thing-at markdown-mode markdown-toc
-                monokai-theme move-text multiple-cursors nushell-mode
-                orderless org-bullets org-download org-preview-html
-                org-tree-slide page-break-lines paren-face perspective popper
-                popwin project-explorer puni quick-peek rainbow-delimiters
-                restclient restclient-jq rg rich-minority ripgrep
-                shrink-whitespace sml-modeline sonic-pi string-inflection
-                super-save symbol-overlay term-keys toggle-test toml-mode
-                transient-dwim typo unfill unicode-fonts urgrep use-package
-                vertico visible-mark which-key windresize winum xclip
-                zop-to-char))
+                git-link git-timemachine github-browse-file go-playground
+                god-mode goggles helpful highlight highlight-escape-sequences
+                highlight-indentation highlight-numbers highlight-parentheses
+                hl-todo hy-mode ibuffer-vc iedit imenu-list jet jinx jump-char
+                just-mode justl key-seq marginalia
+                mark-thing-at markdown-toc monokai-theme move-text
+                multiple-cursors nushell-mode orderless org-bullets
+                org-download org-preview-html org-tree-slide page-break-lines
+                paren-face perspective plz-event-source popper popwin puni
+                quick-peek rainbow-delimiters restclient-jq rg rich-minority
+                ripgrep shrink-whitespace sml-modeline string-inflection
+                super-save symbol-overlay templ-ts-mode term-keys toggle-test
+                toml toml-mode transient-dwim typo unfill unicode-fonts urgrep
+                v-mode vertico visible-mark which-key windresize xclip
+                zig-mode zop-to-char))
  '(page-break-lines-max-width 79)
  '(page-break-lines-modes
    '(emacs-lisp-mode lisp-mode scheme-mode compilation-mode outline-mode
@@ -493,17 +495,18 @@
  '(ctrlf-highlight-line ((t (:background "red4"))))
  '(ctrlf-highlight-passive ((t (:background "orange red" :foreground "black"))))
  '(cursor ((t (:background "red" :foreground "#272822"))))
- '(eglot-highlight-symbol-face ((t (:inherit bold))))
+ '(eglot-highlight-symbol-face ((t (:inherit bold :weight heavy))))
  '(flycheck-indicator-success ((t (:inherit custom-state))))
- '(flymake-error ((t (:foreground "red" :underline (:color foreground-color :style wave)))))
- '(flymake-warning ((t (:foreground "brightyellow" :underline (:color foreground-color :style wave)))))
+ '(flymake-error ((t (:background "black" :foreground "red" :underline (:color foreground-color :style wave :position nil) :weight bold))))
+ '(flymake-note ((t (:foreground "turquoise" :underline t))))
+ '(flymake-warning ((t (:background "black" :foreground "brightyellow" :underline (:color foreground-color :style wave :position nil) :weight bold))))
  '(font-lock-comment-delimiter-face ((t (:foreground "#75715E"))))
  '(font-lock-comment-face ((t (:foreground "gray40" :slant italic))))
  '(font-lock-constant-face ((t (:foreground "#dF9522"))))
  '(font-lock-doc-face ((t (:inherit font-lock-comment-face :foreground "white" :slant italic :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "green3" :underline t :weight ultra-bold))))
  '(font-lock-type-face ((t (:foreground "#66D9EF" :slant italic :weight bold))))
- '(font-lock-variable-name-face ((t (:foreground "green3"))))
+ '(font-lock-variable-name-face ((t (:foreground "white"))))
  '(god-mode-lighter ((t (:inherit error))))
  '(highlight ((t (:background "RoyalBlue4"))))
  '(highlight-numbers-number ((t (:foreground "orangered" :weight extra-bold))))
@@ -561,7 +564,7 @@
  '(visible-mark-face1 ((t (:background "DarkOrange3" :foreground "black"))))
  '(visible-mark-face2 ((t (:background "burlywood4" :foreground "black"))))
  '(which-key-command-description-face ((t nil)))
- '(whitespace-tab ((t (:background "#555555" :foreground "#4e4e4e" :weight bold)))))
+ '(whitespace-tab ((t (:background "#141414" :foreground "#4e4e4e" :weight bold)))))
 
 ;; Color conversion chart from color-N to hex:
 ;; https://stackoverflow.com/a/69141482/326516
@@ -637,27 +640,161 @@
 ;; https://vxlabs.com/2021/03/21/gnupg-pinentry-via-the-emacs-minibuffer/
 (setq epa-pinentry-mode 'loopback)
 
+;; age encryption setup
+;; https://github.com/anticomputer/age.el
+;; (require 'age)
+;; (age-file-enable)
+
 
 ;;; LLM / GPT / AIDER
 
-(setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
-(setq chatgpt-shell-openai-key (getenv "ANTHROPIC_API_KEY"))
-(setq chatgpt-shell-openai-key (getenv "GEMINI_API_KEY"))
-(setq chatgpt-shell-openai-key (getenv "DEEPSEEK_API_KEY"))
+;; (setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
+;; (setq chatgpt-shell-openai-key (getenv "ANTHROPIC_API_KEY"))
+;; (setq chatgpt-shell-openai-key (getenv "GEMINI_API_KEY"))
+;; (setq chatgpt-shell-openai-key (getenv "DEEPSEEK_API_KEY"))
+
+;; Enable auth-source-pass
+;; This uses linux `pass' command, tied into seahorse etc
+(require 'auth-source-pass)
+(auth-source-pass-enable)
+
+(require 'agent-shell)
+
+;; (setq agent-shell-anthropic-claude-environment
+;;       (agent-shell-make-environment-variables
+;;        "ANTHROPIC_API_KEY" (auth-source-pass-get 'secret "anthropic-api-key")))
+
+;; (setq agent-shell-anthropic-authentication
+;;       (agent-shell-anthropic-make-authentication :login t))
+
+(setq agent-shell-anthropic-claude-environment
+      (agent-shell-make-environment-variables :inherit-env t))
+
+(setq agent-shell-anthropic-authentication
+      (agent-shell-anthropic-make-authentication
+       :api-key (lambda () (auth-source-pass-get 'secret "anthropic-api-key"))))
+
+;; (setq agent-shell-openai-environment (agent-shell-make-environment-variables :inherit-env t))
+
+(setq agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t))
+;; (setq agent-shell-openai-default-model-id "gpt-5.4")
+;; (setq agent-shell-openai-default-session-mode-id "full-access")
+;; (setq agent-shell-openai-default-model-id nil)
+;; (setq agent-shell-openai-default-session-mode-id nil)
+
+;; (setq agent-shell-session-strategy 'prompt)
+
+  ;; 2. Set the exact text string from your terminal listing
+;; (setq agent-shell-openai-default-model-id "gpt-5.6-sol")
+;; (setq agent-shell-openai-default-session-mode-id nil)
+
+;; (setq agent-shell-openai-default-model-id nil)
+;; (setq agent-shell-openai-default-session-mode-id nil)
+;; (setq agent-shell-session-strategy 'default)
+
+;; (with-eval-after-load 'agent-shell-openai
+;;   (add-hook 'agent-shell-mode-hook
+;;             (lambda ()
+;;               (when (string-match-p "codex" (buffer-name))
+;;                 ;; Sends a literal RPC command to switch models safely mid-stream
+;;                 (agent-shell-send-command "gpt-5.6-sol")))))
+
+(setq agent-shell-session-strategy 'new)
+  ;; 2. Clear initial overrides to let baseline validation complete safely
+(setq agent-shell-openai-default-model-id "gpt-5.6-luna")
+(setq agent-shell-openai-default-session-mode-id nil)
+
+;; (defun my/compile-and-inject-ai-rules ()
+;;   "Dynamically compile global and project-specific Markdown stanzas,
+;; then inject them into both Codex and Copilot agent-shell backends."
+;;   (let* ((global-rules (expand-file-name "~/.config/ai-rules/global.md"))
+;;          ;; Detect the active Git repository or project root directory name
+;;          (project-name (when (fboundp 'project-name)
+;;                          (let ((p (project-current)))
+;;                            (and p (project-name p)))))
+;;          (project-rules (when project-name
+;;                           (expand-file-name (format "~/.config/ai-rules/projects/%s.md" project-name))))
+;;          (compiled-prompt ""))
+;;     ;; 1. Read and append your global coding styles
+;;     (when (file-exists-p global-rules)
+;;       (setq compiled-prompt (concat compiled-prompt
+;;                                     (with-temp-buffer (insert-file-contents global-rules) (buffer-string))
+;;                                     "\n")))
+;;     ;; 2. If a project match exists, append that specific markdown stanza
+;;     (when (and project-rules (file-exists-p project-rules))
+;;       (setq compiled-prompt (concat compiled-prompt
+;;                                     "\n### PROJECT-SPECIFIC ARCHITECTURE RULES:\n"
+;;                                     (with-temp-buffer (insert-file-contents project-rules) (buffer-string)))))
+;;     ;; 3. Broadcast the final markdown block to both engine variables
+;;     (unless (string-empty-p compiled-prompt)
+;;       (setq agent-shell-openai-custom-system-prompt compiled-prompt)
+;;       (setq agent-shell-copilot-custom-system-prompt compiled-prompt)
+;;       (message "Successfully injected unified AI rules for project: %s" (or project-name "Global")))))
+
+(defun my/compile-and-inject-ai-rules ()
+  "Dynamically compile global and project-specific Markdown stanzas,
+printing diagnostic strings to the *Messages* buffer."
+  (let* ((global-rules (expand-file-name "~/.config/ai-rules/global.md"))
+         ;; Get the project container
+         (proj (project-current))
+         ;; Extract the name Emacs assigns to this specific workspace root
+         (project-name (when proj (project-name proj)))
+         (project-rules (when project-name
+                          (expand-file-name (format "~/.config/ai-rules/projects/%s.md" project-name))))
+         (compiled-prompt ""))
+    ;; DIAGNOSTIC MESSAGES: Open your *Messages* buffer to check these values!
+    (message "[AI-RULES] Active project name detected by Emacs: '%s'" project-name)
+    (message "[AI-RULES] Looking for project stanza file at: '%s'" project-rules)
+    ;; 1. Read and append your global coding styles
+    (if (file-exists-p global-rules)
+        (progn
+          (setq compiled-prompt (concat compiled-prompt (with-temp-buffer (insert-file-contents global-rules) (buffer-string)) "\n"))
+          (message "[AI-RULES] Successfully loaded global.md"))
+      (message "[AI-RULES] WARNING: Could not find global.md at %s" global-rules))
+    ;; 2. If a project match exists, append that specific markdown stanza
+    (if (and project-rules (file-exists-p project-rules))
+        (progn
+          (setq compiled-prompt (concat compiled-prompt
+                                        "\n### PROJECT-SPECIFIC ARCHITECTURE RULES:\n"
+                                        (with-temp-buffer (insert-file-contents project-rules) (buffer-string))))
+          (message "[AI-RULES] Successfully loaded project rules for: %s" project-name))
+      (message "[AI-RULES] NOT LOADING project rules. File missing or project-name nil."))
+    ;; 3. Broadcast the final markdown block to both engine variables
+    (unless (string-empty-p compiled-prompt)
+      (setq agent-shell-openai-custom-system-prompt compiled-prompt)
+      (setq agent-shell-copilot-custom-system-prompt compiled-prompt))))
+
+;; Automatically trigger the compiler whenever an agent-shell session launches
+;; (add-hook 'agent-shell-mode-hook #'my/compile-and-inject-ai-rules)
+(add-hook 'agent-shell-session-initialized-hook #'my/compile-and-inject-ai-rules)
+
+
+
 
 ;; (setq llm-refactoring-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
 
-(require 'llm)
-(require 'llm-openai)
-;; (require 'llm-gemini)
-;; (require 'llm-claude)
-(setq magit-gptcommit-llm-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
-;; (setq magit-gptcommit-llm-provider (make-llm-gemini :key (getenv "GEMINI_API_KEY")))
-;; (setq magit-gptcommit-llm-provider (make-llm-claude :key (getenv "ANTHROPIC_API_KEY")))
+;; (require 'llm)
+;; (require 'llm-openai)
+;; ;; (require 'llm-gemini)
+;; ;; (require 'llm-claude)
+;; (setq magit-gptcommit-llm-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
+;; ;; (setq magit-gptcommit-llm-provider (make-llm-gemini :key (getenv "GEMINI_API_KEY")))
+;; ;; (setq magit-gptcommit-llm-provider (make-llm-claude :key (getenv "ANTHROPIC_API_KEY")))
 
-(require 'magit-gptcommit)
-(magit-gptcommit-status-buffer-setup)
+;; (require 'magit-gptcommit)
+;; (magit-gptcommit-status-buffer-setup)
 
+
+;; (require 'ellama)
+;; ;; (ellama-context-header-line-global-mode +1)
+;; ;; (ellama-session-header-line-global-mode +1)
+;; (setopt ellama-provider (make-llm-openai :key (getenv "OPENAI_API_KEY")))
+
+;; (use-package claude-code-ide
+;;   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+;;   :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+;;   :config
+;;   (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
 
 ;;; BINDINGS
@@ -1251,7 +1388,7 @@
 (key-seq-define-global ",p" (lambda () (interactive)  (windmove-up)))
 (key-seq-define-global ",n" (lambda () (interactive)  (windmove-down)))
 
-(key-seq-define-global ",=" 'buf-move-up)
+(key-seq-define-global ",j" 'buf-move-up)
 (key-seq-define-global ",c" 'buf-move-down)
 (key-seq-define-global ",s" 'buf-move-left)
 (key-seq-define-global ",f" 'buf-move-right)
@@ -2060,7 +2197,6 @@ Here 'words' are defined as characters separated by whitespace."
 ;; disable ido faces to see flx highlights
 ;; (setq ido-use-faces nil)
 
-
 
 ;;; LINTERS
 
@@ -2102,10 +2238,19 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'go-mode)
 (add-hook 'go-mode-hook 'eglot-ensure)
 
-(add-hook 'go-mode-hook
+(add-hook 'go-mode-hook (lambda ()
+					 (setq tab-width 5)
+                          (setq indent-tabs-mode t)
+					 (set-face-attribute 'whitespace-tab nil :background "#111")))
+(add-hook 'go-ts-mode-hook
           (lambda ()
-            (setq tab-width 4)
-            (set-face-attribute 'whitespace-tab nil :background "#111")))
+            (setq indent-tabs-mode t)
+            (setq tab-width 5)
+            (setq go-ts-mode-indent-offset 5)))
+(add-hook 'templ-ts-mode (lambda ()
+					  (setq tab-width 5)
+					  (setq indent-tabs-mode t)))
+
 
 (add-to-list 'auto-mode-alist '("\\.mod\\'" . go-mode))
 
@@ -2124,7 +2269,64 @@ Here 'words' are defined as characters separated by whitespace."
 ;;     (lambda () (call-interactively 'eglot-code-action-organize-imports))
 ;;     nil t)
 
+
+;; eglot-signature-eldoc-talkative
+;; Make Eglot make ElDoc echo docs
+;; https://github.com/emacsmirror/eglot-signature-eldoc-talkative
+(require 'eglot-signature-eldoc-talkative)
+(advice-add #'eglot-signature-eldoc-function :override #'eglot-signature-eldoc-talkative)
+
+
 ;; (require 'gotest)
+
+
+;;; Zig
+
+;; https://zigtools.org/zls/editors/emacs/gnu-emacs/
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+    '(zig-mode . (
+      ;; Use `zls` if it is in your PATH
+      "~/contrib/bin/zls"
+      ;; There are two ways to set config options:
+      ;;   - edit your `zls.json` that applies to any editor that uses ZLS
+      ;;   - set in-editor config options with the `initializationOptions` field below.
+      ;;
+      ;; Further information on how to configure ZLS:
+      ;; https://zigtools.org/zls/configure/
+      :initializationOptions
+        (;; Whether to enable build-on-save diagnostics
+         ;;
+         ;; Further information about build-on save:
+         ;; https://zigtools.org/zls/guides/build-on-save/
+         ;;enable_build_on_save t
+
+         ;; omit the following line if `zig` is in your PATH
+         :zig_exe_path "/home/mde/src/zig/zig-x86_64-linux-0.16.0-dev.27+83f773fc6/zig"
+         )))))
+
+(add-hook 'zig-mode-hook 'eglot-ensure)
+
+;;; v-lang
+
+(require 'v-mode)
+
+(define-key v-mode-map (kbd "C-M-v") 'v-menu)
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(v-mode . (
+                           ;; "~/src/clones/vls/vls"
+                           "v-analyzer"
+      ;; :initializationOptions
+      ;;   (;; Whether to enable build-on-save diagnostics
+      ;;    ;;enable_build_on_save t
+      ;;    ;; :zig_exe_path "/home/mde/src/zig/zig-x86_64-linux-0.16.0-dev.27+83f773fc6/zig"
+      ;;    )
+        ))))
+
+;; (add-hook 'v-mode-hook 'eglot-ensure)
+
 
 (require 'toml-mode)
 
@@ -2300,9 +2502,11 @@ Here 'words' are defined as characters separated by whitespace."
 
 ;; whitespace-mode config
 (require 'whitespace)
-(whitespace-mode)
+;; (whitespace-mode)
 (setq whitespace-line-column 100) ;; limit line length
 (setq whitespace-style '(face tabs empty trailing lines-tail))
+(add-hook 'prog-mode-hook 'whitespace-mode)
+(add-hook 'markdown-mode-hook 'whitespace-mode)
 
 ;; Automatically remove all trailing whitespace.
 ;; (add-hook 'before-save-hook 'delete-trailing-whitespace) ; but only want this in prog-modes
@@ -2824,7 +3028,7 @@ Here 'words' are defined as characters separated by whitespace."
     ;; (global-set-key (kbd "C-c o T") 'eat-other-window)
     ;; (define-key project-prefix-map (kbd "t") 'eat-project)
   ;; (define-key project-prefix-map (kbd "T") 'eat-project-other-window)
-  (define-key eat-mode-map (kbd "C-z") 'eat-semi-char-mode))
+  (define-key eat-mode-map (kbd "C-c C-g") 'eat-semi-char-mode))
 
 
 
@@ -2949,7 +3153,10 @@ Here 'words' are defined as characters separated by whitespace."
 (require 'unicode-fonts)
 (unicode-fonts-setup)
 
+(global-set-key (kbd "C-c ?") (lambda () (interactive) (insert "¿")))
+(global-set-key (kbd "C-c !") (lambda () (interactive) (insert "¡")))
 
+(add-hook 'tsv-mo (lambda () (setq indent-tabs-mode t)))
 
 
 ;;; REST CLIENTS
@@ -3347,6 +3554,7 @@ Here 'words' are defined as characters separated by whitespace."
 ;; Special sectional comments
 ;; https://emacs.stackexchange.com/questions/28232/syntax-highlighting-for-comments-starting-with-specific-sequence-of-characters
 (defface special-comment  '((t (:foreground "#c4bf27"    :weight ultra-bold))) "My Special Comment" :group 'clojure-mode)
+(defface sql-comment      '((t (:foreground "#444"       :weight normal)))     "My Special Comment" :group 'clojure-mode)
 (defface ns-global        '((t (:foreground "green"      :weight ultra-bold))) "NS indicator"       :group 'clojure-mode)
 (defface ns-global-bare   '((t (:foreground "orangered"  :slant italic)))      "NS indicator"       :group 'clojure-mode)
 (defface boolean-true     '((t (:foreground "green"      :weight bold)))       "Boolean true"       :group 'clojure-mode)
@@ -3367,10 +3575,22 @@ Here 'words' are defined as characters separated by whitespace."
 (font-lock-add-keywords 'clojure-mode '(("\\\"/[-:a-z0-9/]+\\\"" 0 'route-path t)))
 (font-lock-add-keywords 'clojure-mode '(("\\(SELECT\\|FROM\\|WHERE\\|NULL\\|FALSE\\|AND\\|LIKE\\|TRUE\\|ASC\\|DESC\\|DELETE\\|GROUP\\|ORDER\\|NOT\\|NOT IN\\|JOIN\\|BY\\|ON\\|TYPEOF\\|END\\|USING\\|WITH\\|SCOPE\\|DATA\\|CATEGORY\\|HAVING\\|LIMIT\\|OFFSET\\|FOR\\|VIEW\\|REFERENCE\\|UPDATE\\|SET\\|NULLS\\|FIRST\\|LAST\\)" 0 'sql-field t)))
 
+;; Clojure HugSQL
+(font-lock-add-keywords 'sql-mode '((" \\*--" 0 'sql-comment t)))
 (font-lock-add-keywords 'sql-mode '(("-- :doc .*" 0 'sfdc-record t)))
 (font-lock-add-keywords 'sql-mode '(("-- :name [^:]+" 0 'special-comment t)))
 (font-lock-add-keywords 'sql-mode '((" \\(:\\*\\|:!\\|:n\\|:\\?\\|:1\\)" 0 'boolean-true t)))
 (font-lock-add-keywords 'sql-mode '((" :\\(v\\*:\\)?[-a-z0-9?]+"  0 'sql-field t)))
+
+;; Golang sqlc
+;; (font-lock-add-keywords 'sql-mode '((" \\*--" 0 'sql-comment t)))
+(font-lock-add-keywords 'sql-mode '(("-- doc: .*"                        0 'sfdc-record     t)))
+(font-lock-add-keywords 'sql-mode '(("-- name: [^:]+"                    0 'special-comment t)))
+;; (font-lock-add-keywords 'sql-mode '(("-- +"                              0 'sql-comment     t)))
+(font-lock-add-keywords 'sql-mode '((" \\(:execrows\\|:execlastid\\|:exec\\|:execresult\\|:many\\|:one\\)" 0 'boolean-true    t)))
+(font-lock-add-keywords 'sql-mode '((" ?"         0 'sql-field       t)))
+(font-lock-add-keywords 'sql-mode '((" @[a-z]+"         0 'sql-field       t)))
+(font-lock-add-keywords 'sql-mode '((" \\$[1-9]"         0 'sql-field       t)))
 
 (font-lock-add-keywords 'clojure-mode '(("::[-.a-z0-9]+/" 0 'ns-global t)))
 (font-lock-add-keywords 'clojure-mode '(("::" 0 'ns-global-bare t)))
@@ -3583,6 +3803,10 @@ Here 'words' are defined as characters separated by whitespace."
 ;; https://stackoverflow.com/questions/9818307/emacs-mode-specific-custom-key-bindings-local-set-key-vs-define-key
 ;; (eval-after-load "sql-mode" (lambda () (local-set-key (kbd "C-c C-k") 'my-cider-eval-db-hugs)))
 
+(add-hook 'sql-mode-hook (lambda ()
+                           (setq tab-width 14)
+                           (setq indent-tabs-mode t)))
+
 
 (defun my-cider-load-route-handler ()
   "Reload handler NS, and send restart-limited to REPL."
@@ -3640,6 +3864,12 @@ Relies on consult (for project-root), cider."
       (cider-find-var))))
 (define-key cider-mode-map (kbd "M-.") 'my-jump-to-hugsql-defn)
 ;; (define-key cider-mode-map (kbd "M-.") 'cider-find-var) ; orig
+
+(setq hugs-imenu-generic-expression
+      '(("SELECTS" "^-- :name \\([-a-z0-9?!]+\\) .*:\\?" 1)
+        ("EXECS"   "^-- :name \\([-a-z0-9?!]+\\) .*:!" 1)
+        ("INSERTS" "^-- :name \\([-a-z0-9?!]+\\) .*:i!" 1)))
+(add-hook 'sql-mode-hook (lambda ()  (setq imenu-generic-expression hugs-imenu-generic-expression)))
 
 (defun my-cider-eval-and-test-fn ()
   "Quickly eval and run test."
@@ -3949,7 +4179,7 @@ Relies on consult (for project-root), cider."
 
 
 (require 'dumb-jump)
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+;; (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 (defun cider-or-dumb-jump ()
   (interactive)
@@ -4096,7 +4326,7 @@ arglists.  ELDOC-INFO is a p-list containing the eldoc information."
 	    (lax-plist-get eldoc-info "docstring"))))
 
 
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+;; (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 (global-set-key  (kbd "C-M->") 'dumb-jump-go)
 
 (defun my-forward-jump-to-line-break ()
@@ -4176,7 +4406,15 @@ arglists.  ELDOC-INFO is a p-list containing the eldoc information."
 
 ;; (define-key shell-script-mode (kbd "C-c C-c") 'sh-send-line-or-region)
 (global-set-key (kbd "C-c Q") 'sh-send-line-or-region)
+;; FIXME this should maybe be shell-mode-hook, not shell-script-mode
 (add-hook 'shell-script-mode (lambda () (local-set-key (kbd "C-c C-c") 'sh-send-line-or-region)))
+
+(add-hook 'clojure-mode-hook (lambda () (modify-syntax-entry ?: ".")))
+(add-hook 'shell-mode-hook (lambda () ; not working
+                               (modify-syntax-entry ?# ".")
+                               (modify-syntax-entry ?+ ".")
+                               ))
+
 
 
 ;; (setq comint-scroll-to-bottom-on-output t)
@@ -5104,6 +5342,12 @@ into Emacs, rather than jump to a browser and see it on GH."
                            "Flymake"
 			   "SoT"
 			   "hs"
+                           "God"
+                           "SO"
+                           "ws"
+                           "Outl"
+                           "Wrap"
+                           "Fill"
 			   "²"
 			   ;; "light" cider-enlighten
 			   "superword-mode")
@@ -5198,12 +5442,6 @@ into Emacs, rather than jump to a browser and see it on GH."
 	("NS" "^(ns \\([a-z0-9.]+\\)" 1)))
 (add-hook 'clojure-mode-hook (lambda ()  (setq imenu-generic-expression clj-imenu-generic-expression)))
 
-
-(setq hugs-imenu-generic-expression
-      '(("SELECTS" "^-- :name \\([-a-z0-9?!]+\\) .*:\\?" 1)
-        ("EXECS"   "^-- :name \\([-a-z0-9?!]+\\) .*:!" 1)
-        ("INSERTS" "^-- :name \\([-a-z0-9?!]+\\) .*:i!" 1)))
-(add-hook 'sql-mode-hook (lambda ()  (setq imenu-generic-expression hugs-imenu-generic-expression)))
 
 
 
